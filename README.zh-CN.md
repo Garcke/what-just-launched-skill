@@ -28,6 +28,16 @@ skills/what-just-launched
 skills/what-just-launched/scripts/just-launched.py
 ```
 
+脚本入口保持很薄，实际实现拆在 Python 包里：
+
+```text
+skills/what-just-launched/scripts/just_launched/
+├── cli.py        # CLI 参数、配置写入、JSON 输出
+├── engine.py     # 搜索引擎编排和数据源 adapter
+├── ranking.py    # 去重、归一化评分、加权 RRF 融合
+└── __init__.py
+```
+
 ## 数据源
 
 ### 产品发现源
@@ -80,6 +90,7 @@ Copy-Item -Recurse -Force "what-just-launched-skill\skills\what-just-launched" "
 ```text
 skills/what-just-launched/SKILL.md
 skills/what-just-launched/scripts/just-launched.py
+skills/what-just-launched/scripts/just_launched/
 skills/what-just-launched/references/
 ```
 

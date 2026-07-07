@@ -28,6 +28,16 @@ Main script:
 skills/what-just-launched/scripts/just-launched.py
 ```
 
+The script entrypoint stays thin; the implementation lives in a small Python package:
+
+```text
+skills/what-just-launched/scripts/just_launched/
+├── cli.py        # CLI arguments, config writing, JSON output
+├── engine.py     # Search orchestration and source adapters
+├── ranking.py    # Deduplication, normalized scoring, weighted RRF fusion
+└── __init__.py
+```
+
 ## Sources
 
 ### Product Discovery Sources
@@ -78,6 +88,7 @@ This repository uses the common Agent Skills shape:
 ```text
 skills/what-just-launched/SKILL.md
 skills/what-just-launched/scripts/just-launched.py
+skills/what-just-launched/scripts/just_launched/
 skills/what-just-launched/references/
 ```
 
