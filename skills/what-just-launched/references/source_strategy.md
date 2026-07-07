@@ -69,4 +69,16 @@ Never save browser cookies in the skill folder, committed files, reports, or log
 
 `errors` means the source failed. Mention the failure if it materially affects the conclusion.
 
-`results` means the source returned evidence. Rank by `score`, but prefer high-quality direct evidence over raw mention count.
+`results` means the source returned evidence. Rank by `ranking.final_score`; keep `score` only as the raw source-local signal.
+
+The ranking model favors:
+
+```text
+source-local rank
+fresh launch or evidence date
+engagement normalized within the same source
+source quality
+duplicate confirmation across multiple sources
+```
+
+This prevents large raw counters, such as app rating counts or video views, from overwhelming smaller but more direct launch signals.

@@ -419,6 +419,10 @@ The script emits JSON:
     "since": "2026-06-30",
     "until": "2026-07-06"
   },
+  "ranking_model": {
+    "name": "source-normalized-weighted-rrf",
+    "rrf_k": 60
+  },
   "results": [
     {
       "source": "hacker_news",
@@ -431,11 +435,18 @@ The script emits JSON:
       "signals": {
         "points": 109,
         "comments": 70
+      },
+      "ranking": {
+        "final_score": 0.812345,
+        "matched_sources": ["hacker_news"],
+        "launch_date_confidence": "evidence_date_only"
       }
     }
   ]
 }
 ```
+
+Use `ranking.final_score` for ordering. `score` is the source-local raw score and is not comparable across platforms.
 
 ## Current Limitations
 

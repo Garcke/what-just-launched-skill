@@ -61,6 +61,12 @@ The top-level `time_range` is the search window. `published_at` is the date of t
 
 When `--filter-launch-date` is active, sources with known launch dates keep only products whose `product_launch_date` is inside `time_range`. Sources without a reliable launch date may still return results; label those as "date not verified" if they affect the conclusion.
 
+## Ranking Semantics
+
+Use `ranking.final_score` for final ordering. Treat `score` as a raw source-local signal only; raw counters from different platforms are not comparable.
+
+The engine normalizes within each source, deduplicates by normalized URL/title, then uses weighted reciprocal rank fusion. Prefer results with strong `ranking.freshness`, direct `launch_date_confidence`, and multiple `matched_sources` when explaining why a product is notable.
+
 ## Source Routing
 
 For product discovery, use:
