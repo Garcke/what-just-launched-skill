@@ -20,6 +20,7 @@ from .common import (
     status,
 )
 from .entities import build_products
+from .feedback_summary import summarize_feedback
 from .ranking import RRF_K, RankingMixin
 from .sources.community_feedback.feedback import FeedbackSources
 from .sources.community_feedback.hacker_news import HackerNewsSource
@@ -91,7 +92,12 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
         }
 
     def run(self) -> dict[str, Any]:
-        selected = selected_sources(self.args.mode, self.args.sources)
+        selected = selected_sources(
+            self.args.mode,
+            self.args.sources,
+            self.args.product_sources,
+            self.args.feedback_sources,
+        )
         results: list[dict[str, Any]] = []
         errors: list[dict[str, str]] = []
         for source in selected:
@@ -109,7 +115,10 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             results = [
                 row
                 for row in results
-                if not row.get("product_launch_date") or self._date_in_range(str(row.get("product_launch_date") or ""))
+                if (
+                    not (row.get("launch_date") or row.get("product_launch_date"))
+                    or self._date_in_range(str(row.get("launch_date") or row.get("product_launch_date") or ""))
+                )
             ]
         if not self.args.include_raw:
             for row in results:
@@ -123,6 +132,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             "mode": self.args.mode,
             "market": self.market,
             "days": self.days,
+            "selected_sources": selected,
             "time_range": {"since": self.start_date.isoformat(), "until": self.end_date.isoformat()},
             "generated_at": now_utc().isoformat(),
             "preflight": self.preflight(),
@@ -136,6 +146,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             "products": products,
             "product_data": product_data[: self.args.limit],
             "community_feedback": community_feedback[: self.args.limit],
+            "community_feedback_summary": summarize_feedback(community_feedback),
             "results": ranked_results[: self.args.limit],
         }
 

@@ -55,7 +55,10 @@ class AppStoreSources:
                     kind="app",
                     summary=app.get("subtitle") or app.get("description") or "",
                     score=max(1, 100 - rank),
-                    signals={"chart": chart, "rank": rank, "category": self.args.category},
+                    first_seen_at=self.today,
+                    evidence_published_at=self.today,
+                    date_confidence="chart_date_only",
+                    signals={"chart": chart, "rank": rank, "category": self.args.category, "date_basis": "chart_date"},
                     raw=app,
                 ))
         return rows
@@ -75,6 +78,9 @@ class AppStoreSources:
                     kind="app",
                     summary=app.get("artistName", ""),
                     product_launch_date=launch_date,
+                    launch_date=launch_date,
+                    evidence_published_at=launch_date,
+                    date_confidence="known_launch_date" if launch_date else "unknown",
                     score=max(1, 100 - rank),
                     signals={"rank": rank, "genre": app.get("genres", [{}])[0].get("name") if app.get("genres") else None},
                     raw=app,
@@ -95,6 +101,9 @@ class AppStoreSources:
                     kind="app",
                     summary=app.get("description", "")[:500],
                     product_launch_date=launch_date,
+                    launch_date=launch_date,
+                    evidence_published_at=app.get("currentVersionReleaseDate") or launch_date,
+                    date_confidence="known_launch_date" if launch_date else "evidence_date_only" if app.get("currentVersionReleaseDate") else "unknown",
                     score=float(app.get("userRatingCount") or 0),
                     signals={"rating": app.get("averageUserRating"), "rating_count": app.get("userRatingCount"), "genre": app.get("primaryGenreName"), "current_version_release_date": app.get("currentVersionReleaseDate")},
                     raw=app,
@@ -112,6 +121,6 @@ class AppStoreSources:
             title = html.unescape(re.sub("<[^>]+>", "", m.group(2))).strip()
             if not title:
                 continue
-            rows.append(item("appbrain", title, f"https://www.appbrain.com{href}", kind="app", score=10, signals={"query": self.query}))
+            rows.append(item("appbrain", title, f"https://www.appbrain.com{href}", kind="app", score=10, date_confidence="unknown", signals={"query": self.query}))
         return rows[: self.args.limit]
 

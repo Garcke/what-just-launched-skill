@@ -21,6 +21,7 @@ from ...common import (
     get_json,
     get_text,
     item,
+    now_utc,
     post_json,
 )
 
@@ -59,6 +60,9 @@ class ProductHuntSource:
                 summary=n.get("tagline", ""),
                 published_at=n.get("createdAt", ""),
                 product_launch_date=date_only(n.get("createdAt")),
+                launch_date=date_only(n.get("createdAt")),
+                evidence_published_at=n.get("createdAt", ""),
+                date_confidence="known_launch_date" if n.get("createdAt") else "unknown",
                 score=float(n.get("votesCount") or 0) + float(n.get("commentsCount") or 0) * 3,
                 signals={"votes": n.get("votesCount"), "comments": n.get("commentsCount")},
                 raw=n,

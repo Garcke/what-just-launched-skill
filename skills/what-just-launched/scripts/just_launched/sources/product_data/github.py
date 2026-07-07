@@ -49,7 +49,9 @@ class GitHubSources:
                 kind="repository",
                 summary=desc,
                 score=float(stars),
-                signals={"stars_period": stars, "since": since},
+                evidence_published_at=self.today,
+                date_confidence="trending_period_only",
+                signals={"stars_period": stars, "since": since, "date_basis": "trending_period"},
             ))
         return rows
 
@@ -67,6 +69,9 @@ class GitHubSources:
                 summary=repo.get("description") or "",
                 published_at=repo.get("created_at", ""),
                 product_launch_date=date_only(repo.get("created_at")),
+                launch_date=date_only(repo.get("created_at")),
+                evidence_published_at=repo.get("created_at", ""),
+                date_confidence="known_launch_date" if repo.get("created_at") else "unknown",
                 score=float(repo.get("stargazers_count") or 0),
                 signals={
                     "stars": repo.get("stargazers_count"),

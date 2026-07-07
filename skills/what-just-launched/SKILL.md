@@ -57,7 +57,9 @@ The engine emits normalized JSON. Use its `preflight`, `errors`, and `results` f
 
 ## Time Semantics
 
-The top-level `time_range` is the search window. `published_at` is the date of the evidence page, post, video, or discussion. `product_launch_date` is the product's own launch or first release date when the source exposes it.
+The top-level `time_range` is the search window. `launch_date` is the product's own launch or first release date when the source exposes it. `first_seen_at` is when the skill first saw the product in a chart/source. `evidence_published_at` is the evidence page, post, video, chart, or discussion date. `product_launch_date` and `published_at` remain as backward-compatible aliases.
+
+Use `date_confidence` and `ranking.launch_date_confidence` carefully. AppPark and trending pages often expose chart or trend dates, not true launch dates, so label those as "date not verified" when they matter.
 
 When `--filter-launch-date` is active, sources with known launch dates keep only products whose `product_launch_date` is inside `time_range`. Sources without a reliable launch date may still return results; label those as "date not verified" if they affect the conclusion.
 
@@ -89,6 +91,12 @@ Use `--sources` only when the user names specific sources or when a narrow sourc
 
 ```bash
 python scripts/just-launched.py "Cursor" --mode feedback --sources reddit,hacker_news,web --days 30
+```
+
+Prefer split source routing when the task needs both product discovery and feedback:
+
+```bash
+python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,appark,github_trending --feedback-sources reddit,hacker_news,web --days 7
 ```
 
 ## Safety And Reliability
@@ -134,6 +142,8 @@ User feedback themes
 Opportunity gaps
 Follow-up sources to configure
 ```
+
+Use `community_feedback_summary` for broad user-feedback themes, and `products[].feedback_summary` when explaining feedback tied to one product.
 
 Read `references/source_strategy.md` when choosing sources or explaining missing coverage. Read `references/configuration.md` when setting up keys. Read `references/output_contract.md` when changing scripts or building downstream tooling against the JSON output.
 

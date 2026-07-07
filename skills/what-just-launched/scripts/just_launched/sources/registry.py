@@ -59,10 +59,28 @@ EMITTED_SOURCE_TYPES = {
 }
 
 
-def selected_sources(mode: str, requested: str) -> list[str]:
+def selected_sources(
+    mode: str,
+    requested: str,
+    product_sources: str = "all",
+    feedback_sources: str = "all",
+) -> list[str]:
     if requested != "all":
         return [source.strip() for source in requested.split(",") if source.strip()]
+    if product_sources != "all" or feedback_sources != "all":
+        selected: list[str] = []
+        if mode in ("discovery", "all"):
+            selected.extend(_selected_by_type(PRODUCT_DATA_SPECS, product_sources, mode))
+        if mode in ("feedback", "all"):
+            selected.extend(_selected_by_type(COMMUNITY_FEEDBACK_SPECS, feedback_sources, mode))
+        return list(dict.fromkeys(selected))
     return [source_id for source_id, spec in SOURCE_SPECS.items() if mode in spec.modes]
+
+
+def _selected_by_type(specs: dict[str, SourceSpec], requested: str, mode: str) -> list[str]:
+    if requested == "all":
+        return [source_id for source_id, spec in specs.items() if mode in spec.modes]
+    return [source.strip() for source in requested.split(",") if source.strip()]
 
 
 def source_runner(instance: Any, source_id: str) -> Callable[[], list[dict[str, Any]]] | None:

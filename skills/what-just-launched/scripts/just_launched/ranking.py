@@ -230,7 +230,7 @@ class RankingMixin:
         return merged
 
     def _freshness_score(self, row: dict[str, Any]) -> float:
-        date_value = row.get("product_launch_date") or row.get("published_at")
+        date_value = row.get("launch_date") or row.get("product_launch_date") or row.get("evidence_published_at") or row.get("published_at")
         parsed = parse_date(str(date_value or ""))
         if not parsed:
             return 0.35
@@ -244,10 +244,13 @@ class RankingMixin:
         return clamp(1.0 - (age_days / (span + 1)) * 0.55)
 
     def _launch_date_confidence(self, row: dict[str, Any]) -> str:
-        launch_date = str(row.get("product_launch_date") or "")
+        date_confidence = str(row.get("date_confidence") or "")
+        if date_confidence in {"chart_date_only", "trending_period_only"}:
+            return "evidence_date_only"
+        launch_date = str(row.get("launch_date") or row.get("product_launch_date") or "")
         if launch_date:
             return "known_in_range" if self._date_in_range(launch_date) else "known_out_of_range"
-        if row.get("published_at"):
+        if row.get("evidence_published_at") or row.get("published_at"):
             return "evidence_date_only"
         return "unknown"
 

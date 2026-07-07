@@ -14,6 +14,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("query", nargs="?", default="", help="Product, category, competitor, or market query.")
     parser.add_argument("--mode", choices=["discovery", "feedback", "all"], default="all")
     parser.add_argument("--sources", default="all", help="Comma-separated source ids or all.")
+    parser.add_argument("--product-sources", default="all", help="Comma-separated product discovery source ids or all. Ignored when --sources is set.")
+    parser.add_argument("--feedback-sources", default="all", help="Comma-separated community feedback source ids or all. Ignored when --sources is set.")
     parser.add_argument("--days", type=int, default=30)
     parser.add_argument("--since", default="", help="Start date in YYYY-MM-DD. Overrides --days start.")
     parser.add_argument("--until", default="", help="End date in YYYY-MM-DD. Defaults to today.")

@@ -6,6 +6,7 @@ import re
 import urllib.parse
 from typing import Any
 
+from .feedback_summary import summarize_feedback
 from .ranking import clean_text, normalize_url
 
 MATCH_STOPWORDS = {
@@ -87,7 +88,8 @@ def build_product_entity(rows: list[dict[str, Any]], community_rows: list[dict[s
         if url and url not in urls:
             urls.append(url)
 
-    launch_dates = sorted({str(row.get("product_launch_date") or "") for row in rows if row.get("product_launch_date")})
+    launch_dates = sorted({str(row.get("launch_date") or row.get("product_launch_date") or "") for row in rows if row.get("launch_date") or row.get("product_launch_date")})
+    first_seen_dates = sorted({str(row.get("first_seen_at") or "") for row in rows if row.get("first_seen_at")})
     confidence_rank = {"known_in_range": 3, "known_out_of_range": 2, "evidence_date_only": 1, "unknown": 0}
     launch_date_confidence = max(
         (str(row.get("ranking", {}).get("launch_date_confidence") or "unknown") for row in rows),
@@ -102,8 +104,12 @@ def build_product_entity(rows: list[dict[str, Any]], community_rows: list[dict[s
             "title": row.get("title"),
             "url": row.get("url"),
             "summary": row.get("summary"),
+            "launch_date": row.get("launch_date"),
             "product_launch_date": row.get("product_launch_date"),
+            "first_seen_at": row.get("first_seen_at"),
+            "evidence_published_at": row.get("evidence_published_at"),
             "published_at": row.get("published_at"),
+            "date_confidence": row.get("date_confidence"),
             "signals": row.get("signals", {}),
             "ranking": row.get("ranking", {}),
         }
@@ -134,9 +140,12 @@ def build_product_entity(rows: list[dict[str, Any]], community_rows: list[dict[s
         "product_score": product_score,
         "score_breakdown": score_breakdown,
         "rank_reasons": product_rank_reasons(rows, feedback, score_breakdown, launch_date_confidence),
+        "launch_date": launch_dates[0] if launch_dates else "",
         "product_launch_date": launch_dates[0] if launch_dates else "",
+        "first_seen_at": first_seen_dates[0] if first_seen_dates else "",
         "launch_date_confidence": launch_date_confidence,
         "community_feedback": feedback,
+        "feedback_summary": summarize_feedback(feedback),
         "feedback_count": len(feedback),
         "feedback_sources": feedback_sources,
         "evidence": evidence,
@@ -214,7 +223,9 @@ def match_community_feedback(
             "title": row.get("title"),
             "url": row.get("url"),
             "summary": row.get("summary"),
+            "evidence_published_at": row.get("evidence_published_at"),
             "published_at": row.get("published_at"),
+            "date_confidence": row.get("date_confidence"),
             "signals": row.get("signals", {}),
             "ranking": row.get("ranking", {}),
             "match_score": round(score, 6),

@@ -10,6 +10,7 @@ The script emits UTF-8 JSON.
   "mode": "all",
   "market": "us",
   "days": 30,
+  "selected_sources": ["product_hunt", "appark", "hacker_news", "web"],
   "time_range": {
     "since": "2026-06-07",
     "until": "2026-07-06"
@@ -26,6 +27,7 @@ The script emits UTF-8 JSON.
   "products": [],
   "product_data": [],
   "community_feedback": [],
+  "community_feedback_summary": {},
   "results": []
 }
 ```
@@ -63,7 +65,11 @@ error
   "summary": "Short evidence text",
   "score": 123,
   "published_at": "2026-07-06T00:00:00Z",
+  "launch_date": "2026-07-01",
   "product_launch_date": "2026-07-01",
+  "first_seen_at": "2026-07-06",
+  "evidence_published_at": "2026-07-06T00:00:00Z",
+  "date_confidence": "known_launch_date",
   "signals": {
     "points": 100,
     "comments": 20
@@ -114,9 +120,12 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
     "product evidence from product_hunt, github_search",
     "launch date is verified inside the requested window"
   ],
+  "launch_date": "2026-07-01",
   "product_launch_date": "2026-07-01",
+  "first_seen_at": "2026-07-06",
   "launch_date_confidence": "known_in_range",
   "community_feedback": [],
+  "feedback_summary": {},
   "feedback_count": 0,
   "feedback_sources": [],
   "evidence": []
@@ -129,6 +138,21 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
 
 `products[].community_feedback` contains feedback rows whose title, summary, URL domain, or normalized product name clearly matches the product. It is intentionally conservative; generic category pages or broad AI news pages may remain only in the top-level `community_feedback` list.
 
+`products[].feedback_summary` and top-level `community_feedback_summary` provide a lightweight structured summary:
+
+```json
+{
+  "evidence_count": 5,
+  "sentiment_counts": {"positive": 1, "negative": 1, "mixed": 0, "neutral": 3},
+  "praise_points": [],
+  "complaint_points": [],
+  "repeated_needs": [],
+  "willingness_to_pay": [],
+  "migration_or_alternative_signals": [],
+  "top_feedback_titles": []
+}
+```
+
 `product_data` and `community_feedback` are source-type partitions of ranked results:
 
 ```text
@@ -140,14 +164,26 @@ results = backward-compatible mixed ranked list
 
 Each partition is independently capped by `--limit`, while `results` remains the mixed top `--limit`.
 
-`published_at` and `product_launch_date` are intentionally separate:
+Date fields are intentionally separate:
 
 ```text
-published_at = evidence/article/post/video date
-product_launch_date = product/app/repository/launch date when known
+launch_date = product/app/repository launch date when known
+product_launch_date = backward-compatible alias for launch_date
+first_seen_at = first date this skill saw the product in a chart/source, when known
+evidence_published_at = article/post/video/chart evidence date
+published_at = backward-compatible evidence publication date
+date_confidence = source-level date basis such as known_launch_date, chart_date_only, trending_period_only, evidence_date_only, or unknown
 ```
 
 Use `--filter-launch-date` for new-product discovery so products with known launch dates outside the requested range are removed.
+
+Use `--product-sources` and `--feedback-sources` to route the two pipelines separately:
+
+```bash
+python scripts/just-launched.py "new AI products" --mode all --product-sources product_hunt,appark --feedback-sources hacker_news,web
+```
+
+`--sources` remains as a backward-compatible global override.
 
 ## Ranking
 

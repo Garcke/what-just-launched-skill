@@ -338,6 +338,8 @@ python scripts/just-launched.py --diagnose
 | `--filter-launch-date` | Keep only products whose known launch date is inside the time window |
 | `--market us` | Market/country code, such as `us`, `jp`, or `cn` |
 | `--sources web,hacker_news` | Restrict source set |
+| `--product-sources product_hunt,appark` | Restrict product discovery sources |
+| `--feedback-sources reddit,hacker_news,web` | Restrict community feedback sources |
 | `--limit 20` | Maximum result count |
 | `--include-raw` | Include raw source payloads for debugging |
 
@@ -476,7 +478,9 @@ The script emits JSON:
 
 Use `ranking.final_score` for ordering. `score` is the source-local raw score and is not comparable across platforms.
 
-`products` is the product entity list built from `product_data`, and is the preferred product discovery view. Products are ordered by `product_score`; `score_breakdown` exposes the product-level scoring components, and `rank_reasons` provides display-ready explanations for why a product ranked well. `products[].community_feedback` contains feedback evidence matched to that product. `product_data` contains product/app/repository/launch-platform/directory evidence. Top-level `community_feedback` contains community discussions, comments, videos, and web feedback that may not match a specific product. `results` remains as a backward-compatible mixed ranked list.
+`products` is the product entity list built from `product_data`, and is the preferred product discovery view. Products are ordered by `product_score`; `score_breakdown` exposes the product-level scoring components, and `rank_reasons` provides display-ready explanations for why a product ranked well. `products[].community_feedback` contains feedback evidence matched to that product, and `products[].feedback_summary` summarizes praise, complaints, repeated needs, willingness-to-pay signals, and migration/alternative signals for that product. Top-level `community_feedback_summary` summarizes the full feedback pool. `product_data` contains product/app/repository/launch-platform/directory evidence. Top-level `community_feedback` contains community discussions, comments, videos, and web feedback that may not match a specific product. `results` remains as a backward-compatible mixed ranked list.
+
+Date fields are separate: `launch_date` is the true product launch or creation date when known, `first_seen_at` is when the skill first saw the product in a chart/source, `evidence_published_at` is the evidence/article/post/chart date, and `date_confidence` explains the date basis. AppPark and GitHub Trending often prove chart or trend date, not a fresh product launch.
 
 ## Current Limitations
 

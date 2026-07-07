@@ -160,9 +160,17 @@ def item(
     score: float = 0,
     published_at: str = "",
     product_launch_date: str = "",
+    launch_date: str = "",
+    first_seen_at: str = "",
+    evidence_published_at: str = "",
+    date_confidence: str = "",
     signals: dict[str, Any] | None = None,
     raw: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    launch_date = launch_date or product_launch_date
+    evidence_published_at = evidence_published_at or published_at
+    if not date_confidence:
+        date_confidence = "known_launch_date" if launch_date else "evidence_date_only" if evidence_published_at else "unknown"
     return {
         "source": source,
         "kind": kind,
@@ -172,6 +180,10 @@ def item(
         "score": score,
         "published_at": published_at,
         "product_launch_date": product_launch_date,
+        "launch_date": launch_date,
+        "first_seen_at": first_seen_at,
+        "evidence_published_at": evidence_published_at,
+        "date_confidence": date_confidence,
         "signals": signals or {},
         "raw": raw or {},
     }
