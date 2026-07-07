@@ -117,7 +117,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
         ranked_results = self._rank_results(results)
         product_data = self._filter_ranked_results(ranked_results, "product_data")
         community_feedback = self._filter_ranked_results(ranked_results, "community_feedback")
-        products = build_products(product_data, self.args.limit)
+        products = build_products(product_data, community_feedback, self.args.limit)
         return {
             "query": self.query,
             "mode": self.args.mode,

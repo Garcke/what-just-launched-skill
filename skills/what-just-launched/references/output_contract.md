@@ -102,11 +102,16 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
   "best_ranking_score": 0.812345,
   "product_launch_date": "2026-07-01",
   "launch_date_confidence": "known_in_range",
+  "community_feedback": [],
+  "feedback_count": 0,
+  "feedback_sources": [],
   "evidence": []
 }
 ```
 
 `products` is the preferred product discovery view. `product_data` remains the source-level evidence used to build it.
+
+`products[].community_feedback` contains feedback rows whose title, summary, URL domain, or normalized product name clearly matches the product. It is intentionally conservative; generic category pages or broad AI news pages may remain only in the top-level `community_feedback` list.
 
 `product_data` and `community_feedback` are source-type partitions of ranked results:
 
