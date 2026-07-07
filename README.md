@@ -2,37 +2,28 @@
 
 Codex skill for discovering recently launched products, apps, AI tools, startup launches, and early market signals.
 
-## Skill
+Choose a language:
 
-The skill lives at:
+- [中文文档](README.zh-CN.md)
+- [English documentation](README.en.md)
+
+## Skill Location
 
 ```text
 skills/what-just-launched
 ```
 
-It searches across launch platforms, app stores, developer communities, social/video feedback sources, and web search.
-
-## Quick Start
-
-From the skill directory:
+## Quick Example
 
 ```bash
+cd skills/what-just-launched
 python scripts/just-launched.py "new AI products" --mode discovery --days 7 --market us
 ```
 
-For explicit launch windows:
+For a strict launch-date window:
 
 ```bash
 python scripts/just-launched.py "new AI products" --mode discovery --since 2026-07-01 --until 2026-07-06 --filter-launch-date
 ```
 
-## Configuration
-
-Secrets should be provided via environment variables or:
-
-```text
-~/.config/what-just-launched/.env
-```
-
-Do not commit API keys, cookies, or `.env` files.
-
+Do not commit API keys, browser cookies, or `.env` files.
