@@ -22,6 +22,8 @@ The script emits UTF-8 JSON.
     "rrf_k": 60,
     "formula": "0.35*rrf + 0.25*local_relevance + 0.15*freshness + 0.10*source_quality + 0.10*engagement + 0.05*source_diversity"
   },
+  "product_data": [],
+  "community_feedback": [],
   "results": []
 }
 ```
@@ -82,6 +84,16 @@ error
 ```
 
 Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing briefs. The script omits `raw` by default; pass `--include-raw` only when debugging adapters.
+
+`product_data` and `community_feedback` are source-type partitions of ranked results:
+
+```text
+product_data = app, product, repository, launch platform, and directory evidence
+community_feedback = community discussion, comments, videos, and web feedback evidence
+results = backward-compatible mixed ranked list
+```
+
+Each partition is independently capped by `--limit`, while `results` remains the mixed top `--limit`.
 
 `published_at` and `product_launch_date` are intentionally separate:
 

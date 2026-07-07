@@ -27,7 +27,7 @@ from .sources.product_data.app_stores import AppStoreSources
 from .sources.product_data.directories import DirectorySources
 from .sources.product_data.github import GitHubSources
 from .sources.product_data.product_hunt import ProductHuntSource
-from .sources.registry import selected_sources, source_runner
+from .sources.registry import selected_sources, source_runner, source_type
 
 class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsSource, GitHubSources, DirectorySources, FeedbackSources, WebSearchSource):
     def __init__(self, args: argparse.Namespace) -> None:
@@ -114,6 +114,8 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             for row in results:
                 row.pop("raw", None)
         ranked_results = self._rank_results(results)
+        product_data = self._filter_ranked_results(ranked_results, "product_data")
+        community_feedback = self._filter_ranked_results(ranked_results, "community_feedback")
         return {
             "query": self.query,
             "mode": self.args.mode,
@@ -128,8 +130,17 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
                 "rrf_k": RRF_K,
                 "formula": "0.35*rrf + 0.25*local_relevance + 0.15*freshness + 0.10*source_quality + 0.10*engagement + 0.05*source_diversity",
             },
+            "product_data": product_data[: self.args.limit],
+            "community_feedback": community_feedback[: self.args.limit],
             "results": ranked_results[: self.args.limit],
         }
+
+    def _filter_ranked_results(self, rows: list[dict[str, Any]], expected_type: str) -> list[dict[str, Any]]:
+        return [
+            row
+            for row in rows
+            if source_type(str(row.get("source") or "")) == expected_type
+        ]
 
     def _date_in_range(self, value: str) -> bool:
         parsed = parse_date(value)

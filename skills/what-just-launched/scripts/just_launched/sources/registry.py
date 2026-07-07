@@ -34,6 +34,30 @@ COMMUNITY_FEEDBACK_SPECS = {
 
 SOURCE_SPECS = {**PRODUCT_DATA_SPECS, **COMMUNITY_FEEDBACK_SPECS}
 
+EMITTED_SOURCE_TYPES = {
+    "product_hunt": "product_data",
+    "appark": "product_data",
+    "github_trending": "product_data",
+    "github_search": "product_data",
+    "apple_rss": "product_data",
+    "itunes_search": "product_data",
+    "appbrain": "product_data",
+    "betalist": "product_data",
+    "ai_directory": "product_data",
+    "hacker_news": "community_feedback",
+    "reddit": "community_feedback",
+    "reddit_public": "community_feedback",
+    "xquik": "community_feedback",
+    "x_external": "community_feedback",
+    "youtube": "community_feedback",
+    "brave_search": "community_feedback",
+    "exa_search": "community_feedback",
+    "serper_search": "community_feedback",
+    "tavily_search": "community_feedback",
+    "duckduckgo": "community_feedback",
+    "web_search": "community_feedback",
+}
+
 
 def selected_sources(mode: str, requested: str) -> list[str]:
     if requested != "all":
@@ -47,3 +71,10 @@ def source_runner(instance: Any, source_id: str) -> Callable[[], list[dict[str, 
         return None
     runner = getattr(instance, spec.method_name, None)
     return runner if callable(runner) else None
+
+
+def source_type(source_id: str) -> str:
+    spec = SOURCE_SPECS.get(source_id)
+    if spec:
+        return spec.source_type
+    return EMITTED_SOURCE_TYPES.get(source_id, "unknown")
