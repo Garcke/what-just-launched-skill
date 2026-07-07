@@ -32,7 +32,7 @@ YOUTUBE_API_KEY=
 PRODUCT_SCOUT_YOUTUBE_COMMENTS=false
 
 # Web search
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,exa,serper,tavily,duckduckgo
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,exa,serper,tavily,google_news,bing_news,duckduckgo
 BRAVE_API_KEY=
 EXA_API_KEY=
 SERPER_API_KEY=
@@ -100,12 +100,14 @@ Provider behavior:
 | Exa | `EXA_API_KEY` | Good for agentic web search and page snippets. |
 | Serper | `SERPER_API_KEY` | Google-style search results API. |
 | Tavily | `TAVILY_API_KEY` | Search API designed for AI workflows. |
+| Google News RSS | none | Free news RSS fallback. Use low request volume only. |
+| Bing News RSS | none | Free news RSS fallback. Use low request volume only. |
 | DuckDuckGo | none | Free HTML fallback. Use low request volume only. |
 
 Override the order:
 
 ```bash
-PRODUCT_SCOUT_WEB_PROVIDERS=duckduckgo,brave,exa
+PRODUCT_SCOUT_WEB_PROVIDERS=google_news,bing_news,duckduckgo,brave,exa
 ```
 
 DuckDuckGo settings:

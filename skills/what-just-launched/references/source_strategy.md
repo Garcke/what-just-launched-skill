@@ -17,15 +17,19 @@ Use these eight sources in the first version:
 
 ## User Feedback Sources
 
-Use these five feedback sources:
+Use these feedback sources:
 
 | Source | Use For | Access |
 |---|---|---|
 | Reddit | real user discussions, complaints, comparisons | OAuth first; public JSON only by explicit opt-in |
+| Reddit Public JSON | low-rate public Reddit fallback for local tests | explicit source id; can return 403 or bot gates |
+| GitHub Issues | bugs, feature requests, migration pain, developer feedback | Public GitHub Search API |
+| Stack Exchange | technical questions, integration pain, repeated needs | Public Stack Exchange API |
+| Lobsters | developer-community discussions | explicit source id; public pages at low request volume |
 | X / Twitter | launch reactions, founder/user chatter, fast-moving sentiment | `XAI_API_KEY`, `XQUIK_API_KEY`, browser cookies, or manual cookies |
 | YouTube | reviews, tutorials, launch videos, comments | `YOUTUBE_API_KEY`; optional `yt-dlp` transcripts |
 | Hacker News | technical feedback and developer skepticism | HN Algolia API |
-| Web Search | official posts, reviews, comparisons, fallback evidence | Brave, Exa, Serper, Tavily, or DuckDuckGo low-volume fallback |
+| Web Search | official posts, reviews, comparisons, fallback evidence | Brave, Exa, Serper, Tavily, Google News RSS, Bing News RSS, or DuckDuckGo low-volume fallback |
 
 ## Reddit Safety Rules
 

@@ -57,6 +57,106 @@ class FeedbackSources:
             for row in sorted(rows, key=lambda r: r.get("score", 0), reverse=True)[:3]:
                 self._attach_reddit_comments(row, token)
         return rows
+
+    def reddit_public(self) -> list[dict[str, Any]]:
+        return self._reddit_public_low_rate()
+
+    def lobsters(self) -> list[dict[str, Any]]:
+        if not self.query:
+            return []
+        params = urllib.parse.urlencode({"q": self.query, "what": "stories", "order": "newest"})
+        text = get_text(f"https://lobste.rs/search?{params}", headers={"User-Agent": DEFAULT_UA})
+        rows = []
+        blocks = re.findall(r'<li[^>]+id="story_[^"]+"[^>]*>(.*?)</li>\s*</ol>', text, flags=re.S)
+        if not blocks:
+            blocks = re.findall(r'<div[^>]+class="[^"]*details[^"]*"[^>]*>(.*?)</div>', text, flags=re.S)
+        for idx, block in enumerate(blocks, 1):
+            link_match = re.search(r'<a[^>]+class="[^"]*u-url[^"]*"[^>]+href="([^"]+)"[^>]*>(.*?)</a>', block, flags=re.S)
+            if not link_match:
+                link_match = re.search(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', block, flags=re.S)
+            if not link_match:
+                continue
+            href = html.unescape(link_match.group(1))
+            title = html.unescape(re.sub("<[^>]+>", "", link_match.group(2))).strip()
+            comments_match = re.search(r'(\d+)\s+comments?', block)
+            score_match = re.search(r'(\d+)\s+points?', block)
+            comments = int(comments_match.group(1)) if comments_match else 0
+            points = int(score_match.group(1)) if score_match else 0
+            if href.startswith("/"):
+                href = f"https://lobste.rs{href}"
+            rows.append(item(
+                "lobsters",
+                title,
+                href,
+                kind="discussion",
+                score=float(points) + comments * 2,
+                signals={"points": points, "comments": comments, "position": idx},
+            ))
+            if len(rows) >= min(self.args.limit, 20):
+                break
+        return rows
+
+    def github_issues(self) -> list[dict[str, Any]]:
+        if not self.query:
+            return []
+        q = f"{self.query} created:{self.start_date.isoformat()}..{self.end_date.isoformat()}"
+        params = urllib.parse.urlencode({"q": q, "sort": "comments", "order": "desc", "per_page": min(self.args.limit, 30)})
+        data = get_json(f"https://api.github.com/search/issues?{params}", headers={"User-Agent": DEFAULT_UA, "Accept": "application/vnd.github+json"})
+        rows = []
+        for issue in data.get("items", []):
+            rows.append(item(
+                "github_issues",
+                issue.get("title", ""),
+                issue.get("html_url", ""),
+                kind="issue" if "pull_request" not in issue else "pull_request",
+                summary=str(issue.get("body") or "")[:500],
+                published_at=issue.get("created_at", ""),
+                evidence_published_at=issue.get("created_at", ""),
+                date_confidence="evidence_date_only" if issue.get("created_at") else "unknown",
+                score=float(issue.get("comments") or 0) * 2 + float(issue.get("score") or 0),
+                signals={"comments": issue.get("comments"), "state": issue.get("state"), "author": (issue.get("user") or {}).get("login")},
+                raw=issue,
+            ))
+        return rows
+
+    def stackexchange(self) -> list[dict[str, Any]]:
+        if not self.query:
+            return []
+        params = urllib.parse.urlencode({
+            "order": "desc",
+            "sort": "activity",
+            "q": self.query,
+            "site": os.getenv("PRODUCT_SCOUT_STACKEXCHANGE_SITE", "stackoverflow"),
+            "fromdate": date_to_epoch_start(self.start_date),
+            "todate": date_to_epoch_end(self.end_date),
+            "pagesize": min(self.args.limit, 30),
+            "filter": "default",
+        })
+        data = get_json(f"https://api.stackexchange.com/2.3/search/advanced?{params}", headers={"User-Agent": DEFAULT_UA})
+        rows = []
+        for question in data.get("items", []):
+            created = question.get("creation_date")
+            published = dt.datetime.fromtimestamp(created, dt.timezone.utc).isoformat() if created else ""
+            rows.append(item(
+                "stackexchange",
+                html.unescape(question.get("title", "")),
+                question.get("link", ""),
+                kind="question",
+                published_at=published,
+                evidence_published_at=published,
+                date_confidence="evidence_date_only" if published else "unknown",
+                score=float(question.get("score") or 0) + float(question.get("answer_count") or 0) * 2,
+                signals={
+                    "site": os.getenv("PRODUCT_SCOUT_STACKEXCHANGE_SITE", "stackoverflow"),
+                    "answers": question.get("answer_count"),
+                    "score": question.get("score"),
+                    "is_answered": question.get("is_answered"),
+                    "tags": question.get("tags", []),
+                },
+                raw=question,
+            ))
+        return rows
+
     def x_twitter(self) -> list[dict[str, Any]]:
         if os.getenv("XQUIK_API_KEY"):
             return self._xquik_search()
@@ -153,7 +253,20 @@ class FeedbackSources:
         rows = []
         for child in data.get("data", {}).get("children", []):
             d = child.get("data", {})
-            rows.append(item("reddit_public", d.get("title", ""), "https://www.reddit.com" + d.get("permalink", ""), kind="discussion", score=float(d.get("score") or 0), signals={"comments": d.get("num_comments")}))
+            published = dt.datetime.fromtimestamp(d.get("created_utc", 0), dt.timezone.utc).isoformat() if d.get("created_utc") else ""
+            rows.append(item(
+                "reddit_public",
+                d.get("title", ""),
+                "https://www.reddit.com" + d.get("permalink", ""),
+                kind="discussion",
+                summary=d.get("selftext", "")[:500],
+                published_at=published,
+                evidence_published_at=published,
+                date_confidence="evidence_date_only" if published else "unknown",
+                score=float(d.get("score") or 0) + float(d.get("num_comments") or 0) * 2,
+                signals={"subreddit": d.get("subreddit"), "upvotes": d.get("score"), "comments": d.get("num_comments")},
+                raw=d,
+            ))
         return rows
 
     def _attach_reddit_comments(self, row: dict[str, Any], token: str) -> None:

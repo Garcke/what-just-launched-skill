@@ -74,10 +74,14 @@ skills/what-just-launched/scripts/just_launched/
 | 来源 | 用途 | 访问方式 |
 |---|---|---|
 | Reddit | 真实用户讨论、抱怨、对比 | OAuth 优先，默认不抓 HTML |
+| Reddit Public JSON | 本地低频测试用的 Reddit 公开 JSON | `--feedback-sources reddit_public`，可能返回 403 |
+| GitHub Issues | Bug、功能需求、迁移痛点、开发者反馈 | GitHub 公开 Search API |
+| Stack Exchange | 技术问题、集成痛点、反复需求 | Stack Exchange 公开 API |
+| Lobsters | 开发者社区讨论 | 显式指定 source，公共页面低频访问 |
 | X / Twitter | 发布反应、创始人/用户讨论 | `XQUIK_API_KEY` 或外部 adapter |
 | YouTube | 测评视频、教程、评论 | `YOUTUBE_API_KEY` |
 | Hacker News | 开发者反馈和质疑 | HN Algolia API |
-| Web Search | 官网、评测、榜单、对比文章 | Tavily / Brave / Exa / Serper / DuckDuckGo |
+| Web Search | 官网、评测、榜单、对比文章 | Tavily / Brave / Exa / Serper / Google News RSS / Bing News RSS / DuckDuckGo |
 
 ## 安装到 Codex
 
@@ -381,7 +385,7 @@ product_launch_date  产品自身的上线/首次发布日期
 
 ```bash
 python scripts/just-launched.py --write-config TAVILY_API_KEY=your_key_here
-python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=tavily,duckduckgo,brave,exa
+python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=tavily,google_news,bing_news,duckduckgo,brave,exa
 ```
 
 推荐配置：
@@ -404,7 +408,7 @@ PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 YOUTUBE_API_KEY=
 
 # Web Search
-PRODUCT_SCOUT_WEB_PROVIDERS=tavily,duckduckgo,brave,exa
+PRODUCT_SCOUT_WEB_PROVIDERS=tavily,google_news,bing_news,duckduckgo,brave,exa
 TAVILY_API_KEY=
 BRAVE_API_KEY=
 EXA_API_KEY=
@@ -425,7 +429,7 @@ brave,exa,serper,tavily,duckduckgo
 tavily,duckduckgo,brave,exa
 ```
 
-DuckDuckGo 不需要 key，但只适合作为低频 fallback，不建议批量高并发使用。
+Google News RSS、Bing News RSS 和 DuckDuckGo 不需要 key，但只适合作为低频 fallback，不建议批量高并发使用。
 
 ## 安全说明
 

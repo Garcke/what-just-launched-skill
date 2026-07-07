@@ -54,9 +54,13 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             status("betalist", "available", "scrapes public BetaList pages at low request volume"),
             status("ai_directory", "available", "scrapes public AI directory pages at low request volume"),
             status("reddit", "available" if self._has_reddit_oauth() else "missing_config", "use REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT; public fallback is disabled by default"),
+            status("reddit_public", "available", "explicit opt-in source id; uses low-rate public Reddit JSON without OAuth"),
+            status("lobsters", "available", "explicit opt-in source id; scrapes public Lobsters search pages at low request volume"),
+            status("github_issues", "available", "uses public GitHub Issues search API"),
+            status("stackexchange", "available", "uses public Stack Exchange advanced search API"),
             status("x_twitter", "available" if self._has_x_config() else "missing_config", "set XQUIK_API_KEY, XAI_API_KEY, PRODUCT_SCOUT_X_ADAPTER_COMMAND, FROM_BROWSER=auto, or AUTH_TOKEN+CT0"),
             status("youtube", "available" if os.getenv("YOUTUBE_API_KEY") else "missing_config", "set YOUTUBE_API_KEY; yt-dlp is optional for transcripts"),
-            status("web_search", "available", "uses PRODUCT_SCOUT_WEB_PROVIDERS; supports Brave, Exa, DuckDuckGo, Serper, Tavily"),
+            status("web_search", "available", "uses PRODUCT_SCOUT_WEB_PROVIDERS; supports Brave, Exa, Serper, Tavily, Google News RSS, Bing News RSS, DuckDuckGo"),
         ]
         return checks
 
@@ -82,7 +86,9 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
                 "EXA_API_KEY": bool(os.getenv("EXA_API_KEY")),
                 "SERPER_API_KEY": bool(os.getenv("SERPER_API_KEY")),
                 "TAVILY_API_KEY": bool(os.getenv("TAVILY_API_KEY")),
-                "PRODUCT_SCOUT_WEB_PROVIDERS": os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,exa,serper,tavily,duckduckgo"),
+                "PRODUCT_SCOUT_WEB_PROVIDERS": os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,exa,serper,tavily,google_news,bing_news,duckduckgo"),
+                "PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON": os.getenv("PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON", ""),
+                "PRODUCT_SCOUT_STACKEXCHANGE_SITE": os.getenv("PRODUCT_SCOUT_STACKEXCHANGE_SITE", "stackoverflow"),
             },
             "commands": {
                 "yt-dlp": self._command_exists("yt-dlp"),

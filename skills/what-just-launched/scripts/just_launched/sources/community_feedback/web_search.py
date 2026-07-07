@@ -8,6 +8,7 @@ import os
 import re
 import subprocess
 import time
+import xml.etree.ElementTree as ET
 import urllib.parse
 import urllib.request
 from typing import Any
@@ -28,10 +29,11 @@ class WebSearchSource:
     def web_search(self) -> list[dict[str, Any]]:
         providers = [
             p.strip().lower()
-            for p in os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,exa,serper,tavily,duckduckgo").split(",")
+            for p in os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,exa,serper,tavily,google_news,bing_news,duckduckgo").split(",")
             if p.strip()
         ]
         errors: list[str] = []
+        collected: list[dict[str, Any]] = []
         for provider in providers:
             try:
                 if provider == "brave" and os.getenv("BRAVE_API_KEY"):
@@ -42,15 +44,21 @@ class WebSearchSource:
                     rows = self._serper_search()
                 elif provider == "tavily" and os.getenv("TAVILY_API_KEY"):
                     rows = self._tavily_search()
+                elif provider in ("google_news", "google_news_rss"):
+                    rows = self._google_news_rss()
+                elif provider in ("bing_news", "bing_news_rss"):
+                    rows = self._bing_news_rss()
                 elif provider in ("duckduckgo", "ddg"):
                     rows = self._duckduckgo_search()
                 else:
                     continue
                 if rows:
-                    return rows
+                    collected.extend(rows)
             except Exception as exc:
                 errors.append(f"{provider}: {type(exc).__name__}: {exc}")
                 continue
+        if collected:
+            return collected
         if errors:
             return [item(
                 "web_search",
@@ -170,6 +178,55 @@ class WebSearchSource:
             if len(rows) >= min(self.args.limit, 20):
                 break
         return rows
+
+    def _google_news_rss(self) -> list[dict[str, Any]]:
+        if not self.query:
+            return []
+        params = urllib.parse.urlencode({"q": self.query, "hl": self._news_locale(), "gl": self.market.upper(), "ceid": f"{self.market.upper()}:en"})
+        return self._rss_search("google_news", f"https://news.google.com/rss/search?{params}")
+
+    def _bing_news_rss(self) -> list[dict[str, Any]]:
+        if not self.query:
+            return []
+        params = urllib.parse.urlencode({"q": self.query, "cc": self.market.upper(), "setlang": self._news_language()})
+        return self._rss_search("bing_news", f"https://www.bing.com/news/search?format=rss&{params}")
+
+    def _rss_search(self, source: str, url: str) -> list[dict[str, Any]]:
+        text = get_text(url, headers={"User-Agent": DEFAULT_UA, "Accept": "application/rss+xml,application/xml,text/xml"})
+        root = ET.fromstring(text)
+        rows = []
+        for idx, node in enumerate(root.findall(".//item"), 1):
+            title = self._xml_text(node, "title")
+            link = self._xml_text(node, "link")
+            summary = self._xml_text(node, "description")
+            published = self._xml_text(node, "pubDate")
+            rows.append(item(
+                source,
+                title,
+                link,
+                kind="news_result",
+                summary=html.unescape(re.sub("<[^>]+>", "", summary))[:500],
+                published_at=published,
+                evidence_published_at=published,
+                date_confidence="evidence_date_only" if published else "unknown",
+                score=max(1, 30 - idx),
+                signals={"position": idx, "provider": source},
+            ))
+            if len(rows) >= min(self.args.limit, 20):
+                break
+        return rows
+
+    def _xml_text(self, node: ET.Element, tag: str) -> str:
+        child = node.find(tag)
+        return (child.text or "").strip() if child is not None else ""
+
+    def _news_locale(self) -> str:
+        mapping = {"cn": "zh-CN", "jp": "ja", "kr": "ko", "de": "de", "fr": "fr"}
+        return mapping.get(self.market, "en-US")
+
+    def _news_language(self) -> str:
+        mapping = {"cn": "zh-CN", "jp": "ja-JP", "kr": "ko-KR", "de": "de-DE", "fr": "fr-FR"}
+        return mapping.get(self.market, "en-US")
 
     def _normalize_ddg_url(self, href: str) -> str:
         if href.startswith("//duckduckgo.com/l/?"):

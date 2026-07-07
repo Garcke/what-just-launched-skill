@@ -72,10 +72,14 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 | Source | Use For | Access |
 |---|---|---|
 | Reddit | Real user discussions, complaints, comparisons | OAuth first; HTML scraping disabled by default |
+| Reddit Public JSON | Explicit low-rate fallback for local tests | `--feedback-sources reddit_public`; can return 403 |
+| GitHub Issues | Bugs, feature requests, migration pain, developer feedback | Public GitHub Search API |
+| Stack Exchange | Technical questions, integration pain, repeated needs | Public Stack Exchange API |
+| Lobsters | Developer-community discussions | Explicit source; public pages, low-volume access |
 | X / Twitter | Launch reactions and fast-moving sentiment | `XQUIK_API_KEY` or external adapter |
 | YouTube | Reviews, tutorials, and comments | `YOUTUBE_API_KEY` |
 | Hacker News | Developer feedback and skepticism | HN Algolia API |
-| Web Search | Official pages, reviews, comparisons, launch lists | Tavily / Brave / Exa / Serper / DuckDuckGo |
+| Web Search | Official pages, reviews, comparisons, launch lists | Tavily / Brave / Exa / Serper / Google News RSS / Bing News RSS / DuckDuckGo |
 
 ## Install Into Codex
 
@@ -379,7 +383,7 @@ Append config values:
 
 ```bash
 python scripts/just-launched.py --write-config TAVILY_API_KEY=your_key_here
-python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=tavily,duckduckgo,brave,exa
+python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=tavily,google_news,bing_news,duckduckgo,brave,exa
 ```
 
 Recommended configuration:
@@ -402,7 +406,7 @@ PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 YOUTUBE_API_KEY=
 
 # Web Search
-PRODUCT_SCOUT_WEB_PROVIDERS=tavily,duckduckgo,brave,exa
+PRODUCT_SCOUT_WEB_PROVIDERS=tavily,google_news,bing_news,duckduckgo,brave,exa
 TAVILY_API_KEY=
 BRAVE_API_KEY=
 EXA_API_KEY=
@@ -423,7 +427,7 @@ Suggested practical order:
 tavily,duckduckgo,brave,exa
 ```
 
-DuckDuckGo requires no key and is useful as a low-volume fallback. Do not use it for high-concurrency scraping.
+Google News RSS, Bing News RSS, and DuckDuckGo require no key and are useful as low-volume fallbacks. Do not use them for high-concurrency scraping.
 
 ## Security Notes
 
