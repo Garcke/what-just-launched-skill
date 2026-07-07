@@ -20,7 +20,8 @@ The script emits UTF-8 JSON.
   "ranking_model": {
     "name": "source-normalized-weighted-rrf",
     "rrf_k": 60,
-    "formula": "0.35*rrf + 0.25*local_relevance + 0.15*freshness + 0.10*source_quality + 0.10*engagement + 0.05*source_diversity"
+    "formula": "0.35*rrf + 0.25*local_relevance + 0.15*freshness + 0.10*source_quality + 0.10*engagement + 0.05*source_diversity",
+    "product_formula": "0.45*ranking_strength + 0.20*source_coverage + 0.15*feedback_strength + 0.10*evidence_depth + 0.10*launch_confidence"
   },
   "products": [],
   "product_data": [],
@@ -100,6 +101,19 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
   "sources": ["product_hunt", "github_search"],
   "evidence_count": 2,
   "best_ranking_score": 0.812345,
+  "product_score": 0.734567,
+  "product_rank": 1,
+  "score_breakdown": {
+    "ranking_strength": 0.812345,
+    "source_coverage": 0.666667,
+    "feedback_strength": 0.45,
+    "evidence_depth": 0.5,
+    "launch_confidence": 1.0
+  },
+  "rank_reasons": [
+    "product evidence from product_hunt, github_search",
+    "launch date is verified inside the requested window"
+  ],
   "product_launch_date": "2026-07-01",
   "launch_date_confidence": "known_in_range",
   "community_feedback": [],
@@ -110,6 +124,8 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
 ```
 
 `products` is the preferred product discovery view. `product_data` remains the source-level evidence used to build it.
+
+`product_score` is the product-level score used to order `products`. It combines the best evidence ranking, source coverage, matched feedback strength, evidence depth, and launch-date confidence. `score_breakdown` exposes those components for downstream tuning. `rank_reasons` is a short display-ready explanation list for why the product ranked well.
 
 `products[].community_feedback` contains feedback rows whose title, summary, URL domain, or normalized product name clearly matches the product. It is intentionally conservative; generic category pages or broad AI news pages may remain only in the top-level `community_feedback` list.
 

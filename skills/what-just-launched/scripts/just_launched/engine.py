@@ -131,6 +131,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
                 "name": "source-normalized-weighted-rrf",
                 "rrf_k": RRF_K,
                 "formula": "0.35*rrf + 0.25*local_relevance + 0.15*freshness + 0.10*source_quality + 0.10*engagement + 0.05*source_diversity",
+                "product_formula": "0.45*ranking_strength + 0.20*source_coverage + 0.15*feedback_strength + 0.10*evidence_depth + 0.10*launch_confidence",
             },
             "products": products,
             "product_data": product_data[: self.args.limit],

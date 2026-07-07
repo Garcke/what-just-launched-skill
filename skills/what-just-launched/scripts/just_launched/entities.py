@@ -43,11 +43,14 @@ def build_products(
     products = [build_product_entity(rows, community_rows) for rows in groups.values()]
     products.sort(
         key=lambda product: (
+            product.get("product_score", 0),
             product.get("best_ranking_score", 0),
             product.get("evidence_count", 0),
         ),
         reverse=True,
     )
+    for rank, product in enumerate(products, 1):
+        product["product_rank"] = rank
     return products[:limit]
 
 
@@ -109,6 +112,15 @@ def build_product_entity(rows: list[dict[str, Any]], community_rows: list[dict[s
     evidence.sort(key=lambda row: row.get("ranking", {}).get("final_score", 0), reverse=True)
     feedback = match_community_feedback(best, rows, community_rows)
     feedback_sources = sorted({str(row.get("source") or "unknown") for row in feedback})
+    score_breakdown = product_score_breakdown(best, rows, feedback, launch_date_confidence)
+    product_score = round(
+        0.45 * score_breakdown["ranking_strength"]
+        + 0.20 * score_breakdown["source_coverage"]
+        + 0.15 * score_breakdown["feedback_strength"]
+        + 0.10 * score_breakdown["evidence_depth"]
+        + 0.10 * score_breakdown["launch_confidence"],
+        6,
+    )
 
     return {
         "name": best.get("title") or "",
@@ -119,6 +131,9 @@ def build_product_entity(rows: list[dict[str, Any]], community_rows: list[dict[s
         "sources": sources,
         "evidence_count": len(rows),
         "best_ranking_score": best.get("ranking", {}).get("final_score", 0),
+        "product_score": product_score,
+        "score_breakdown": score_breakdown,
+        "rank_reasons": product_rank_reasons(rows, feedback, score_breakdown, launch_date_confidence),
         "product_launch_date": launch_dates[0] if launch_dates else "",
         "launch_date_confidence": launch_date_confidence,
         "community_feedback": feedback,
@@ -126,6 +141,59 @@ def build_product_entity(rows: list[dict[str, Any]], community_rows: list[dict[s
         "feedback_sources": feedback_sources,
         "evidence": evidence,
     }
+
+
+def product_score_breakdown(
+    best: dict[str, Any],
+    rows: list[dict[str, Any]],
+    feedback: list[dict[str, Any]],
+    launch_date_confidence: str,
+) -> dict[str, float]:
+    ranking_strength = float(best.get("ranking", {}).get("final_score") or 0.0)
+    source_coverage = min(1.0, len({str(row.get("source") or "unknown") for row in rows}) / 3.0)
+    evidence_depth = min(1.0, len(rows) / 4.0)
+    launch_confidence_score = {
+        "known_in_range": 1.0,
+        "known_out_of_range": 0.35,
+        "evidence_date_only": 0.65,
+        "unknown": 0.20,
+    }.get(launch_date_confidence, 0.20)
+    if feedback:
+        avg_feedback_score = sum(float(row.get("ranking", {}).get("final_score") or 0.0) for row in feedback) / len(feedback)
+        feedback_strength = min(1.0, 0.45 * (len(feedback) / 5.0) + 0.55 * avg_feedback_score)
+    else:
+        feedback_strength = 0.0
+    return {
+        "ranking_strength": round(ranking_strength, 6),
+        "source_coverage": round(source_coverage, 6),
+        "feedback_strength": round(feedback_strength, 6),
+        "evidence_depth": round(evidence_depth, 6),
+        "launch_confidence": round(launch_confidence_score, 6),
+    }
+
+
+def product_rank_reasons(
+    rows: list[dict[str, Any]],
+    feedback: list[dict[str, Any]],
+    score_breakdown: dict[str, float],
+    launch_date_confidence: str,
+) -> list[str]:
+    reasons: list[str] = []
+    sources = sorted({str(row.get("source") or "unknown") for row in rows})
+    if sources:
+        reasons.append(f"product evidence from {', '.join(sources[:4])}")
+    if launch_date_confidence == "known_in_range":
+        reasons.append("launch date is verified inside the requested window")
+    elif launch_date_confidence == "evidence_date_only":
+        reasons.append("fresh evidence exists, but launch date is not directly verified")
+    if feedback:
+        feedback_sources = sorted({str(row.get("source") or "unknown") for row in feedback})
+        reasons.append(f"{len(feedback)} matched feedback item(s) from {', '.join(feedback_sources[:4])}")
+    if score_breakdown.get("source_coverage", 0) >= 0.67:
+        reasons.append("multiple independent sources support the product signal")
+    if score_breakdown.get("ranking_strength", 0) >= 0.65:
+        reasons.append("strong source-normalized ranking score")
+    return reasons[:5]
 
 
 def match_community_feedback(
