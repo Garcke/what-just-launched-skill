@@ -12,7 +12,7 @@ import urllib.parse
 import urllib.request
 from typing import Any
 
-from ..common import (
+from ...common import (
     BROWSER_UA,
     DEFAULT_UA,
     date_only,

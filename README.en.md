@@ -38,17 +38,19 @@ skills/what-just-launched/scripts/just_launched/
 ├── ranking.py          # Deduplication, normalized scoring, weighted RRF fusion
 ├── sources/
 │   ├── registry.py     # source ids, mode groups, method mapping
-│   ├── product_hunt.py
-│   ├── hacker_news.py
-│   ├── web_search.py
-│   ├── github.py
-│   ├── app_stores.py
-│   ├── directories.py
-│   └── feedback.py
+│   ├── product_data/   # app, product, repository, and directory sources
+│   │   ├── product_hunt.py
+│   │   ├── app_stores.py
+│   │   ├── github.py
+│   │   └── directories.py
+│   └── community_feedback/  # community discussion, comments, and web feedback
+│       ├── hacker_news.py
+│       ├── feedback.py
+│       └── web_search.py
 └── __init__.py
 ```
 
-To add a source, create or extend an adapter under `sources/`, then register its source id, method name, and supported modes in `sources/registry.py`.
+To add a product-data source, use `sources/product_data/`. To add a community/comment feedback source, use `sources/community_feedback/`. Then register its source id, method name, source type, and supported modes in `sources/registry.py`.
 
 ## Sources
 

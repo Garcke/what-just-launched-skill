@@ -38,17 +38,19 @@ skills/what-just-launched/scripts/just_launched/
 ├── ranking.py          # 去重、归一化评分、加权 RRF 融合
 ├── sources/
 │   ├── registry.py     # source id、mode 分组、method 映射
-│   ├── product_hunt.py
-│   ├── hacker_news.py
-│   ├── web_search.py
-│   ├── github.py
-│   ├── app_stores.py
-│   ├── directories.py
-│   └── feedback.py
+│   ├── product_data/   # App/产品/仓库/目录类数据源
+│   │   ├── product_hunt.py
+│   │   ├── app_stores.py
+│   │   ├── github.py
+│   │   └── directories.py
+│   └── community_feedback/  # 社区讨论、评论、网页反馈源
+│       ├── hacker_news.py
+│       ├── feedback.py
+│       └── web_search.py
 └── __init__.py
 ```
 
-新增来源时，优先在 `sources/` 下新增或扩展 adapter，然后在 `sources/registry.py` 里注册 source id、method 名称和所属模式。
+新增产品数据源时放到 `sources/product_data/`，新增社区评论/反馈源时放到 `sources/community_feedback/`，然后在 `sources/registry.py` 里注册 source id、method 名称、所属类型和模式。
 
 ## 数据源
 

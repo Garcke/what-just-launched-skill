@@ -20,14 +20,14 @@ from .common import (
     status,
 )
 from .ranking import RRF_K, RankingMixin
-from .sources.app_stores import AppStoreSources
-from .sources.directories import DirectorySources
-from .sources.feedback import FeedbackSources
-from .sources.github import GitHubSources
-from .sources.hacker_news import HackerNewsSource
-from .sources.product_hunt import ProductHuntSource
+from .sources.community_feedback.feedback import FeedbackSources
+from .sources.community_feedback.hacker_news import HackerNewsSource
+from .sources.community_feedback.web_search import WebSearchSource
+from .sources.product_data.app_stores import AppStoreSources
+from .sources.product_data.directories import DirectorySources
+from .sources.product_data.github import GitHubSources
+from .sources.product_data.product_hunt import ProductHuntSource
 from .sources.registry import selected_sources, source_runner
-from .sources.web_search import WebSearchSource
 
 class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsSource, GitHubSources, DirectorySources, FeedbackSources, WebSearchSource):
     def __init__(self, args: argparse.Namespace) -> None:

@@ -83,22 +83,38 @@ duplicate confirmation across multiple sources
 
 This prevents large raw counters, such as app rating counts or video views, from overwhelming smaller but more direct launch signals.
 
-## Adding Sources
+## Source Architecture
 
-Keep source access code under `scripts/just_launched/sources/`.
+Keep product discovery data and community feedback collection separate.
 
 Use this shape:
 
 ```text
-sources/<source_name>.py      adapter methods
-sources/registry.py          source id, method name, and mode membership
-common.py                    shared HTTP/date/item helpers
-engine.py                    orchestration only
+sources/product_data/          app, product, repository, and directory adapters
+sources/community_feedback/    community discussion, comments, videos, web feedback
+sources/registry.py            source id, method name, source type, mode membership
+common.py                      shared HTTP/date/item helpers
+engine.py                      orchestration only
 ```
 
-To add a new source:
+`product_data` sources answer "what exists or launched?".
 
-1. Add an adapter method that returns normalized `item(...)` dictionaries.
-2. Register it in `SOURCE_SPECS` with a stable source id, method name, and modes.
+`community_feedback` sources answer "what are people saying about it?".
+
+Some platforms can serve both purposes. For example, Hacker News can surface Show HN launches and also provide developer reactions. Put the adapter where its evidence is primarily interpreted, then register it for every mode it should participate in.
+
+## Adding Sources
+
+To add a product-data source:
+
+1. Add an adapter under `sources/product_data/` that returns normalized `item(...)` dictionaries.
+2. Register it in `PRODUCT_DATA_SPECS` with a stable source id, method name, and modes.
+3. Add or adjust source weights in `ranking.py` when the source has different quality or rank reliability.
+4. Add config keys to `preflight()` and `diagnose()` when the source needs credentials.
+
+To add a community-feedback source:
+
+1. Add an adapter under `sources/community_feedback/` that returns normalized `item(...)` dictionaries.
+2. Register it in `COMMUNITY_FEEDBACK_SPECS` with a stable source id, method name, and modes.
 3. Add or adjust source weights in `ranking.py` when the source has different quality or rank reliability.
 4. Add config keys to `preflight()` and `diagnose()` when the source needs credentials.
