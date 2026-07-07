@@ -5,7 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 
-from .engine import CONFIG_FILE, ProductScout, append_config, load_env_file
+from .common import CONFIG_FILE, append_config, load_env_file
+from .engine import ProductScout
 
 def main(argv: list[str] | None = None) -> int:
     load_env_file()

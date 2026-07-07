@@ -82,3 +82,23 @@ duplicate confirmation across multiple sources
 ```
 
 This prevents large raw counters, such as app rating counts or video views, from overwhelming smaller but more direct launch signals.
+
+## Adding Sources
+
+Keep source access code under `scripts/just_launched/sources/`.
+
+Use this shape:
+
+```text
+sources/<source_name>.py      adapter methods
+sources/registry.py          source id, method name, and mode membership
+common.py                    shared HTTP/date/item helpers
+engine.py                    orchestration only
+```
+
+To add a new source:
+
+1. Add an adapter method that returns normalized `item(...)` dictionaries.
+2. Register it in `SOURCE_SPECS` with a stable source id, method name, and modes.
+3. Add or adjust source weights in `ranking.py` when the source has different quality or rank reliability.
+4. Add config keys to `preflight()` and `diagnose()` when the source needs credentials.

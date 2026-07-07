@@ -32,11 +32,23 @@ The script entrypoint stays thin; the implementation lives in a small Python pac
 
 ```text
 skills/what-just-launched/scripts/just_launched/
-├── cli.py        # CLI arguments, config writing, JSON output
-├── engine.py     # Search orchestration and source adapters
-├── ranking.py    # Deduplication, normalized scoring, weighted RRF fusion
+├── cli.py              # CLI arguments, config writing, JSON output
+├── common.py           # Config, dates, HTTP, normalized item helpers
+├── engine.py           # Search orchestration, no concrete source logic
+├── ranking.py          # Deduplication, normalized scoring, weighted RRF fusion
+├── sources/
+│   ├── registry.py     # source ids, mode groups, method mapping
+│   ├── product_hunt.py
+│   ├── hacker_news.py
+│   ├── web_search.py
+│   ├── github.py
+│   ├── app_stores.py
+│   ├── directories.py
+│   └── feedback.py
 └── __init__.py
 ```
+
+To add a source, create or extend an adapter under `sources/`, then register its source id, method name, and supported modes in `sources/registry.py`.
 
 ## Sources
 

@@ -134,3 +134,5 @@ Follow-up sources to configure
 ```
 
 Read `references/source_strategy.md` when choosing sources or explaining missing coverage. Read `references/configuration.md` when setting up keys. Read `references/output_contract.md` when changing scripts or building downstream tooling against the JSON output.
+
+When changing source coverage, keep concrete adapters under `scripts/just_launched/sources/` and register source ids, method names, and mode membership in `scripts/just_launched/sources/registry.py`.

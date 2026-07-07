@@ -32,11 +32,23 @@ skills/what-just-launched/scripts/just-launched.py
 
 ```text
 skills/what-just-launched/scripts/just_launched/
-├── cli.py        # CLI 参数、配置写入、JSON 输出
-├── engine.py     # 搜索引擎编排和数据源 adapter
-├── ranking.py    # 去重、归一化评分、加权 RRF 融合
+├── cli.py              # CLI 参数、配置写入、JSON 输出
+├── common.py           # 配置、日期、HTTP、标准 item 工具
+├── engine.py           # 搜索编排，不直接放具体来源逻辑
+├── ranking.py          # 去重、归一化评分、加权 RRF 融合
+├── sources/
+│   ├── registry.py     # source id、mode 分组、method 映射
+│   ├── product_hunt.py
+│   ├── hacker_news.py
+│   ├── web_search.py
+│   ├── github.py
+│   ├── app_stores.py
+│   ├── directories.py
+│   └── feedback.py
 └── __init__.py
 ```
+
+新增来源时，优先在 `sources/` 下新增或扩展 adapter，然后在 `sources/registry.py` 里注册 source id、method 名称和所属模式。
 
 ## 数据源
 
