@@ -448,6 +448,7 @@ The script emits JSON:
     "name": "source-normalized-weighted-rrf",
     "rrf_k": 60
   },
+  "products": [],
   "product_data": [],
   "community_feedback": [],
   "results": [
@@ -475,7 +476,7 @@ The script emits JSON:
 
 Use `ranking.final_score` for ordering. `score` is the source-local raw score and is not comparable across platforms.
 
-`product_data` contains product/app/repository/launch-platform/directory evidence. `community_feedback` contains community discussions, comments, videos, and web feedback evidence. `results` remains as a backward-compatible mixed ranked list.
+`products` is the product entity list built from `product_data`, and is the preferred product discovery view. `product_data` contains product/app/repository/launch-platform/directory evidence. `community_feedback` contains community discussions, comments, videos, and web feedback evidence. `results` remains as a backward-compatible mixed ranked list.
 
 ## Current Limitations
 

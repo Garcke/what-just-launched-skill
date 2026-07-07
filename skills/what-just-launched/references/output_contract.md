@@ -22,6 +22,7 @@ The script emits UTF-8 JSON.
     "rrf_k": 60,
     "formula": "0.35*rrf + 0.25*local_relevance + 0.15*freshness + 0.10*source_quality + 0.10*engagement + 0.05*source_diversity"
   },
+  "products": [],
   "product_data": [],
   "community_feedback": [],
   "results": []
@@ -85,9 +86,32 @@ error
 
 Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing briefs. The script omits `raw` by default; pass `--include-raw` only when debugging adapters.
 
+## Product Entity Entries
+
+`products` contains grouped product entities built from `product_data` evidence:
+
+```json
+{
+  "name": "Example Product",
+  "canonical_key": "domain:example.com",
+  "kind": "app",
+  "url": "https://example.com",
+  "urls": ["https://example.com"],
+  "sources": ["product_hunt", "github_search"],
+  "evidence_count": 2,
+  "best_ranking_score": 0.812345,
+  "product_launch_date": "2026-07-01",
+  "launch_date_confidence": "known_in_range",
+  "evidence": []
+}
+```
+
+`products` is the preferred product discovery view. `product_data` remains the source-level evidence used to build it.
+
 `product_data` and `community_feedback` are source-type partitions of ranked results:
 
 ```text
+products = grouped product entities built from product_data
 product_data = app, product, repository, launch platform, and directory evidence
 community_feedback = community discussion, comments, videos, and web feedback evidence
 results = backward-compatible mixed ranked list

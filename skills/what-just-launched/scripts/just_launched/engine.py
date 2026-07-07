@@ -19,6 +19,7 @@ from .common import (
     parse_date,
     status,
 )
+from .entities import build_products
 from .ranking import RRF_K, RankingMixin
 from .sources.community_feedback.feedback import FeedbackSources
 from .sources.community_feedback.hacker_news import HackerNewsSource
@@ -116,6 +117,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
         ranked_results = self._rank_results(results)
         product_data = self._filter_ranked_results(ranked_results, "product_data")
         community_feedback = self._filter_ranked_results(ranked_results, "community_feedback")
+        products = build_products(product_data, self.args.limit)
         return {
             "query": self.query,
             "mode": self.args.mode,
@@ -130,6 +132,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
                 "rrf_k": RRF_K,
                 "formula": "0.35*rrf + 0.25*local_relevance + 0.15*freshness + 0.10*source_quality + 0.10*engagement + 0.05*source_diversity",
             },
+            "products": products,
             "product_data": product_data[: self.args.limit],
             "community_feedback": community_feedback[: self.args.limit],
             "results": ranked_results[: self.args.limit],

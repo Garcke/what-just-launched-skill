@@ -67,6 +67,8 @@ Use `ranking.final_score` for final ordering. Treat `score` as a raw source-loca
 
 The engine normalizes within each source, deduplicates by normalized URL/title, then uses weighted reciprocal rank fusion. Prefer results with strong `ranking.freshness`, direct `launch_date_confidence`, and multiple `matched_sources` when explaining why a product is notable.
 
+Use `products` as the primary product discovery view. Use `product_data` and `community_feedback` as source-level evidence partitions. Treat `results` as a backward-compatible mixed ranked list.
+
 ## Source Routing
 
 For product discovery, use:
