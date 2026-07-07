@@ -132,6 +132,57 @@ Use what-just-launched to discover new mobile apps launched this week.
 
 Reference: Kimi Code CLI Agent Skills documentation: <https://moonshotai.github.io/kimi-cli/en/customization/skills.html>
 
+### Cursor
+
+Cursor supports Agent Skills and can discover skills from project-level or personal skill directories. Prefer project-level installation when you want the skill to travel with a repository.
+
+Project-level install:
+
+```bash
+mkdir -p .cursor/skills
+cp -R skills/what-just-launched .cursor/skills/
+```
+
+Windows PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force -Path ".cursor\skills"
+Copy-Item -Recurse -Force "skills\what-just-launched" ".cursor\skills\"
+```
+
+Personal installation can use your Cursor user configuration directory; check your current Cursor version for the exact path. After installation, ask Cursor Agent Chat:
+
+```text
+Use what-just-launched to find new AI agent products launched in the last 7 days.
+```
+
+Cursor uses the `description` field in `SKILL.md` to decide when a skill is relevant. If automatic selection does not trigger, explicitly say `use what-just-launched skill`.
+
+Reference: Cursor Agent Skills documentation: <https://cursor.com/docs/skills>
+
+### OpenCode
+
+OpenCode has native Agent Skills support. It can discover `SKILL.md` definitions from your repo or home directory and load them on demand through the built-in skill tool. For project-level usage, install into `.agents/skills/`:
+
+```bash
+mkdir -p .agents/skills
+cp -R skills/what-just-launched .agents/skills/
+```
+
+You can also use a user-level skills directory, depending on your OpenCode configuration. To make discovery more explicit, add a project instruction:
+
+```text
+When the task is about finding recently launched products, use .agents/skills/what-just-launched.
+```
+
+Then ask OpenCode:
+
+```text
+Use the what-just-launched skill to list new AI products launched this week.
+```
+
+Reference: OpenCode Agent Skills documentation: <https://opencode.ai/docs/skills/>
+
 ### OpenClaw
 
 OpenClaw supports skills configuration and allowlists. Put the skill in a directory that OpenClaw scans, then allow `what-just-launched` in the OpenClaw skills config if your setup uses allowlists.

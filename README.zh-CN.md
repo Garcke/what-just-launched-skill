@@ -134,6 +134,57 @@ Use what-just-launched to discover new mobile apps launched this week.
 
 参考：Kimi Code CLI Agent Skills 文档：<https://moonshotai.github.io/kimi-cli/en/customization/skills.html>
 
+### Cursor
+
+Cursor 支持 Agent Skills，可以通过项目级或个人级 skills 目录让 Agent 自动发现。优先推荐项目级安装，这样团队成员克隆项目后也能看到同一套 skill。
+
+项目级安装：
+
+```bash
+mkdir -p .cursor/skills
+cp -R skills/what-just-launched .cursor/skills/
+```
+
+Windows PowerShell：
+
+```powershell
+New-Item -ItemType Directory -Force -Path ".cursor\skills"
+Copy-Item -Recurse -Force "skills\what-just-launched" ".cursor\skills\"
+```
+
+个人级安装可以放到你的 Cursor 用户配置目录，具体路径以 Cursor 当前版本为准。安装后在 Cursor Agent Chat 中直接请求：
+
+```text
+Use what-just-launched to find new AI agent products launched in the last 7 days.
+```
+
+Cursor 会根据 `SKILL.md` frontmatter 里的 `description` 判断是否需要加载该 skill。若没有自动触发，可以显式说 `use what-just-launched skill`。
+
+参考：Cursor Agent Skills 文档：<https://cursor.com/docs/skills>
+
+### OpenCode
+
+OpenCode 官方支持 Agent Skills，会从 repo 或 home 目录发现 `SKILL.md` 定义，并通过内置 skill tool 按需加载。项目级安装推荐放在 `.agents/skills/`：
+
+```bash
+mkdir -p .agents/skills
+cp -R skills/what-just-launched .agents/skills/
+```
+
+也可以放在用户级技能目录，具体路径以你的 OpenCode 配置为准。项目里可以增加一条提示，让 OpenCode 更容易选择它：
+
+```text
+When the task is about finding recently launched products, use .agents/skills/what-just-launched.
+```
+
+然后在 OpenCode 里请求：
+
+```text
+Use the what-just-launched skill to list new AI products launched this week.
+```
+
+参考：OpenCode Agent Skills 文档：<https://opencode.ai/docs/skills/>
+
 ### OpenClaw
 
 OpenClaw 支持 skills 配置和 allowlist。建议先把 skill 放到 OpenClaw 能扫描的 skills 目录，然后在 OpenClaw 的 skills config 中允许 `what-just-launched`。
