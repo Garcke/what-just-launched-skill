@@ -73,6 +73,139 @@ New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills"
 Copy-Item -Recurse -Force "what-just-launched-skill\skills\what-just-launched" "$env:USERPROFILE\.codex\skills\"
 ```
 
+## 安装到其他 Agent 工具
+
+这个仓库使用的是通用 Agent Skills 结构：
+
+```text
+skills/what-just-launched/SKILL.md
+skills/what-just-launched/scripts/just-launched.py
+skills/what-just-launched/references/
+```
+
+大多数支持 Agent Skills 的工具都能读取这种「一个 skill 文件夹 + `SKILL.md` + scripts/references」结构。不同工具的差异主要是 skill 目录位置和是否需要额外 allowlist。
+
+### Claude Code
+
+Claude Code 官方支持 skills。通常可以把 skill 复制到 Claude 的 skills 目录：
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R skills/what-just-launched ~/.claude/skills/
+```
+
+Windows PowerShell：
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills"
+Copy-Item -Recurse -Force "skills\what-just-launched" "$env:USERPROFILE\.claude\skills\"
+```
+
+然后在 Claude Code 中直接提问：
+
+```text
+Use what-just-launched to find new AI products from the last 7 days.
+```
+
+如果你不确定 Claude 是否已经发现该 skill，可以重启 Claude Code，或打开 `/skills` / slash command 相关界面检查。
+
+参考：Claude Code 官方文档的 skills 说明：<https://code.claude.com/docs/en/skills>
+
+### Kimi Code CLI
+
+Kimi Code CLI 支持 Agent Skills。可以优先使用共享 `.agents/skills/` 目录：
+
+```bash
+mkdir -p .agents/skills
+cp -R skills/what-just-launched .agents/skills/
+```
+
+如果你想全局使用，可以放到用户级目录，具体位置以 Kimi Code CLI 当前文档为准。常见方式是让当前项目包含：
+
+```text
+.agents/skills/what-just-launched/SKILL.md
+```
+
+然后在 Kimi Code 中请求：
+
+```text
+Use what-just-launched to discover new mobile apps launched this week.
+```
+
+参考：Kimi Code CLI Agent Skills 文档：<https://moonshotai.github.io/kimi-cli/en/customization/skills.html>
+
+### OpenClaw
+
+OpenClaw 支持 skills 配置和 allowlist。建议先把 skill 放到 OpenClaw 能扫描的 skills 目录，然后在 OpenClaw 的 skills config 中允许 `what-just-launched`。
+
+示例目录结构：
+
+```text
+~/.openclaw/skills/what-just-launched/SKILL.md
+```
+
+复制示例：
+
+```bash
+mkdir -p ~/.openclaw/skills
+cp -R skills/what-just-launched ~/.openclaw/skills/
+```
+
+如果你的 OpenClaw 实例使用 allowlist，请把 `what-just-launched` 加进去。OpenClaw 文档强调 allowlist 是可见性和加载过滤，不是 shell 权限边界，所以仍然要认真检查第三方 skill 代码。
+
+参考：OpenClaw skills config 文档：<https://docs.openclaw.ai/tools/skills-config>
+
+### Hermes Agent
+
+Hermes Agent 更偏「自学习 agent + profile/workspace 配置」模式。建议把本 skill 放进 Hermes 当前 workspace 的 skills 目录，或放到你自己的 agent resources 目录，然后在 Hermes 的项目说明或 profile 中明确引用。
+
+推荐结构：
+
+```text
+<your-hermes-workspace>/skills/what-just-launched/SKILL.md
+```
+
+示例说明可以写进 Hermes workspace/profile：
+
+```text
+When asked to discover recently launched products, use the skill at skills/what-just-launched.
+Run scripts/just-launched.py for structured launch search results.
+```
+
+参考：Hermes Agent 文档：<https://hermes-agent.nousresearch.com/docs/>
+
+### 通用 Agent Skills 目录
+
+一些工具使用共享目录：
+
+```text
+.agents/skills/
+```
+
+如果你的 agent 支持该约定，可以直接复制：
+
+```bash
+mkdir -p .agents/skills
+cp -R skills/what-just-launched .agents/skills/
+```
+
+这种方式适合 Kimi Code、部分 IDE agent、云端 coding agent 或支持开放 Agent Skills 结构的工具。若工具没有自动发现，可以在项目说明文件中显式写：
+
+```text
+Use .agents/skills/what-just-launched when the task is about discovering recently launched products.
+```
+
+### 手动命令方式
+
+如果某个 agent 工具暂时不支持 skills，你仍然可以把它当作普通 CLI 工具使用：
+
+```bash
+cd skills/what-just-launched
+python scripts/just-launched.py "new AI products" --mode discovery --days 7 --market us
+```
+
+然后把 JSON 输出交给该 agent 总结。这个方式最通用，也最容易调试。
+
 ## 快速开始
 
 进入 skill 目录：
@@ -276,4 +409,3 @@ Show HN AI tool
 Launch HN startup
 Product Hunt AI agents
 ```
-

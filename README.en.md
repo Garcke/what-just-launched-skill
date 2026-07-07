@@ -71,6 +71,139 @@ New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills"
 Copy-Item -Recurse -Force "what-just-launched-skill\skills\what-just-launched" "$env:USERPROFILE\.codex\skills\"
 ```
 
+## Install Into Other Agent Tools
+
+This repository uses the common Agent Skills shape:
+
+```text
+skills/what-just-launched/SKILL.md
+skills/what-just-launched/scripts/just-launched.py
+skills/what-just-launched/references/
+```
+
+Most tools that support Agent Skills can load a folder that contains `SKILL.md`, scripts, and references. The main differences are the skill directory and whether the tool requires an allowlist.
+
+### Claude Code
+
+Claude Code officially supports skills. A typical install is:
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R skills/what-just-launched ~/.claude/skills/
+```
+
+Windows PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills"
+Copy-Item -Recurse -Force "skills\what-just-launched" "$env:USERPROFILE\.claude\skills\"
+```
+
+Then ask Claude Code:
+
+```text
+Use what-just-launched to find new AI products from the last 7 days.
+```
+
+If Claude Code does not discover the skill immediately, restart Claude Code or inspect the `/skills` / slash command interface.
+
+Reference: Claude Code skills documentation: <https://code.claude.com/docs/en/skills>
+
+### Kimi Code CLI
+
+Kimi Code CLI supports Agent Skills. Start with the shared `.agents/skills/` directory:
+
+```bash
+mkdir -p .agents/skills
+cp -R skills/what-just-launched .agents/skills/
+```
+
+For project-local use, the expected shape is:
+
+```text
+.agents/skills/what-just-launched/SKILL.md
+```
+
+Then ask Kimi Code:
+
+```text
+Use what-just-launched to discover new mobile apps launched this week.
+```
+
+Reference: Kimi Code CLI Agent Skills documentation: <https://moonshotai.github.io/kimi-cli/en/customization/skills.html>
+
+### OpenClaw
+
+OpenClaw supports skills configuration and allowlists. Put the skill in a directory that OpenClaw scans, then allow `what-just-launched` in the OpenClaw skills config if your setup uses allowlists.
+
+Example structure:
+
+```text
+~/.openclaw/skills/what-just-launched/SKILL.md
+```
+
+Copy example:
+
+```bash
+mkdir -p ~/.openclaw/skills
+cp -R skills/what-just-launched ~/.openclaw/skills/
+```
+
+If your OpenClaw instance uses an allowlist, add `what-just-launched`. OpenClaw's docs note that allowlists are visibility and loading filters, not shell authorization boundaries, so you should still review third-party skill code before running it.
+
+Reference: OpenClaw skills config documentation: <https://docs.openclaw.ai/tools/skills-config>
+
+### Hermes Agent
+
+Hermes Agent is more profile/workspace oriented. A practical setup is to copy this skill into the current Hermes workspace or agent resources directory, then reference it from your Hermes workspace/profile instructions.
+
+Recommended structure:
+
+```text
+<your-hermes-workspace>/skills/what-just-launched/SKILL.md
+```
+
+Example Hermes workspace/profile note:
+
+```text
+When asked to discover recently launched products, use the skill at skills/what-just-launched.
+Run scripts/just-launched.py for structured launch search results.
+```
+
+Reference: Hermes Agent documentation: <https://hermes-agent.nousresearch.com/docs/>
+
+### Shared Agent Skills Directory
+
+Some tools use a shared directory:
+
+```text
+.agents/skills/
+```
+
+If your agent supports this convention, copy the skill there:
+
+```bash
+mkdir -p .agents/skills
+cp -R skills/what-just-launched .agents/skills/
+```
+
+This is useful for Kimi Code, some IDE agents, cloud coding agents, and tools that support the open Agent Skills structure. If auto-discovery does not work, add an explicit project instruction:
+
+```text
+Use .agents/skills/what-just-launched when the task is about discovering recently launched products.
+```
+
+### Plain CLI Fallback
+
+If an agent tool does not support skills yet, use the engine as a normal CLI:
+
+```bash
+cd skills/what-just-launched
+python scripts/just-launched.py "new AI products" --mode discovery --days 7 --market us
+```
+
+Then pass the JSON output back to the agent for summarization. This is the most portable and easiest-to-debug mode.
+
 ## Quick Start
 
 From the skill directory:
@@ -274,4 +407,3 @@ Show HN AI tool
 Launch HN startup
 Product Hunt AI agents
 ```
-
