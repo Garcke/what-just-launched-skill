@@ -64,7 +64,6 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 | Apple RSS / iTunes Search | iOS app charts and app metadata | Apple public APIs |
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search |
 | BetaList | Early-stage startups and waitlists | Public pages, low-volume access |
-| AI directories | AI product directories and niche tools | Public pages, low-volume access |
 
 ### Feedback Sources
 

@@ -12,7 +12,6 @@ Use these product discovery sources:
 | Apple RSS / iTunes Search | iOS app charts and metadata | Official Apple public APIs |
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search; upgrade later to Google Play scraper |
 | BetaList | early-stage startups and waitlists | Public pages, low request volume |
-| There's An AI For That | AI tool directories and task-specific tools | Public pages, low request volume |
 
 ## User Feedback Sources
 

@@ -66,7 +66,6 @@ skills/what-just-launched/scripts/just_launched/
 | Apple RSS / iTunes Search | iOS App 榜单和元数据 | Apple 公共 API |
 | Google Play / AppBrain | Android App 发现补充 | AppBrain 页面搜索 |
 | BetaList | 早期 startup / waitlist 产品 | 公共页面，低频访问 |
-| AI 工具目录 | AI 产品目录和垂直工具 | 公共页面，低频访问 |
 
 ### 用户反馈源
 

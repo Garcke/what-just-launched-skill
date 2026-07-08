@@ -1,6 +1,6 @@
 ---
 name: what-just-launched
-description: Discover and synthesize recently launched products across launch platforms, app stores, developer communities, social/video feedback sources, and web search. Use when the user asks what just launched, what new products appeared recently, what new apps or AI products are emerging, or wants launch signals from sources such as Product Hunt, Hacker News, GitHub Trending, Apple App Store, Google Play/AppBrain, BetaList, AI tool directories, Reddit, X/Twitter, YouTube, and web search.
+description: Discover and synthesize recently launched products across launch platforms, app stores, developer communities, social/video feedback sources, and web search. Use when the user asks what just launched, what new products appeared recently, what new apps or AI products are emerging, or wants launch signals from sources such as Product Hunt, Hacker News, GitHub Trending, Apple App Store, Google Play/AppBrain, BetaList, Reddit, X/Twitter, YouTube, and web search.
 ---
 
 # What Just Launched
@@ -78,7 +78,7 @@ For product discovery, use:
 ```text
 Product Hunt, Hacker News, GitHub Trending,
 Apple RSS / iTunes Search, Google Play / AppBrain,
-BetaList, There's An AI For That
+BetaList
 ```
 
 For user feedback, use:

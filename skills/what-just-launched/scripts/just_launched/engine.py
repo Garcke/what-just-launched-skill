@@ -51,7 +51,6 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             status("apple_rss_itunes", "available", "uses Apple RSS and iTunes Search APIs"),
             status("google_play_appbrain", "available", "uses AppBrain page search as a lightweight Android discovery fallback"),
             status("betalist", "available", "scrapes public BetaList pages at low request volume"),
-            status("ai_directory", "available", "scrapes public AI directory pages at low request volume"),
             status("reddit", "available" if self._has_reddit_oauth() else "missing_config", "use REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT; public fallback is disabled by default"),
             status("reddit_public", "available", "explicit opt-in source id; uses low-rate public Reddit JSON without OAuth"),
             status("lobsters", "available", "explicit opt-in source id; scrapes public Lobsters search pages at low request volume"),

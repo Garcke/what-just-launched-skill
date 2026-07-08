@@ -20,7 +20,6 @@ PRODUCT_DATA_SPECS = {
     "apple": SourceSpec("apple", "apple", ("discovery", "all"), "product_data"),
     "google_play": SourceSpec("google_play", "google_play", ("discovery", "all"), "product_data"),
     "betalist": SourceSpec("betalist", "betalist", ("discovery", "all"), "product_data"),
-    "ai_directory": SourceSpec("ai_directory", "ai_directory", ("discovery", "all"), "product_data"),
 }
 
 COMMUNITY_FEEDBACK_SPECS = {
@@ -44,7 +43,6 @@ EMITTED_SOURCE_TYPES = {
     "itunes_search": "product_data",
     "appbrain": "product_data",
     "betalist": "product_data",
-    "ai_directory": "product_data",
     "brave_search": "community_feedback",
     "firecrawl_search": "community_feedback",
     "serpapi_search": "community_feedback",
