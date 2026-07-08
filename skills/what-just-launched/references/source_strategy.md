@@ -7,7 +7,7 @@ Use these eight sources in the first version:
 | Source | Use For | Access |
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` for GraphQL |
-| AppPark | App Store / Google Play style charts and categories | Public endpoint with browser User-Agent |
+| AppPark | App Store / Google Play style charts, app detail, categories | Public endpoints with browser User-Agent |
 | Hacker News | developer products, Show HN, technical launches | HN Algolia API |
 | GitHub Trending | open-source and developer-tool momentum | Public GitHub Trending page |
 | Apple RSS / iTunes Search | iOS app charts and metadata | Official Apple public APIs |
@@ -104,6 +104,8 @@ engine.py                      orchestration only
 `product_data` sources answer "what exists or launched?".
 
 `community_feedback` sources answer "what are people saying about it?".
+
+AppPark uses `top-charts` for chart discovery and enriches a small number of rows with `app-detail`. The detail endpoint only needs a browser-like `User-Agent`; cookies, `sec-*` headers, cache headers, and `referer` are not required in current testing. Use `--appark-detail-limit 0` to disable detail enrichment.
 
 Some platforms can serve both purposes. For example, Hacker News can surface Show HN launches and also provide developer reactions. Put the adapter where its evidence is primarily interpreted, then register it for every mode it should participate in.
 

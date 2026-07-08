@@ -343,6 +343,7 @@ python scripts/just-launched.py --diagnose
 | `--until YYYY-MM-DD` | 结束日期 |
 | `--filter-launch-date` | 只保留上线日期在时间范围内的产品，适合「新产品」查询 |
 | `--market us` | 市场/国家，例如 `us`、`jp`、`cn` |
+| `--appark-detail-limit 10` | AppPark 榜单结果最多补充多少条 app-detail；设为 `0` 可关闭 |
 | `--sources web,hacker_news` | 指定数据源 |
 | `--product-sources product_hunt,appark` | 单独指定产品发现来源 |
 | `--feedback-sources reddit,hacker_news,web` | 单独指定社区反馈来源 |

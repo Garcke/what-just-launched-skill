@@ -21,6 +21,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--until", default="", help="End date in YYYY-MM-DD. Defaults to today.")
     parser.add_argument("--market", default="us")
     parser.add_argument("--category", default="36", help="AppPark category id; 36 means all categories.")
+    parser.add_argument("--appark-detail-limit", type=int, default=10, help="Maximum AppPark chart rows to enrich with app-detail. Use 0 to disable.")
     parser.add_argument("--time-zone", default="Asia/Shanghai")
     parser.add_argument("--limit", type=int, default=30)
     parser.add_argument("--filter-launch-date", action="store_true", help="Keep products only when product_launch_date is inside the time range. Best for new-product discovery.")

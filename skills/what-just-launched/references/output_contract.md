@@ -185,6 +185,15 @@ python scripts/just-launched.py "new AI products" --mode all --product-sources p
 
 `--sources` remains as a backward-compatible global override.
 
+AppPark detail enrichment:
+
+```text
+--appark-detail-limit 10 = enrich up to 10 AppPark chart rows with app-detail
+--appark-detail-limit 0 = disable app-detail requests
+```
+
+AppPark `app-detail` is fetched with `app_id`, `platform=1`, and `country`. In current testing, a browser-like `User-Agent` is the only required header; cookies and browser `sec-*` headers are unnecessary.
+
 ## Ranking
 
 The `score` field is the raw score from a single source and is not comparable across sources. For final ordering, use `ranking.final_score`.

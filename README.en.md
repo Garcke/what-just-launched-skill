@@ -341,6 +341,7 @@ python scripts/just-launched.py --diagnose
 | `--until YYYY-MM-DD` | End date |
 | `--filter-launch-date` | Keep only products whose known launch date is inside the time window |
 | `--market us` | Market/country code, such as `us`, `jp`, or `cn` |
+| `--appark-detail-limit 10` | Maximum AppPark chart rows to enrich with app-detail; use `0` to disable |
 | `--sources web,hacker_news` | Restrict source set |
 | `--product-sources product_hunt,appark` | Restrict product discovery sources |
 | `--feedback-sources reddit,hacker_news,web` | Restrict community feedback sources |

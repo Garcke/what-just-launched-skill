@@ -46,7 +46,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
     def preflight(self) -> list[dict[str, str]]:
         checks = [
             status("product_hunt", "available" if os.getenv("PRODUCT_HUNT_TOKEN") else "missing_config", "set PRODUCT_HUNT_TOKEN for Product Hunt GraphQL"),
-            status("appark", "available", "uses public top-charts endpoint with browser User-Agent"),
+            status("appark", "available", "uses public top-charts and app-detail endpoints with browser User-Agent"),
             status("hacker_news", "available", "uses free HN Algolia API"),
             status("github_trending", "available", "scrapes public GitHub Trending page"),
             status("apple_rss_itunes", "available", "uses Apple RSS and iTunes Search APIs"),
