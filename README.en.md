@@ -495,6 +495,10 @@ Date fields are separate: `launch_date` is the true product launch or creation d
 - Web search may return launch directories or article pages; Codex should extract concrete products from them.
 - Some sources prove discussion date, not the true product launch date.
 
+## Release Rule
+
+Every push to GitHub should be accompanied by a new version tag and GitHub Release. Use `vMAJOR.MINOR.PATCH`, for example `v1.3.0`.
+
 ## Useful Queries
 
 ```text
