@@ -50,10 +50,8 @@ SOURCE_WEIGHTS = {
     "youtube": 0.95,
     "brave_search": 0.88,
     "firecrawl_search": 0.86,
-    "exa_search": 0.85,
     "serpapi_search": 0.85,
     "tavily_search": 0.85,
-    "duckduckgo": 0.70,
     "web_search": 0.60,
 }
 SOURCE_QUALITY = {
@@ -78,10 +76,8 @@ SOURCE_QUALITY = {
     "youtube": 0.70,
     "brave_search": 0.62,
     "firecrawl_search": 0.62,
-    "exa_search": 0.60,
     "serpapi_search": 0.58,
     "tavily_search": 0.60,
-    "duckduckgo": 0.45,
     "web_search": 0.35,
 }
 

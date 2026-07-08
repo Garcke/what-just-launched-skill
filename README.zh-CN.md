@@ -68,7 +68,7 @@ skills/what-just-launched/scripts/just_launched/
 | Google Play / AppBrain | Android App 发现补充 | AppBrain 页面搜索 |
 | BetaList | 早期 startup / waitlist 产品 | 公共页面，低频访问 |
 | AI 工具目录 | AI 产品目录和垂直工具 | 公共页面，低频访问 |
-| Web Search | 官网、评测、榜单、对比文章 | Brave / Firecrawl / SerpApi / Tavily / Exa / DuckDuckGo |
+| Web Search | 官网、评测、榜单、对比文章 | Brave / Firecrawl / SerpApi / Tavily |
 
 ### 用户反馈源
 
@@ -386,7 +386,7 @@ product_launch_date  产品自身的上线/首次发布日期
 
 ```bash
 python scripts/just-launched.py --write-config TAVILY_API_KEY=your_key_here
-python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily,exa,duckduckgo
+python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
 ```
 
 推荐配置：
@@ -409,12 +409,11 @@ PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 YOUTUBE_API_KEY=
 
 # Web Search
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily,exa,duckduckgo
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
 BRAVE_API_KEY=
 FIRECRAWL_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
-EXA_API_KEY=
 ```
 
 ## Web Search Provider
@@ -422,16 +421,14 @@ EXA_API_KEY=
 默认支持：
 
 ```text
-serpapi,exa,tavily,duckduckgo
+brave,firecrawl,serpapi,tavily
 ```
 
 推荐实际使用：
 
 ```text
-serpapi,tavily,exa,duckduckgo
+brave,firecrawl,serpapi,tavily
 ```
-
-DuckDuckGo 不需要 key，但只适合作为低频 fallback，不建议批量高并发使用。
 
 ## 安全说明
 

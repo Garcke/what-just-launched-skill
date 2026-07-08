@@ -32,14 +32,11 @@ YOUTUBE_API_KEY=
 PRODUCT_SCOUT_YOUTUBE_COMMENTS=false
 
 # Web search
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,exa,tavily,duckduckgo
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
 BRAVE_API_KEY=
 FIRECRAWL_API_KEY=
 SERPAPI_API_KEY=
-EXA_API_KEY=
 TAVILY_API_KEY=
-PRODUCT_SCOUT_DDG_REGION=
-PRODUCT_SCOUT_DDG_DELAY=1.0
 ```
 
 ## X Adapter Command Contract
@@ -90,7 +87,7 @@ Use this for local, consented browser-cookie adapters or an xAI-backed adapter w
 Default order:
 
 ```text
-brave,firecrawl,serpapi,exa,tavily,duckduckgo
+brave,firecrawl,serpapi,tavily
 ```
 
 Provider behavior:
@@ -100,21 +97,10 @@ Provider behavior:
 | Brave | `BRAVE_API_KEY` or `BRAVE_SEARCH_API_KEY` | Independent web index via Brave Search API. |
 | Firecrawl | `FIRECRAWL_API_KEY` | Live web search API that can also scrape result content. |
 | SerpApi | `SERPAPI_API_KEY` | Google-style search results API. |
-| Exa | `EXA_API_KEY` | Good for agentic web search and page snippets. |
 | Tavily | `TAVILY_API_KEY` | Search API designed for AI workflows. |
-| DuckDuckGo | none | Free HTML fallback. Use low request volume only. |
 
 Override the order:
 
 ```bash
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily,exa,duckduckgo
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
 ```
-
-DuckDuckGo settings:
-
-```bash
-PRODUCT_SCOUT_DDG_REGION=us-en
-PRODUCT_SCOUT_DDG_DELAY=1.0
-```
-
-Region defaults are inferred from `--market` for common markets. The time filter follows `--days`: day, week, month, or year.
