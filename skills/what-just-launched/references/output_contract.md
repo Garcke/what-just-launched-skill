@@ -104,7 +104,7 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
   "kind": "app",
   "url": "https://example.com",
   "urls": ["https://example.com"],
-  "sources": ["product_hunt", "github_search"],
+  "sources": ["product_hunt", "github_trending"],
   "evidence_count": 2,
   "best_ranking_score": 0.812345,
   "product_score": 0.734567,
@@ -117,7 +117,7 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
     "launch_confidence": 1.0
   },
   "rank_reasons": [
-    "product evidence from product_hunt, github_search",
+    "product evidence from product_hunt, github_trending",
     "launch date is verified inside the requested window"
   ],
   "launch_date": "2026-07-01",

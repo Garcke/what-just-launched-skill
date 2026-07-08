@@ -15,6 +15,9 @@ Do not store secrets in `SKILL.md`, source files, reports, or committed artifact
 ```bash
 # Product discovery
 PRODUCT_HUNT_TOKEN=
+# Optional Product Hunt topic slug for time + topic discovery.
+# Examples: artificial-intelligence, developer-tools, productivity.
+PRODUCT_SCOUT_PRODUCT_HUNT_TOPIC=
 
 # Reddit, OAuth first. Avoid Reddit HTML scraping on servers.
 REDDIT_CLIENT_ID=

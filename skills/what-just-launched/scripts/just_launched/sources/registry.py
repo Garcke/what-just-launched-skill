@@ -40,7 +40,6 @@ SOURCE_SPECS = {**PRODUCT_DATA_SPECS, **COMMUNITY_FEEDBACK_SPECS}
 EMITTED_SOURCE_TYPES = {
     "product_hunt": "product_data",
     "github_trending": "product_data",
-    "github_search": "product_data",
     "apple_rss": "product_data",
     "itunes_search": "product_data",
     "appbrain": "product_data",

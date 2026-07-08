@@ -60,7 +60,7 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` |
 | Hacker News | Show HN, Launch HN, developer products | HN Algolia API |
-| GitHub Trending / Search | Open-source projects and developer tools | GitHub pages/API |
+| GitHub Trending | Open-source projects and developer tools | GitHub Trending page |
 | Apple RSS / iTunes Search | iOS app charts and app metadata | Apple public APIs |
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search |
 | BetaList | Early-stage startups and waitlists | Public pages, low-volume access |
@@ -390,6 +390,9 @@ Recommended configuration:
 ```bash
 # Product Hunt
 PRODUCT_HUNT_TOKEN=
+# Optional Product Hunt topic slug for time + topic discovery.
+# Examples: artificial-intelligence, developer-tools, productivity.
+PRODUCT_SCOUT_PRODUCT_HUNT_TOPIC=
 
 # Reddit OAuth. Do not scrape Reddit HTML from server IPs.
 REDDIT_CLIENT_ID=

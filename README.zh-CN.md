@@ -62,7 +62,7 @@ skills/what-just-launched/scripts/just_launched/
 |---|---|---|
 | Product Hunt | SaaS、AI 工具、独立产品、发布榜 | 需要 `PRODUCT_HUNT_TOKEN` |
 | Hacker News | Show HN、Launch HN、开发者产品 | HN Algolia API |
-| GitHub Trending / Search | 开源项目、开发者工具、新仓库 | GitHub 页面/API |
+| GitHub Trending | 开源项目、开发者工具、新仓库 | GitHub Trending 页面 |
 | Apple RSS / iTunes Search | iOS App 榜单和元数据 | Apple 公共 API |
 | Google Play / AppBrain | Android App 发现补充 | AppBrain 页面搜索 |
 | BetaList | 早期 startup / waitlist 产品 | 公共页面，低频访问 |
@@ -392,6 +392,9 @@ python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=brave
 ```bash
 # Product Hunt
 PRODUCT_HUNT_TOKEN=
+# 可选 Product Hunt topic slug，用于“时间范围 + topic”发现。
+# 示例：artificial-intelligence、developer-tools、productivity。
+PRODUCT_SCOUT_PRODUCT_HUNT_TOPIC=
 
 # Reddit OAuth，服务器上不要直接抓 Reddit HTML
 REDDIT_CLIENT_ID=

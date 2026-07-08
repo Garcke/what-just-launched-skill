@@ -1,28 +1,15 @@
 from __future__ import annotations
 
-import base64
 import datetime as dt
-import html
 import json
 import os
-import re
-import subprocess
-import time
-import urllib.parse
 import urllib.request
 from typing import Any
 
 from ...common import (
-    BROWSER_UA,
     DEFAULT_UA,
     date_only,
-    date_to_epoch_end,
-    date_to_epoch_start,
-    get_json,
-    get_text,
     item,
-    now_utc,
-    post_json,
 )
 
 class ProductHuntSource:
@@ -31,15 +18,16 @@ class ProductHuntSource:
         if not token:
             return []
         posted_after = dt.datetime.combine(self.start_date, dt.time.min, tzinfo=dt.timezone.utc).isoformat()
+        topic = self._product_hunt_topic()
         query = """
-        query Posts($postedAfter: DateTime, $postedBefore: DateTime) {
-          posts(first: 20, postedAfter: $postedAfter, postedBefore: $postedBefore, order: VOTES) {
+        query Posts($postedAfter: DateTime, $postedBefore: DateTime, $topic: String) {
+          posts(first: 20, postedAfter: $postedAfter, postedBefore: $postedBefore, topic: $topic, order: VOTES) {
             edges { node { name tagline url votesCount commentsCount createdAt } }
           }
         }
         """
         posted_before = dt.datetime.combine(self.end_date + dt.timedelta(days=1), dt.time.min, tzinfo=dt.timezone.utc).isoformat()
-        payload = json.dumps({"query": query, "variables": {"postedAfter": posted_after, "postedBefore": posted_before}}).encode()
+        payload = json.dumps({"query": query, "variables": {"postedAfter": posted_after, "postedBefore": posted_before, "topic": topic}}).encode()
         req = urllib.request.Request(
             "https://api.producthunt.com/v2/api/graphql",
             data=payload,
@@ -66,8 +54,25 @@ class ProductHuntSource:
                 evidence_published_at=n.get("createdAt", ""),
                 date_confidence="known_launch_date" if n.get("createdAt") else "unknown",
                 score=float(n.get("votesCount") or 0) + float(n.get("commentsCount") or 0) * 3,
-                signals={"votes": n.get("votesCount"), "comments": n.get("commentsCount")},
+                signals={"votes": n.get("votesCount"), "comments": n.get("commentsCount"), "topic": topic or ""},
                 raw=n,
             ))
         return rows
+
+    def _product_hunt_topic(self) -> str | None:
+        topic = os.getenv("PRODUCT_SCOUT_PRODUCT_HUNT_TOPIC", "").strip()
+        if topic:
+            return topic
+        query = (self.query or "").lower()
+        topic_keywords = [
+            ("artificial-intelligence", (" ai ", "ai products", "ai tools", "artificial intelligence", "agent", "agents", "llm")),
+            ("developer-tools", ("developer", "dev tool", "devtool", "api", "coding", "github", "code")),
+            ("productivity", ("productivity", "workflow", "calendar", "notes", "task", "todo")),
+            ("marketing", ("marketing", "seo", "sales", "crm")),
+        ]
+        padded = f" {query} "
+        for topic_slug, keywords in topic_keywords:
+            if any(keyword in padded for keyword in keywords):
+                return topic_slug
+        return None
 
