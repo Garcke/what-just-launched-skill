@@ -66,7 +66,7 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search |
 | BetaList | Early-stage startups and waitlists | Public pages, low-volume access |
 | AI directories | AI product directories and niche tools | Public pages, low-volume access |
-| Web Search | Official pages, reviews, comparisons, launch lists | SerpApi / Tavily / Exa / DuckDuckGo |
+| Web Search | Official pages, reviews, comparisons, launch lists | Brave / Firecrawl / SerpApi / Tavily / Exa / DuckDuckGo |
 
 ### Feedback Sources
 
@@ -384,7 +384,7 @@ Append config values:
 
 ```bash
 python scripts/just-launched.py --write-config TAVILY_API_KEY=your_key_here
-python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=serpapi,tavily,exa,duckduckgo
+python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily,exa,duckduckgo
 ```
 
 Recommended configuration:
@@ -407,7 +407,9 @@ PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 YOUTUBE_API_KEY=
 
 # Web Search
-PRODUCT_SCOUT_WEB_PROVIDERS=serpapi,tavily,exa,duckduckgo
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily,exa,duckduckgo
+BRAVE_API_KEY=
+FIRECRAWL_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
 EXA_API_KEY=

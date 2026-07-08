@@ -48,6 +48,8 @@ EMITTED_SOURCE_TYPES = {
     "appbrain": "product_data",
     "betalist": "product_data",
     "ai_directory": "product_data",
+    "brave_search": "product_data",
+    "firecrawl_search": "product_data",
     "exa_search": "product_data",
     "serpapi_search": "product_data",
     "tavily_search": "product_data",

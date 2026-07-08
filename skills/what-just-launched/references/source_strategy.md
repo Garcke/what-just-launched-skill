@@ -14,7 +14,7 @@ Use these eight sources in the first version:
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search; upgrade later to Google Play scraper |
 | BetaList | early-stage startups and waitlists | Public pages, low request volume |
 | There's An AI For That | AI tool directories and task-specific tools | Public pages, low request volume |
-| Web Search | official posts, reviews, comparisons, launch lists, search evidence | SerpApi, Exa, Tavily, or DuckDuckGo low-volume fallback |
+| Web Search | official posts, reviews, comparisons, launch lists, search evidence | Brave, Firecrawl, SerpApi, Exa, Tavily, or DuckDuckGo low-volume fallback |
 
 ## User Feedback Sources
 

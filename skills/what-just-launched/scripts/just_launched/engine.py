@@ -60,7 +60,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             status("stackexchange", "available", "uses public Stack Exchange advanced search API"),
             status("x_twitter", "available" if self._has_x_config() else "missing_config", "set XQUIK_API_KEY, XAI_API_KEY, PRODUCT_SCOUT_X_ADAPTER_COMMAND, FROM_BROWSER=auto, or AUTH_TOKEN+CT0"),
             status("youtube", "available" if os.getenv("YOUTUBE_API_KEY") else "missing_config", "set YOUTUBE_API_KEY; yt-dlp is optional for transcripts"),
-            status("web_search", "available", "uses PRODUCT_SCOUT_WEB_PROVIDERS; supports SerpApi, Exa, Tavily, DuckDuckGo"),
+            status("web_search", "available", "uses PRODUCT_SCOUT_WEB_PROVIDERS; supports Brave, Firecrawl, SerpApi, Exa, Tavily, DuckDuckGo"),
         ]
         return checks
 
@@ -82,10 +82,12 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
                 "AUTH_TOKEN": bool(os.getenv("AUTH_TOKEN")),
                 "CT0": bool(os.getenv("CT0")),
                 "YOUTUBE_API_KEY": bool(os.getenv("YOUTUBE_API_KEY")),
+                "BRAVE_API_KEY": bool(os.getenv("BRAVE_API_KEY") or os.getenv("BRAVE_SEARCH_API_KEY")),
+                "FIRECRAWL_API_KEY": bool(os.getenv("FIRECRAWL_API_KEY")),
                 "EXA_API_KEY": bool(os.getenv("EXA_API_KEY")),
                 "SERPAPI_API_KEY": bool(os.getenv("SERPAPI_API_KEY")),
                 "TAVILY_API_KEY": bool(os.getenv("TAVILY_API_KEY")),
-                "PRODUCT_SCOUT_WEB_PROVIDERS": os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "serpapi,exa,tavily,duckduckgo"),
+                "PRODUCT_SCOUT_WEB_PROVIDERS": os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,firecrawl,serpapi,exa,tavily,duckduckgo"),
                 "PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON": os.getenv("PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON", ""),
                 "PRODUCT_SCOUT_STACKEXCHANGE_SITE": os.getenv("PRODUCT_SCOUT_STACKEXCHANGE_SITE", "stackoverflow"),
             },
