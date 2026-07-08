@@ -1,6 +1,6 @@
 ---
 name: what-just-launched
-description: Discover and synthesize recently launched products across launch platforms, app stores, developer communities, social/video feedback sources, and web search. Use when the user asks what just launched, what new products appeared recently, what new apps or AI products are emerging, or wants launch signals from sources such as Product Hunt, AppPark, Hacker News, GitHub Trending, Apple App Store, Google Play/AppBrain, BetaList, AI tool directories, Reddit, X/Twitter, YouTube, and web search.
+description: Discover and synthesize recently launched products across launch platforms, app stores, developer communities, social/video feedback sources, and web search. Use when the user asks what just launched, what new products appeared recently, what new apps or AI products are emerging, or wants launch signals from sources such as Product Hunt, Hacker News, GitHub Trending, Apple App Store, Google Play/AppBrain, BetaList, AI tool directories, Reddit, X/Twitter, YouTube, and web search.
 ---
 
 # What Just Launched
@@ -59,7 +59,7 @@ The engine emits normalized JSON. Use its `preflight`, `errors`, and `results` f
 
 The top-level `time_range` is the search window. `launch_date` is the product's own launch or first release date when the source exposes it. `first_seen_at` is when the skill first saw the product in a chart/source. `evidence_published_at` is the evidence page, post, video, chart, or discussion date. `product_launch_date` and `published_at` remain as backward-compatible aliases.
 
-Use `date_confidence` and `ranking.launch_date_confidence` carefully. AppPark and trending pages often expose chart or trend dates, not true launch dates, so label those as "date not verified" when they matter.
+Use `date_confidence` and `ranking.launch_date_confidence` carefully. Trending pages often expose trend dates, not true launch dates, so label those as "date not verified" when they matter.
 
 When `--filter-launch-date` is active, sources with known launch dates keep only products whose `product_launch_date` is inside `time_range`. Sources without a reliable launch date may still return results; label those as "date not verified" if they affect the conclusion.
 
@@ -76,16 +76,16 @@ Use `products` as the primary product discovery view. Order products by `product
 For product discovery, use:
 
 ```text
-Product Hunt, AppPark, Hacker News, GitHub Trending,
+Product Hunt, Hacker News, GitHub Trending,
 Apple RSS / iTunes Search, Google Play / AppBrain,
-BetaList, There's An AI For That, Web Search
+BetaList, There's An AI For That
 ```
 
 For user feedback, use:
 
 ```text
-Reddit, Reddit Public JSON, Hacker News, GitHub Issues,
-Stack Exchange, Lobsters, X / Twitter, YouTube
+Reddit, Reddit Public JSON, Hacker News, Web Search,
+GitHub Issues, Stack Exchange, Lobsters, X / Twitter, YouTube
 ```
 
 Use `--sources` only when the user names specific sources or when a narrow source set is clearly better:
@@ -97,7 +97,7 @@ python scripts/just-launched.py "Cursor" --mode feedback --sources reddit,hacker
 Prefer split source routing when the task needs both product discovery and feedback:
 
 ```bash
-python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,appark,github_trending,web --feedback-sources reddit,hacker_news --days 7
+python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,github_trending --feedback-sources web,reddit,hacker_news --days 7
 ```
 
 ## Safety And Reliability

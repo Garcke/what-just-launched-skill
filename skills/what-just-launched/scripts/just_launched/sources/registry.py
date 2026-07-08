@@ -16,17 +16,16 @@ class SourceSpec:
 
 PRODUCT_DATA_SPECS = {
     "product_hunt": SourceSpec("product_hunt", "product_hunt", ("discovery", "all"), "product_data"),
-    "appark": SourceSpec("appark", "appark", ("discovery", "all"), "product_data"),
     "github_trending": SourceSpec("github_trending", "github_trending", ("discovery", "all"), "product_data"),
     "apple": SourceSpec("apple", "apple", ("discovery", "all"), "product_data"),
     "google_play": SourceSpec("google_play", "google_play", ("discovery", "all"), "product_data"),
     "betalist": SourceSpec("betalist", "betalist", ("discovery", "all"), "product_data"),
     "ai_directory": SourceSpec("ai_directory", "ai_directory", ("discovery", "all"), "product_data"),
-    "web": SourceSpec("web", "web_search", ("discovery", "all"), "product_data"),
 }
 
 COMMUNITY_FEEDBACK_SPECS = {
     "hacker_news": SourceSpec("hacker_news", "hacker_news", ("discovery", "feedback", "all"), "community_feedback"),
+    "web": SourceSpec("web", "web_search", ("feedback", "all"), "community_feedback"),
     "reddit": SourceSpec("reddit", "reddit", ("feedback", "all"), "community_feedback"),
     "reddit_public": SourceSpec("reddit_public", "reddit_public", (), "community_feedback"),
     "lobsters": SourceSpec("lobsters", "lobsters", (), "community_feedback"),
@@ -40,7 +39,6 @@ SOURCE_SPECS = {**PRODUCT_DATA_SPECS, **COMMUNITY_FEEDBACK_SPECS}
 
 EMITTED_SOURCE_TYPES = {
     "product_hunt": "product_data",
-    "appark": "product_data",
     "github_trending": "product_data",
     "github_search": "product_data",
     "apple_rss": "product_data",
@@ -48,11 +46,11 @@ EMITTED_SOURCE_TYPES = {
     "appbrain": "product_data",
     "betalist": "product_data",
     "ai_directory": "product_data",
-    "brave_search": "product_data",
-    "firecrawl_search": "product_data",
-    "serpapi_search": "product_data",
-    "tavily_search": "product_data",
-    "web_search": "product_data",
+    "brave_search": "community_feedback",
+    "firecrawl_search": "community_feedback",
+    "serpapi_search": "community_feedback",
+    "tavily_search": "community_feedback",
+    "web_search": "community_feedback",
     "hacker_news": "community_feedback",
     "reddit": "community_feedback",
     "reddit_public": "community_feedback",

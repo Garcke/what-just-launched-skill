@@ -33,19 +33,19 @@ skills/what-just-launched/scripts/just-launched.py
 ```text
 skills/what-just-launched/scripts/just_launched/
 ├── cli.py              # CLI 参数、配置写入、JSON 输出
-├── common.py           # 配置、日期、HTTP、标准 item 工具
-├── engine.py           # 搜索编排，不直接放具体来源逻辑
-├── ranking.py          # 去重、归一化评分、加权 RRF 融合
+├── common.py           # 配置、日期、HTTP、标准 item helper
+├── engine.py           # 搜索编排，不放具体 source 逻辑
+├── ranking.py          # 去重、标准化评分、RRF 融合
 ├── sources/
 │   ├── registry.py     # source id、mode 分组、method 映射
-│   ├── product_data/   # App/产品/仓库/目录/Web Search 数据源
+│   ├── product_data/   # App/产品/仓库/目录数据源
 │   │   ├── product_hunt.py
 │   │   ├── app_stores.py
 │   │   ├── github.py
-│   │   ├── directories.py
-│   │   └── web_search.py
-│   └── community_feedback/  # 社区讨论、评论、社交反馈源
+│   │   └── directories.py
+│   └── community_feedback/  # 社区讨论、评论、社交反馈和 Web Search 源
 │       ├── hacker_news.py
+│       ├── web_search.py
 │       └── feedback.py
 └── __init__.py
 ```
@@ -61,14 +61,12 @@ skills/what-just-launched/scripts/just_launched/
 | 来源 | 用途 | 访问方式 |
 |---|---|---|
 | Product Hunt | SaaS、AI 工具、独立产品、发布榜 | 需要 `PRODUCT_HUNT_TOKEN` |
-| AppPark | App Store / Google Play 风格榜单和分类榜 | 公共接口，浏览器 User-Agent |
 | Hacker News | Show HN、Launch HN、开发者产品 | HN Algolia API |
 | GitHub Trending / Search | 开源项目、开发者工具、新仓库 | GitHub 页面/API |
 | Apple RSS / iTunes Search | iOS App 榜单和元数据 | Apple 公共 API |
 | Google Play / AppBrain | Android App 发现补充 | AppBrain 页面搜索 |
 | BetaList | 早期 startup / waitlist 产品 | 公共页面，低频访问 |
 | AI 工具目录 | AI 产品目录和垂直工具 | 公共页面，低频访问 |
-| Web Search | 官网、评测、榜单、对比文章 | Brave / Firecrawl / SerpApi / Tavily |
 
 ### 用户反馈源
 
@@ -82,6 +80,7 @@ skills/what-just-launched/scripts/just_launched/
 | X / Twitter | 发布反应、创始人/用户讨论 | `XQUIK_API_KEY` 或外部 adapter |
 | YouTube | 测评视频、教程、评论 | `YOUTUBE_API_KEY` |
 | Hacker News | 开发者反馈和质疑 | HN Algolia API |
+| Web Search | 官网、评测、榜单、对比文章、资讯/搜索证据 | Brave / Firecrawl / SerpApi / Tavily |
 
 ## 安装到 Codex
 
@@ -343,10 +342,9 @@ python scripts/just-launched.py --diagnose
 | `--until YYYY-MM-DD` | 结束日期 |
 | `--filter-launch-date` | 只保留上线日期在时间范围内的产品，适合「新产品」查询 |
 | `--market us` | 市场/国家，例如 `us`、`jp`、`cn` |
-| `--appark-detail-limit 10` | AppPark 榜单结果最多补充多少条 app-detail；设为 `0` 可关闭 |
-| `--sources appark,hacker_news` | 指定数据源 |
-| `--product-sources product_hunt,appark,web` | 单独指定产品发现来源 |
-| `--feedback-sources reddit,hacker_news` | 单独指定社区反馈来源 |
+| `--sources product_hunt,hacker_news` | 指定数据源 |
+| `--product-sources product_hunt,github_trending` | 单独指定产品发现来源 |
+| `--feedback-sources web,reddit,hacker_news` | 单独指定社区/资讯/反馈来源 |
 | `--limit 20` | 最多返回多少条 |
 | `--include-raw` | 调试时包含原始数据 |
 
@@ -483,9 +481,9 @@ brave,firecrawl,serpapi,tavily
 
 排序时优先使用 `ranking.final_score`。`score` 是各来源自己的原始分数，不同平台之间不能直接比较。
 
-`products` 是从 `product_data` 合并出的产品实体列表，适合作为产品发现主视图。产品会按 `product_score` 排序，`score_breakdown` 展示产品级评分拆分，`rank_reasons` 给出可直接用于摘要的排序原因；其中 `products[].community_feedback` 会放已经匹配到该产品的反馈证据，`products[].feedback_summary` 会总结这个产品的用户喜欢点、抱怨点、反复需求、付费意愿和迁移/替代信号。顶层 `community_feedback_summary` 会总结全部社区反馈。`product_data` 放产品/App/仓库/发布平台/目录/Web Search 证据，顶层 `community_feedback` 放未必能匹配到具体产品的社区讨论、评论、视频和社交反馈证据。`results` 会继续保留，作为兼容旧用法的混合排序列表。
+`products` 是从 `product_data` 合并出的产品实体列表，适合作为产品发现主视图。产品会按 `product_score` 排序，`score_breakdown` 展示产品级评分拆分，`rank_reasons` 给出可直接用于摘要的排序原因；其中 `products[].community_feedback` 会放已经匹配到该产品的反馈证据，`products[].feedback_summary` 会总结这个产品的用户喜欢点、抱怨点、反复需求、付费意愿和迁移/替代信号。顶层 `community_feedback_summary` 会总结全部社区反馈。`product_data` 放产品/App/仓库/发布平台/目录证据，顶层 `community_feedback` 放未必能匹配到具体产品的社区讨论、评论、视频、社交反馈和 Web Search 资讯证据。`results` 会继续保留，作为兼容旧用法的混合排序列表。
 
-时间字段里，`launch_date` 是产品真实上线/创建日期，`first_seen_at` 是 skill 首次在榜单或来源里看到它的日期，`evidence_published_at` 是文章/帖子/榜单证据日期，`date_confidence` 表示日期可信度。AppPark 和 GitHub Trending 这类来源经常只能证明榜单或趋势日期，不代表产品刚上线。
+时间字段里，`launch_date` 是产品真实上线/创建日期，`first_seen_at` 是 skill 首次在榜单或来源里看到它的日期，`evidence_published_at` 是文章/帖子/榜单证据日期，`date_confidence` 表示日期可信度。GitHub Trending 这类来源经常只能证明趋势日期，不代表产品刚上线。
 
 ## 目前限制
 

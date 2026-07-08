@@ -24,11 +24,11 @@ from .feedback_summary import summarize_feedback
 from .ranking import RRF_K, RankingMixin
 from .sources.community_feedback.feedback import FeedbackSources
 from .sources.community_feedback.hacker_news import HackerNewsSource
+from .sources.community_feedback.web_search import WebSearchSource
 from .sources.product_data.app_stores import AppStoreSources
 from .sources.product_data.directories import DirectorySources
 from .sources.product_data.github import GitHubSources
 from .sources.product_data.product_hunt import ProductHuntSource
-from .sources.product_data.web_search import WebSearchSource
 from .sources.registry import selected_sources, source_runner, source_type
 
 class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsSource, GitHubSources, DirectorySources, FeedbackSources, WebSearchSource):
@@ -46,7 +46,6 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
     def preflight(self) -> list[dict[str, str]]:
         checks = [
             status("product_hunt", "available" if os.getenv("PRODUCT_HUNT_TOKEN") else "missing_config", "set PRODUCT_HUNT_TOKEN for Product Hunt GraphQL"),
-            status("appark", "available", "uses public top-charts and app-detail endpoints with browser User-Agent"),
             status("hacker_news", "available", "uses free HN Algolia API"),
             status("github_trending", "available", "scrapes public GitHub Trending page"),
             status("apple_rss_itunes", "available", "uses Apple RSS and iTunes Search APIs"),
@@ -60,7 +59,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             status("stackexchange", "available", "uses public Stack Exchange advanced search API"),
             status("x_twitter", "available" if self._has_x_config() else "missing_config", "set XQUIK_API_KEY, XAI_API_KEY, PRODUCT_SCOUT_X_ADAPTER_COMMAND, FROM_BROWSER=auto, or AUTH_TOKEN+CT0"),
             status("youtube", "available" if os.getenv("YOUTUBE_API_KEY") else "missing_config", "set YOUTUBE_API_KEY; yt-dlp is optional for transcripts"),
-            status("web_search", "available", "uses PRODUCT_SCOUT_WEB_PROVIDERS; supports Brave, Firecrawl, SerpApi, Tavily"),
+            status("web_search", "available", "community/news source; uses PRODUCT_SCOUT_WEB_PROVIDERS; supports Brave, Firecrawl, SerpApi, Tavily"),
         ]
         return checks
 

@@ -30,7 +30,6 @@ def parse_date(value: str | None) -> dt.date | None:
 RRF_K = 60
 SOURCE_WEIGHTS = {
     "product_hunt": 1.25,
-    "appark": 0.95,
     "hacker_news": 1.15,
     "github_trending": 1.05,
     "github_search": 1.05,
@@ -56,7 +55,6 @@ SOURCE_WEIGHTS = {
 }
 SOURCE_QUALITY = {
     "product_hunt": 0.90,
-    "appark": 0.72,
     "hacker_news": 0.82,
     "github_trending": 0.78,
     "github_search": 0.80,

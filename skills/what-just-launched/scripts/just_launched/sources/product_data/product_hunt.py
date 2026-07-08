@@ -30,17 +30,16 @@ class ProductHuntSource:
         token = os.getenv("PRODUCT_HUNT_TOKEN")
         if not token:
             return []
-        posted_after = (now_utc() - dt.timedelta(days=self.days)).isoformat()
         posted_after = dt.datetime.combine(self.start_date, dt.time.min, tzinfo=dt.timezone.utc).isoformat()
         query = """
-        query Posts($postedAfter: DateTime, $postedBefore: DateTime, $search: String) {
-          posts(first: 20, postedAfter: $postedAfter, postedBefore: $postedBefore, order: VOTES, search: $search) {
+        query Posts($postedAfter: DateTime, $postedBefore: DateTime) {
+          posts(first: 20, postedAfter: $postedAfter, postedBefore: $postedBefore, order: VOTES) {
             edges { node { name tagline url votesCount commentsCount createdAt } }
           }
         }
         """
         posted_before = dt.datetime.combine(self.end_date + dt.timedelta(days=1), dt.time.min, tzinfo=dt.timezone.utc).isoformat()
-        payload = json.dumps({"query": query, "variables": {"postedAfter": posted_after, "postedBefore": posted_before, "search": self.query or None}}).encode()
+        payload = json.dumps({"query": query, "variables": {"postedAfter": posted_after, "postedBefore": posted_before}}).encode()
         req = urllib.request.Request(
             "https://api.producthunt.com/v2/api/graphql",
             data=payload,
@@ -49,6 +48,9 @@ class ProductHuntSource:
         )
         with urllib.request.urlopen(req, timeout=25) as resp:
             data = json.loads(resp.read().decode("utf-8"))
+        if data.get("errors"):
+            messages = "; ".join(str(err.get("message") or err) for err in data.get("errors", [])[:3])
+            raise RuntimeError(f"Product Hunt GraphQL error: {messages}")
         rows = []
         for edge in data.get("data", {}).get("posts", {}).get("edges", []):
             n = edge.get("node", {})

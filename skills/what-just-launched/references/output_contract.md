@@ -10,7 +10,7 @@ The script emits UTF-8 JSON.
   "mode": "all",
   "market": "us",
   "days": 30,
-  "selected_sources": ["product_hunt", "appark", "hacker_news", "web"],
+  "selected_sources": ["product_hunt", "hacker_news", "web"],
   "time_range": {
     "since": "2026-06-07",
     "until": "2026-07-06"
@@ -157,8 +157,8 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
 
 ```text
 products = grouped product entities built from product_data
-product_data = app, product, repository, launch platform, directory, and web-search evidence
-community_feedback = community discussion, comments, videos, and social feedback evidence
+product_data = app, product, repository, launch platform, and directory evidence
+community_feedback = community discussion, comments, videos, social feedback, and web-search/news evidence
 results = backward-compatible mixed ranked list
 ```
 
@@ -180,19 +180,10 @@ Use `--filter-launch-date` for new-product discovery so products with known laun
 Use `--product-sources` and `--feedback-sources` to route the two pipelines separately:
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode all --product-sources product_hunt,appark,web --feedback-sources hacker_news
+python scripts/just-launched.py "new AI products" --mode all --product-sources product_hunt,github_trending --feedback-sources web,hacker_news
 ```
 
 `--sources` remains as a backward-compatible global override.
-
-AppPark detail enrichment:
-
-```text
---appark-detail-limit 10 = enrich up to 10 AppPark chart rows with app-detail
---appark-detail-limit 0 = disable app-detail requests
-```
-
-AppPark `app-detail` is fetched with `app_id`, `platform=1`, and `country`. In current testing, a browser-like `User-Agent` is the only required header; cookies and browser `sec-*` headers are unnecessary.
 
 ## Ranking
 

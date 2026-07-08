@@ -2,19 +2,17 @@
 
 ## Product Discovery Sources
 
-Use these eight sources in the first version:
+Use these product discovery sources:
 
 | Source | Use For | Access |
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` for GraphQL |
-| AppPark | App Store / Google Play style charts, app detail, categories | Public endpoints with browser User-Agent |
 | Hacker News | developer products, Show HN, technical launches | HN Algolia API |
 | GitHub Trending | open-source and developer-tool momentum | Public GitHub Trending page |
 | Apple RSS / iTunes Search | iOS app charts and metadata | Official Apple public APIs |
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search; upgrade later to Google Play scraper |
 | BetaList | early-stage startups and waitlists | Public pages, low request volume |
 | There's An AI For That | AI tool directories and task-specific tools | Public pages, low request volume |
-| Web Search | official posts, reviews, comparisons, launch lists, search evidence | Brave, Firecrawl, SerpApi, or Tavily |
 
 ## User Feedback Sources
 
@@ -30,6 +28,7 @@ Use these feedback sources:
 | X / Twitter | launch reactions, founder/user chatter, fast-moving sentiment | `XAI_API_KEY`, `XQUIK_API_KEY`, browser cookies, or manual cookies |
 | YouTube | reviews, tutorials, launch videos, comments | `YOUTUBE_API_KEY`; optional `yt-dlp` transcripts |
 | Hacker News | technical feedback and developer skepticism | HN Algolia API |
+| Web Search | official posts, reviews, comparisons, launch lists, news/search evidence | Brave, Firecrawl, SerpApi, or Tavily |
 
 ## Reddit Safety Rules
 
@@ -94,8 +93,8 @@ Keep product discovery data and community feedback collection separate.
 Use this shape:
 
 ```text
-sources/product_data/          app, product, repository, directory, and web-search adapters
-sources/community_feedback/    community discussion, comments, videos, and social feedback
+sources/product_data/          app, product, repository, and directory adapters
+sources/community_feedback/    community discussion, comments, videos, social feedback, and web-search adapters
 sources/registry.py            source id, method name, source type, mode membership
 common.py                      shared HTTP/date/item helpers
 engine.py                      orchestration only
@@ -104,8 +103,6 @@ engine.py                      orchestration only
 `product_data` sources answer "what exists or launched?".
 
 `community_feedback` sources answer "what are people saying about it?".
-
-AppPark uses `top-charts` for chart discovery and enriches a small number of rows with `app-detail`. The detail endpoint only needs a browser-like `User-Agent`; cookies, `sec-*` headers, cache headers, and `referer` are not required in current testing. Use `--appark-detail-limit 0` to disable detail enrichment.
 
 Some platforms can serve both purposes. For example, Hacker News can surface Show HN launches and also provide developer reactions. Put the adapter where its evidence is primarily interpreted, then register it for every mode it should participate in.
 
