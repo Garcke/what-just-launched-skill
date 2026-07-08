@@ -66,7 +66,7 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search |
 | BetaList | Early-stage startups and waitlists | Public pages, low-volume access |
 | AI directories | AI product directories and niche tools | Public pages, low-volume access |
-| Web Search | Official pages, reviews, comparisons, launch lists | Tavily / Brave / Exa / Serper / Google News RSS / Bing News RSS / DuckDuckGo |
+| Web Search | Official pages, reviews, comparisons, launch lists | SerpApi / Tavily / Exa / DuckDuckGo |
 
 ### Feedback Sources
 
@@ -384,7 +384,7 @@ Append config values:
 
 ```bash
 python scripts/just-launched.py --write-config TAVILY_API_KEY=your_key_here
-python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=tavily,google_news,bing_news,duckduckgo,brave,exa
+python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=serpapi,tavily,exa,duckduckgo
 ```
 
 Recommended configuration:
@@ -407,11 +407,10 @@ PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 YOUTUBE_API_KEY=
 
 # Web Search
-PRODUCT_SCOUT_WEB_PROVIDERS=tavily,google_news,bing_news,duckduckgo,brave,exa
+PRODUCT_SCOUT_WEB_PROVIDERS=serpapi,tavily,exa,duckduckgo
+SERPAPI_API_KEY=
 TAVILY_API_KEY=
-BRAVE_API_KEY=
 EXA_API_KEY=
-SERPER_API_KEY=
 ```
 
 ## Web Search Providers
@@ -419,16 +418,16 @@ SERPER_API_KEY=
 Supported providers:
 
 ```text
-brave,exa,serper,tavily,duckduckgo
+serpapi,exa,tavily,duckduckgo
 ```
 
 Suggested practical order:
 
 ```text
-tavily,duckduckgo,brave,exa
+serpapi,tavily,exa,duckduckgo
 ```
 
-Google News RSS, Bing News RSS, and DuckDuckGo require no key and are useful as low-volume fallbacks. Do not use them for high-concurrency scraping.
+DuckDuckGo requires no key and is useful as a low-volume fallback. Do not use it for high-concurrency scraping.
 
 ## Security Notes
 

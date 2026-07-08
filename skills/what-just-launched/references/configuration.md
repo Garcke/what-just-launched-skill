@@ -32,10 +32,9 @@ YOUTUBE_API_KEY=
 PRODUCT_SCOUT_YOUTUBE_COMMENTS=false
 
 # Web search
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,exa,serper,tavily,google_news,bing_news,duckduckgo
-BRAVE_API_KEY=
+PRODUCT_SCOUT_WEB_PROVIDERS=serpapi,exa,tavily,duckduckgo
+SERPAPI_API_KEY=
 EXA_API_KEY=
-SERPER_API_KEY=
 TAVILY_API_KEY=
 PRODUCT_SCOUT_DDG_REGION=
 PRODUCT_SCOUT_DDG_DELAY=1.0
@@ -89,25 +88,22 @@ Use this for local, consented browser-cookie adapters or an xAI-backed adapter w
 Default order:
 
 ```text
-brave,exa,serper,tavily,duckduckgo
+serpapi,exa,tavily,duckduckgo
 ```
 
 Provider behavior:
 
 | Provider | Key | Notes |
 |---|---|---|
-| Brave | `BRAVE_API_KEY` | Best default API provider when available. |
+| SerpApi | `SERPAPI_API_KEY` | Google-style search results API. |
 | Exa | `EXA_API_KEY` | Good for agentic web search and page snippets. |
-| Serper | `SERPER_API_KEY` | Google-style search results API. |
 | Tavily | `TAVILY_API_KEY` | Search API designed for AI workflows. |
-| Google News RSS | none | Free news RSS fallback. Use low request volume only. |
-| Bing News RSS | none | Free news RSS fallback. Use low request volume only. |
 | DuckDuckGo | none | Free HTML fallback. Use low request volume only. |
 
 Override the order:
 
 ```bash
-PRODUCT_SCOUT_WEB_PROVIDERS=google_news,bing_news,duckduckgo,brave,exa
+PRODUCT_SCOUT_WEB_PROVIDERS=serpapi,tavily,exa,duckduckgo
 ```
 
 DuckDuckGo settings:

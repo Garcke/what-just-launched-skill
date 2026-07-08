@@ -110,7 +110,7 @@ For X/Twitter, prefer server-safe keys (`XAI_API_KEY` or `XQUIK_API_KEY`) on ser
 
 For YouTube, use `YOUTUBE_API_KEY` for video discovery. Use `yt-dlp` only as an optional transcript helper, and treat throttling or bot gates as source degradation.
 
-For web search, prefer API providers when configured (`BRAVE_API_KEY`, `EXA_API_KEY`, `SERPER_API_KEY`, `TAVILY_API_KEY`). Google News RSS, Bing News RSS, and DuckDuckGo HTML search are available as free low-volume fallbacks; do not use them for high-concurrency or bulk scraping.
+For web search, prefer API providers when configured (`SERPAPI_API_KEY`, `EXA_API_KEY`, `TAVILY_API_KEY`). DuckDuckGo HTML search is available as a free low-volume fallback; do not use it for high-concurrency or bulk scraping.
 
 ## Output Brief
 

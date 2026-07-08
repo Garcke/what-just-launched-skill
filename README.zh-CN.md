@@ -68,7 +68,7 @@ skills/what-just-launched/scripts/just_launched/
 | Google Play / AppBrain | Android App 发现补充 | AppBrain 页面搜索 |
 | BetaList | 早期 startup / waitlist 产品 | 公共页面，低频访问 |
 | AI 工具目录 | AI 产品目录和垂直工具 | 公共页面，低频访问 |
-| Web Search | 官网、评测、榜单、对比文章 | Tavily / Brave / Exa / Serper / Google News RSS / Bing News RSS / DuckDuckGo |
+| Web Search | 官网、评测、榜单、对比文章 | SerpApi / Tavily / Exa / DuckDuckGo |
 
 ### 用户反馈源
 
@@ -386,7 +386,7 @@ product_launch_date  产品自身的上线/首次发布日期
 
 ```bash
 python scripts/just-launched.py --write-config TAVILY_API_KEY=your_key_here
-python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=tavily,google_news,bing_news,duckduckgo,brave,exa
+python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=serpapi,tavily,exa,duckduckgo
 ```
 
 推荐配置：
@@ -409,11 +409,10 @@ PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 YOUTUBE_API_KEY=
 
 # Web Search
-PRODUCT_SCOUT_WEB_PROVIDERS=tavily,google_news,bing_news,duckduckgo,brave,exa
+PRODUCT_SCOUT_WEB_PROVIDERS=serpapi,tavily,exa,duckduckgo
+SERPAPI_API_KEY=
 TAVILY_API_KEY=
-BRAVE_API_KEY=
 EXA_API_KEY=
-SERPER_API_KEY=
 ```
 
 ## Web Search Provider
@@ -421,16 +420,16 @@ SERPER_API_KEY=
 默认支持：
 
 ```text
-brave,exa,serper,tavily,duckduckgo
+serpapi,exa,tavily,duckduckgo
 ```
 
 推荐实际使用：
 
 ```text
-tavily,duckduckgo,brave,exa
+serpapi,tavily,exa,duckduckgo
 ```
 
-Google News RSS、Bing News RSS 和 DuckDuckGo 不需要 key，但只适合作为低频 fallback，不建议批量高并发使用。
+DuckDuckGo 不需要 key，但只适合作为低频 fallback，不建议批量高并发使用。
 
 ## 安全说明
 
