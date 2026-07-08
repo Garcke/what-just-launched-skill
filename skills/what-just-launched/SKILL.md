@@ -78,26 +78,26 @@ For product discovery, use:
 ```text
 Product Hunt, AppPark, Hacker News, GitHub Trending,
 Apple RSS / iTunes Search, Google Play / AppBrain,
-BetaList, There's An AI For That
+BetaList, There's An AI For That, Web Search
 ```
 
 For user feedback, use:
 
 ```text
 Reddit, Reddit Public JSON, Hacker News, GitHub Issues,
-Stack Exchange, Lobsters, X / Twitter, YouTube, Web Search
+Stack Exchange, Lobsters, X / Twitter, YouTube
 ```
 
 Use `--sources` only when the user names specific sources or when a narrow source set is clearly better:
 
 ```bash
-python scripts/just-launched.py "Cursor" --mode feedback --sources reddit,hacker_news,web --days 30
+python scripts/just-launched.py "Cursor" --mode feedback --sources reddit,hacker_news,github_issues --days 30
 ```
 
 Prefer split source routing when the task needs both product discovery and feedback:
 
 ```bash
-python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,appark,github_trending --feedback-sources reddit,hacker_news,web --days 7
+python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,appark,github_trending,web --feedback-sources reddit,hacker_news --days 7
 ```
 
 ## Safety And Reliability

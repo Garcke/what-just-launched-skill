@@ -38,15 +38,15 @@ skills/what-just-launched/scripts/just_launched/
 ├── ranking.py          # Deduplication, normalized scoring, weighted RRF fusion
 ├── sources/
 │   ├── registry.py     # source ids, mode groups, method mapping
-│   ├── product_data/   # app, product, repository, and directory sources
+│   ├── product_data/   # app, product, repository, directory, and web search sources
 │   │   ├── product_hunt.py
 │   │   ├── app_stores.py
 │   │   ├── github.py
-│   │   └── directories.py
-│   └── community_feedback/  # community discussion, comments, and web feedback
+│   │   ├── directories.py
+│   │   └── web_search.py
+│   └── community_feedback/  # community discussion, comments, and social feedback
 │       ├── hacker_news.py
-│       ├── feedback.py
-│       └── web_search.py
+│       └── feedback.py
 └── __init__.py
 ```
 
@@ -66,6 +66,7 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search |
 | BetaList | Early-stage startups and waitlists | Public pages, low-volume access |
 | AI directories | AI product directories and niche tools | Public pages, low-volume access |
+| Web Search | Official pages, reviews, comparisons, launch lists | Tavily / Brave / Exa / Serper / Google News RSS / Bing News RSS / DuckDuckGo |
 
 ### Feedback Sources
 
@@ -79,7 +80,6 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 | X / Twitter | Launch reactions and fast-moving sentiment | `XQUIK_API_KEY` or external adapter |
 | YouTube | Reviews, tutorials, and comments | `YOUTUBE_API_KEY` |
 | Hacker News | Developer feedback and skepticism | HN Algolia API |
-| Web Search | Official pages, reviews, comparisons, launch lists | Tavily / Brave / Exa / Serper / Google News RSS / Bing News RSS / DuckDuckGo |
 
 ## Install Into Codex
 
@@ -313,7 +313,7 @@ python scripts/just-launched.py "new AI products" --mode discovery --since 2026-
 Research user feedback for a product:
 
 ```bash
-python scripts/just-launched.py "Cursor AI reviews" --mode feedback --days 30 --sources web,hacker_news
+python scripts/just-launched.py "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,github_issues
 ```
 
 Check source availability:
@@ -342,9 +342,9 @@ python scripts/just-launched.py --diagnose
 | `--filter-launch-date` | Keep only products whose known launch date is inside the time window |
 | `--market us` | Market/country code, such as `us`, `jp`, or `cn` |
 | `--appark-detail-limit 10` | Maximum AppPark chart rows to enrich with app-detail; use `0` to disable |
-| `--sources web,hacker_news` | Restrict source set |
-| `--product-sources product_hunt,appark` | Restrict product discovery sources |
-| `--feedback-sources reddit,hacker_news,web` | Restrict community feedback sources |
+| `--sources appark,hacker_news` | Restrict source set |
+| `--product-sources product_hunt,appark,web` | Restrict product discovery sources |
+| `--feedback-sources reddit,hacker_news` | Restrict community feedback sources |
 | `--limit 20` | Maximum result count |
 | `--include-raw` | Include raw source payloads for debugging |
 
@@ -483,7 +483,7 @@ The script emits JSON:
 
 Use `ranking.final_score` for ordering. `score` is the source-local raw score and is not comparable across platforms.
 
-`products` is the product entity list built from `product_data`, and is the preferred product discovery view. Products are ordered by `product_score`; `score_breakdown` exposes the product-level scoring components, and `rank_reasons` provides display-ready explanations for why a product ranked well. `products[].community_feedback` contains feedback evidence matched to that product, and `products[].feedback_summary` summarizes praise, complaints, repeated needs, willingness-to-pay signals, and migration/alternative signals for that product. Top-level `community_feedback_summary` summarizes the full feedback pool. `product_data` contains product/app/repository/launch-platform/directory evidence. Top-level `community_feedback` contains community discussions, comments, videos, and web feedback that may not match a specific product. `results` remains as a backward-compatible mixed ranked list.
+`products` is the product entity list built from `product_data`, and is the preferred product discovery view. Products are ordered by `product_score`; `score_breakdown` exposes the product-level scoring components, and `rank_reasons` provides display-ready explanations for why a product ranked well. `products[].community_feedback` contains feedback evidence matched to that product, and `products[].feedback_summary` summarizes praise, complaints, repeated needs, willingness-to-pay signals, and migration/alternative signals for that product. Top-level `community_feedback_summary` summarizes the full feedback pool. `product_data` contains product/app/repository/launch-platform/directory/web-search evidence. Top-level `community_feedback` contains community discussions, comments, videos, and social feedback that may not match a specific product. `results` remains as a backward-compatible mixed ranked list.
 
 Date fields are separate: `launch_date` is the true product launch or creation date when known, `first_seen_at` is when the skill first saw the product in a chart/source, `evidence_published_at` is the evidence/article/post/chart date, and `date_confidence` explains the date basis. AppPark and GitHub Trending often prove chart or trend date, not a fresh product launch.
 

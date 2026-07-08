@@ -22,6 +22,7 @@ PRODUCT_DATA_SPECS = {
     "google_play": SourceSpec("google_play", "google_play", ("discovery", "all"), "product_data"),
     "betalist": SourceSpec("betalist", "betalist", ("discovery", "all"), "product_data"),
     "ai_directory": SourceSpec("ai_directory", "ai_directory", ("discovery", "all"), "product_data"),
+    "web": SourceSpec("web", "web_search", ("discovery", "all"), "product_data"),
 }
 
 COMMUNITY_FEEDBACK_SPECS = {
@@ -33,7 +34,6 @@ COMMUNITY_FEEDBACK_SPECS = {
     "stackexchange": SourceSpec("stackexchange", "stackexchange", ("feedback", "all"), "community_feedback"),
     "x": SourceSpec("x", "x_twitter", ("feedback", "all"), "community_feedback"),
     "youtube": SourceSpec("youtube", "youtube", ("feedback", "all"), "community_feedback"),
-    "web": SourceSpec("web", "web_search", ("feedback", "all"), "community_feedback"),
 }
 
 SOURCE_SPECS = {**PRODUCT_DATA_SPECS, **COMMUNITY_FEEDBACK_SPECS}
@@ -48,6 +48,14 @@ EMITTED_SOURCE_TYPES = {
     "appbrain": "product_data",
     "betalist": "product_data",
     "ai_directory": "product_data",
+    "brave_search": "product_data",
+    "exa_search": "product_data",
+    "serper_search": "product_data",
+    "tavily_search": "product_data",
+    "google_news": "product_data",
+    "bing_news": "product_data",
+    "duckduckgo": "product_data",
+    "web_search": "product_data",
     "hacker_news": "community_feedback",
     "reddit": "community_feedback",
     "reddit_public": "community_feedback",
@@ -57,14 +65,6 @@ EMITTED_SOURCE_TYPES = {
     "xquik": "community_feedback",
     "x_external": "community_feedback",
     "youtube": "community_feedback",
-    "brave_search": "community_feedback",
-    "exa_search": "community_feedback",
-    "serper_search": "community_feedback",
-    "tavily_search": "community_feedback",
-    "google_news": "community_feedback",
-    "bing_news": "community_feedback",
-    "duckduckgo": "community_feedback",
-    "web_search": "community_feedback",
 }
 
 

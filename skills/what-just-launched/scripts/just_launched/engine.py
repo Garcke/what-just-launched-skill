@@ -24,11 +24,11 @@ from .feedback_summary import summarize_feedback
 from .ranking import RRF_K, RankingMixin
 from .sources.community_feedback.feedback import FeedbackSources
 from .sources.community_feedback.hacker_news import HackerNewsSource
-from .sources.community_feedback.web_search import WebSearchSource
 from .sources.product_data.app_stores import AppStoreSources
 from .sources.product_data.directories import DirectorySources
 from .sources.product_data.github import GitHubSources
 from .sources.product_data.product_hunt import ProductHuntSource
+from .sources.product_data.web_search import WebSearchSource
 from .sources.registry import selected_sources, source_runner, source_type
 
 class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsSource, GitHubSources, DirectorySources, FeedbackSources, WebSearchSource):

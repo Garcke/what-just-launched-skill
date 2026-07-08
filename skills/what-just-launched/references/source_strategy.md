@@ -14,6 +14,7 @@ Use these eight sources in the first version:
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search; upgrade later to Google Play scraper |
 | BetaList | early-stage startups and waitlists | Public pages, low request volume |
 | There's An AI For That | AI tool directories and task-specific tools | Public pages, low request volume |
+| Web Search | official posts, reviews, comparisons, launch lists, news evidence | Brave, Exa, Serper, Tavily, Google News RSS, Bing News RSS, or DuckDuckGo low-volume fallback |
 
 ## User Feedback Sources
 
@@ -29,7 +30,6 @@ Use these feedback sources:
 | X / Twitter | launch reactions, founder/user chatter, fast-moving sentiment | `XAI_API_KEY`, `XQUIK_API_KEY`, browser cookies, or manual cookies |
 | YouTube | reviews, tutorials, launch videos, comments | `YOUTUBE_API_KEY`; optional `yt-dlp` transcripts |
 | Hacker News | technical feedback and developer skepticism | HN Algolia API |
-| Web Search | official posts, reviews, comparisons, fallback evidence | Brave, Exa, Serper, Tavily, Google News RSS, Bing News RSS, or DuckDuckGo low-volume fallback |
 
 ## Reddit Safety Rules
 
@@ -94,8 +94,8 @@ Keep product discovery data and community feedback collection separate.
 Use this shape:
 
 ```text
-sources/product_data/          app, product, repository, and directory adapters
-sources/community_feedback/    community discussion, comments, videos, web feedback
+sources/product_data/          app, product, repository, directory, and web-search adapters
+sources/community_feedback/    community discussion, comments, videos, and social feedback
 sources/registry.py            source id, method name, source type, mode membership
 common.py                      shared HTTP/date/item helpers
 engine.py                      orchestration only

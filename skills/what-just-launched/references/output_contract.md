@@ -157,8 +157,8 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
 
 ```text
 products = grouped product entities built from product_data
-product_data = app, product, repository, launch platform, and directory evidence
-community_feedback = community discussion, comments, videos, and web feedback evidence
+product_data = app, product, repository, launch platform, directory, and web-search evidence
+community_feedback = community discussion, comments, videos, and social feedback evidence
 results = backward-compatible mixed ranked list
 ```
 
@@ -180,7 +180,7 @@ Use `--filter-launch-date` for new-product discovery so products with known laun
 Use `--product-sources` and `--feedback-sources` to route the two pipelines separately:
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode all --product-sources product_hunt,appark --feedback-sources hacker_news,web
+python scripts/just-launched.py "new AI products" --mode all --product-sources product_hunt,appark,web --feedback-sources hacker_news
 ```
 
 `--sources` remains as a backward-compatible global override.
