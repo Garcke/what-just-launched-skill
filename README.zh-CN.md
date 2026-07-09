@@ -62,11 +62,13 @@ skills/what-just-launched/scripts/just_launched/
 |---|---|---|
 | Product Hunt | SaaS、AI 工具、独立产品、发布榜 | 需要 `PRODUCT_HUNT_TOKEN` |
 | Hacker News | Show HN、Launch HN、开发者产品 | HN Algolia API |
-| GitHub Trending | 开源项目、开发者工具、新仓库 | GitHub Trending 页面 |
+| GitHub Trending | 开源项目、开发者工具、新仓库 | GitHub Trending 页面；可选 Firecrawl 页面解析 |
 | Apple RSS / iTunes Search | iOS App 榜单和元数据 | Apple 公共 API |
 | Google Play / AppBrain | Android App 发现补充 | AppBrain 页面搜索 |
-| BetaList | 早期 startup / waitlist 产品 | 公共页面，低频访问 |
+| BetaList | 早期 startup / waitlist 产品 | 公共页面；可选 Firecrawl 页面解析 |
 | Microlaunch | 独立产品、SaaS、AI 工具、开发者产品 | 公共页面；可选 Firecrawl 页面解析 |
+| Uneed | 独立产品、SaaS、AI 工具、发布页 | 公共 daily ladder API；可选 Firecrawl 回退 |
+| Fazier | 每日产品发布、独立产品 | 公共页面；可选 Firecrawl 页面解析 |
 
 ### 用户反馈源
 
@@ -415,7 +417,7 @@ BRAVE_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
 
-# 可选页面解析辅助，用于 Microlaunch 这类产品源
+# 可选页面解析辅助，用于页面型产品源
 FIRECRAWL_API_KEY=
 ```
 

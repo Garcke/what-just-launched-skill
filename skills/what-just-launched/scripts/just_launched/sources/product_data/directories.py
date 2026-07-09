@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime as dt
 import html
 import json
 import os
@@ -9,8 +10,10 @@ from typing import Any
 
 from ...common import (
     BROWSER_UA,
+    DEFAULT_UA,
     date_only,
-    firecrawl_scrape,
+    get_json,
+    get_page_text,
     get_text,
     item,
 )
@@ -20,17 +23,24 @@ class DirectorySources:
         url = "https://betalist.com/"
         if self.query:
             url = f"https://betalist.com/search?q={urllib.parse.quote_plus(self.query)}"
-        text = get_text(url, headers={"User-Agent": BROWSER_UA})
+        text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_BETALIST_USE_FIRECRAWL")
         rows = []
         for m in re.finditer(r'<a[^>]+href="(/startups/[^"]+)"[^>]*>(.*?)</a>', text, flags=re.S):
             title = html.unescape(re.sub("<[^>]+>", "", m.group(2))).strip()
             if title and len(title) < 120:
-                rows.append(item("betalist", title, f"https://betalist.com{m.group(1)}", kind="startup", score=20))
+                rows.append(item(
+                    "betalist",
+                    title,
+                    f"https://betalist.com{m.group(1)}",
+                    kind="startup",
+                    score=20,
+                    signals={"parser": parser},
+                ))
         return rows[: self.args.limit]
 
     def microlaunch(self) -> list[dict[str, Any]]:
         url = "https://microlaunch.net/"
-        text, parser = self._microlaunch_page_text(url)
+        text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_MICROLAUNCH_USE_FIRECRAWL")
         products = self._microlaunch_products(text)
         if not products and parser == "firecrawl_scrape":
             text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
@@ -74,18 +84,6 @@ class DirectorySources:
                 break
         return rows
 
-    def _microlaunch_page_text(self, url: str) -> tuple[str, str]:
-        if os.getenv("FIRECRAWL_API_KEY") and os.getenv("PRODUCT_SCOUT_MICROLAUNCH_USE_FIRECRAWL", "true").lower() not in {"0", "false", "no"}:
-            try:
-                data = firecrawl_scrape(url, formats=["html", "markdown"], only_main_content=False)
-                body = data.get("data", {}) if isinstance(data, dict) else {}
-                text = "\n".join(str(body.get(key) or "") for key in ("html", "markdown") if body.get(key))
-                if text:
-                    return text, "firecrawl_scrape"
-            except Exception:
-                pass
-        return get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30), "html"
-
     def _microlaunch_products(self, text: str) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         seen: set[str] = set()
@@ -115,4 +113,185 @@ class DirectorySources:
             str(product.get(key) or "")
             for key in ("codename", "problem_label", "solution_label", "market", "product_type", "offer_type", "stage")
         ).lower()
+        return any(term in haystack for term in query_terms)
+
+    def fazier(self) -> list[dict[str, Any]]:
+        url = "https://fazier.com/"
+        text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_FAZIER_USE_FIRECRAWL")
+        products = self._fazier_products(text)
+        if not products and parser == "firecrawl_scrape":
+            text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
+            parser = "html"
+            products = self._fazier_products(text)
+        rows = []
+        for idx, product in enumerate(products, 1):
+            title = str(product.get("name") or "").strip()
+            slug = str(product.get("slug") or "").strip()
+            launch_date = str(product.get("launch_date") or "").strip()
+            if not title or not slug:
+                continue
+            if self.query and not self._directory_matches_query(product, ("name", "tagline", "category_type", "pricing_type")):
+                continue
+            rows.append(item(
+                "fazier",
+                title,
+                f"https://fazier.com/launches/{urllib.parse.quote(slug)}",
+                kind="product",
+                summary=str(product.get("tagline") or ""),
+                score=float(product.get("upvotes_count") or max(1, 40 - idx)),
+                published_at=launch_date,
+                product_launch_date=date_only(launch_date),
+                launch_date=date_only(launch_date),
+                evidence_published_at=launch_date,
+                date_confidence="known_launch_date" if launch_date else "unknown",
+                signals={
+                    "id": product.get("id"),
+                    "slug": slug,
+                    "upvotes": product.get("upvotes_count"),
+                    "comments": product.get("comments_count"),
+                    "pricing_type": product.get("pricing_type", ""),
+                    "category_type": product.get("category_type", ""),
+                    "created_at": product.get("created_at", ""),
+                    "parser": parser,
+                },
+                raw=product,
+            ))
+            if len(rows) >= self.args.limit:
+                break
+        return rows
+
+    def _fazier_products(self, text: str) -> list[dict[str, Any]]:
+        match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', text, flags=re.S)
+        if not match:
+            return []
+        try:
+            data = json.loads(html.unescape(match.group(1)))
+        except json.JSONDecodeError:
+            return []
+        groups = data.get("props", {}).get("pageProps", {}).get("posts", [])
+        rows: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for group in groups:
+            for product in group.get("posts", []) if isinstance(group, dict) else []:
+                slug = str(product.get("slug") or "")
+                if slug and slug not in seen:
+                    seen.add(slug)
+                    rows.append(product)
+        return sorted(rows, key=lambda row: str(row.get("launch_date") or row.get("created_at") or ""), reverse=True)
+
+    def uneed(self) -> list[dict[str, Any]]:
+        rows = self._uneed_api_rows()
+        if rows:
+            return rows[: self.args.limit]
+        url = "https://www.uneed.best/"
+        text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_UNEED_USE_FIRECRAWL")
+        rows = self._uneed_rows(text, parser)
+        if not rows and parser == "firecrawl_scrape":
+            text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
+            rows = self._uneed_rows(text, "html")
+        return rows[: self.args.limit]
+
+    def _uneed_api_rows(self) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        current = self.end_date
+        while current >= self.start_date and len(rows) < self.args.limit:
+            day = current.isoformat()
+            url = "https://www.uneed.best/api/tools/get-ladder?" + urllib.parse.urlencode({
+                "type": "daily",
+                "date": day,
+                "year": day,
+            })
+            data = self._uneed_get_ladder(url)
+            if not isinstance(data, list):
+                break
+            for idx, product in enumerate(data, 1):
+                slug = str(product.get("slug") or "")
+                title = str(product.get("name") or "").strip()
+                if not slug or not title or slug in seen:
+                    continue
+                if self.query and not self._directory_matches_query(product, ("name", "description")):
+                    continue
+                votes = product.get("votes") or []
+                vote_score = sum(float(vote.get("value") or 1) for vote in votes if isinstance(vote, dict))
+                review_count = len(product.get("reviews") or [])
+                seen.add(slug)
+                rows.append(item(
+                    "uneed",
+                    title,
+                    f"https://www.uneed.best/tool/{urllib.parse.quote(slug)}",
+                    kind="product",
+                    summary=str(product.get("description") or ""),
+                    score=vote_score or float(max(1, 50 - idx)),
+                    published_at=day,
+                    product_launch_date=day,
+                    launch_date=day,
+                    evidence_published_at=day,
+                    date_confidence="known_launch_date",
+                    signals={
+                        "id": product.get("id"),
+                        "slug": slug,
+                        "rank": idx,
+                        "votes": len(votes),
+                        "vote_score": vote_score,
+                        "reviews": review_count,
+                        "rate": product.get("rate"),
+                        "premium": product.get("premium", False),
+                        "parser": "api",
+                    },
+                    raw=product,
+                ))
+                if len(rows) >= self.args.limit:
+                    break
+            current = current - dt.timedelta(days=1)
+        return rows
+
+    def _uneed_get_ladder(self, url: str) -> Any:
+        last_error: Exception | None = None
+        for _ in range(2):
+            try:
+                return get_json(url, headers={"Accept": "application/json", "User-Agent": DEFAULT_UA}, timeout=30)
+            except Exception as exc:
+                last_error = exc
+        if last_error:
+            return []
+        return []
+
+    def _uneed_rows(self, text: str, parser: str) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for href, label in re.findall(r'href="(/tool/[^"]+)"[^>]*>(.*?)</a>', text, flags=re.S):
+            title = html.unescape(re.sub("<[^>]+>", " ", label))
+            title = re.sub(r"\s+", " ", title).strip()
+            slug = href.rstrip("/").split("/")[-1]
+            if not title or len(title) > 120 or slug in seen:
+                continue
+            if self.query and not self._query_matches_text(title):
+                continue
+            seen.add(slug)
+            rows.append(item(
+                "uneed",
+                title,
+                f"https://www.uneed.best{href}",
+                kind="product",
+                summary="",
+                score=float(max(1, 30 - len(rows))),
+                evidence_published_at=self.today,
+                date_confidence="evidence_date_only",
+                signals={"slug": slug, "parser": parser, "date_basis": "page_evidence"},
+            ))
+        return rows
+
+    def _directory_matches_query(self, product: dict[str, Any], keys: tuple[str, ...]) -> bool:
+        return self._query_matches_text(" ".join(str(product.get(key) or "") for key in keys))
+
+    def _query_matches_text(self, text: str) -> bool:
+        query_terms = [
+            term
+            for term in re.findall(r"[a-z0-9]+", self.query.lower())
+            if len(term) > 2 and term not in {"new", "product", "products", "tool", "tools", "app", "apps"}
+        ]
+        if not query_terms:
+            return True
+        haystack = text.lower()
         return any(term in haystack for term in query_terms)

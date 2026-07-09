@@ -165,6 +165,30 @@ def firecrawl_scrape(
     )
 
 
+def get_page_text(
+    url: str,
+    *,
+    env_flag: str = "",
+    timeout: int = 30,
+) -> tuple[str, str]:
+    if os.getenv("FIRECRAWL_API_KEY") and _enabled(env_flag):
+        try:
+            data = firecrawl_scrape(url, formats=["html", "markdown"], only_main_content=False)
+            body = data.get("data", {}) if isinstance(data, dict) else {}
+            text = "\n".join(str(body.get(key) or "") for key in ("html", "markdown") if body.get(key))
+            if text:
+                return text, "firecrawl_scrape"
+        except Exception:
+            pass
+    return get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=timeout), "html"
+
+
+def _enabled(env_flag: str) -> bool:
+    if not env_flag:
+        return True
+    return os.getenv(env_flag, "true").lower() not in {"0", "false", "no"}
+
+
 def get_text(url: str, headers: dict[str, str] | None = None, timeout: int = 20) -> str:
     req = urllib.request.Request(url, headers=headers or {}, method="GET")
     with urllib.request.urlopen(req, timeout=timeout) as resp:

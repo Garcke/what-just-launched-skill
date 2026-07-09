@@ -60,11 +60,13 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` |
 | Hacker News | Show HN, Launch HN, developer products | HN Algolia API |
-| GitHub Trending | Open-source projects and developer tools | GitHub Trending page |
+| GitHub Trending | Open-source projects and developer tools | GitHub Trending page; optional Firecrawl page parsing |
 | Apple RSS / iTunes Search | iOS app charts and app metadata | Apple public APIs |
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search |
-| BetaList | Early-stage startups and waitlists | Public pages, low-volume access |
+| BetaList | Early-stage startups and waitlists | Public pages; optional Firecrawl page parsing |
 | Microlaunch | Indie products, SaaS, AI tools, developer products | Public pages; optional Firecrawl page parsing |
+| Uneed | Indie products, SaaS, AI tools, launch pages | Public daily ladder API; optional Firecrawl fallback |
+| Fazier | Daily product launches and indie products | Public pages; optional Firecrawl page parsing |
 
 ### Feedback Sources
 
@@ -413,7 +415,7 @@ BRAVE_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
 
-# Optional page parsing helper for product sources such as Microlaunch
+# Optional page parsing helper for page-based product sources
 FIRECRAWL_API_KEY=
 ```
 

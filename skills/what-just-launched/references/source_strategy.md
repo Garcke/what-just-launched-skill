@@ -8,11 +8,13 @@ Use these product discovery sources:
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` for GraphQL |
 | Hacker News | developer products, Show HN, technical launches | HN Algolia API |
-| GitHub Trending | open-source and developer-tool momentum | Public GitHub Trending page |
+| GitHub Trending | open-source and developer-tool momentum | Public GitHub Trending page; optional Firecrawl page parsing |
 | Apple RSS / iTunes Search | iOS app charts and metadata | Official Apple public APIs |
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search; upgrade later to Google Play scraper |
-| BetaList | early-stage startups and waitlists | Public pages, low request volume |
+| BetaList | early-stage startups and waitlists | Public pages; optional Firecrawl page parsing |
 | Microlaunch | indie products, SaaS, AI tools, developer products | Public pages; Firecrawl scrape can improve page parsing |
+| Uneed | indie products, SaaS, AI tools, launch pages | Public daily ladder API; optional Firecrawl fallback |
+| Fazier | daily product launches and indie products | Public pages; optional Firecrawl page parsing |
 
 ## User Feedback Sources
 

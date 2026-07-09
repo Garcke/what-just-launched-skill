@@ -40,7 +40,8 @@ BRAVE_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
 
-# Optional page parsing helper for product sources such as Microlaunch
+# Optional page parsing helper for page-based product sources.
+# Disable per source with PRODUCT_SCOUT_<SOURCE>_USE_FIRECRAWL=false.
 FIRECRAWL_API_KEY=
 ```
 

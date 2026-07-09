@@ -21,6 +21,8 @@ PRODUCT_DATA_SPECS = {
     "google_play": SourceSpec("google_play", "google_play", ("discovery", "all"), "product_data"),
     "betalist": SourceSpec("betalist", "betalist", ("discovery", "all"), "product_data"),
     "microlaunch": SourceSpec("microlaunch", "microlaunch", ("discovery", "all"), "product_data"),
+    "uneed": SourceSpec("uneed", "uneed", ("discovery", "all"), "product_data"),
+    "fazier": SourceSpec("fazier", "fazier", ("discovery", "all"), "product_data"),
 }
 
 COMMUNITY_FEEDBACK_SPECS = {
@@ -45,6 +47,8 @@ EMITTED_SOURCE_TYPES = {
     "appbrain": "product_data",
     "betalist": "product_data",
     "microlaunch": "product_data",
+    "uneed": "product_data",
+    "fazier": "product_data",
     "brave_search": "community_feedback",
     "serpapi_search": "community_feedback",
     "tavily_search": "community_feedback",
