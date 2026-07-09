@@ -35,11 +35,13 @@ YOUTUBE_API_KEY=
 PRODUCT_SCOUT_YOUTUBE_COMMENTS=false
 
 # Web search
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,serpapi,tavily
 BRAVE_API_KEY=
-FIRECRAWL_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
+
+# Optional page parsing helper for product sources such as Microlaunch
+FIRECRAWL_API_KEY=
 ```
 
 ## X Adapter Command Contract
@@ -90,7 +92,7 @@ Use this for local, consented browser-cookie adapters or an xAI-backed adapter w
 Default order:
 
 ```text
-brave,firecrawl,serpapi,tavily
+brave,serpapi,tavily
 ```
 
 Provider behavior:
@@ -98,12 +100,11 @@ Provider behavior:
 | Provider | Key | Notes |
 |---|---|---|
 | Brave | `BRAVE_API_KEY` or `BRAVE_SEARCH_API_KEY` | Independent web index via Brave Search API. |
-| Firecrawl | `FIRECRAWL_API_KEY` | Live web search API that can also scrape result content. |
 | SerpApi | `SERPAPI_API_KEY` | Google-style search results API. |
 | Tavily | `TAVILY_API_KEY` | Search API designed for AI workflows. |
 
 Override the order:
 
 ```bash
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,serpapi,tavily
 ```

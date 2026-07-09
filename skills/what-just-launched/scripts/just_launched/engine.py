@@ -51,6 +51,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             status("apple_rss_itunes", "available", "uses Apple RSS and iTunes Search APIs"),
             status("google_play_appbrain", "available", "uses AppBrain page search as a lightweight Android discovery fallback"),
             status("betalist", "available", "scrapes public BetaList pages at low request volume"),
+            status("microlaunch", "available", "scrapes Microlaunch product pages; uses Firecrawl scrape when configured"),
             status("reddit", "available" if self._has_reddit_oauth() else "missing_config", "use REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT; public fallback is disabled by default"),
             status("reddit_public", "available", "explicit opt-in source id; uses low-rate public Reddit JSON without OAuth"),
             status("lobsters", "available", "explicit opt-in source id; scrapes public Lobsters search pages at low request volume"),
@@ -58,7 +59,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             status("stackexchange", "available", "uses public Stack Exchange advanced search API"),
             status("x_twitter", "available" if self._has_x_config() else "missing_config", "set XQUIK_API_KEY, XAI_API_KEY, PRODUCT_SCOUT_X_ADAPTER_COMMAND, FROM_BROWSER=auto, or AUTH_TOKEN+CT0"),
             status("youtube", "available" if os.getenv("YOUTUBE_API_KEY") else "missing_config", "set YOUTUBE_API_KEY; yt-dlp is optional for transcripts"),
-            status("web_search", "available", "community/news source; uses PRODUCT_SCOUT_WEB_PROVIDERS; supports Brave, Firecrawl, SerpApi, Tavily"),
+            status("web_search", "available", "community/news source; uses PRODUCT_SCOUT_WEB_PROVIDERS; supports Brave, SerpApi, Tavily"),
         ]
         return checks
 
@@ -84,7 +85,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
                 "FIRECRAWL_API_KEY": bool(os.getenv("FIRECRAWL_API_KEY")),
                 "SERPAPI_API_KEY": bool(os.getenv("SERPAPI_API_KEY")),
                 "TAVILY_API_KEY": bool(os.getenv("TAVILY_API_KEY")),
-                "PRODUCT_SCOUT_WEB_PROVIDERS": os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,firecrawl,serpapi,tavily"),
+                "PRODUCT_SCOUT_WEB_PROVIDERS": os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,serpapi,tavily"),
                 "PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON": os.getenv("PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON", ""),
                 "PRODUCT_SCOUT_STACKEXCHANGE_SITE": os.getenv("PRODUCT_SCOUT_STACKEXCHANGE_SITE", "stackoverflow"),
             },

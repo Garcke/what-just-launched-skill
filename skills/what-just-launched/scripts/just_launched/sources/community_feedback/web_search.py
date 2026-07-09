@@ -15,7 +15,7 @@ class WebSearchSource:
     def web_search(self) -> list[dict[str, Any]]:
         providers = [
             p.strip().lower()
-            for p in os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,firecrawl,serpapi,tavily").split(",")
+            for p in os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,serpapi,tavily").split(",")
             if p.strip()
         ]
         errors: list[str] = []
@@ -24,8 +24,6 @@ class WebSearchSource:
             try:
                 if provider == "brave" and self._brave_api_key():
                     rows = self._brave_search()
-                elif provider == "firecrawl" and os.getenv("FIRECRAWL_API_KEY"):
-                    rows = self._firecrawl_search()
                 elif provider in ("serpapi", "serpapi_google") and os.getenv("SERPAPI_API_KEY"):
                     rows = self._serpapi_search()
                 elif provider == "tavily" and os.getenv("TAVILY_API_KEY"):
@@ -85,42 +83,6 @@ class WebSearchSource:
                     "provider": "brave",
                     "age": r.get("age", ""),
                     "freshness": self._brave_freshness(),
-                },
-                raw=r,
-            ))
-        return rows
-
-    def _firecrawl_search(self) -> list[dict[str, Any]]:
-        data = post_json(
-            "https://api.firecrawl.dev/v2/search",
-            {
-                "query": self.query,
-                "limit": min(self.args.limit, 20),
-                "sources": ["web"],
-                "country": self.market.upper(),
-                "tbs": self._time_filter(),
-                "timeout": 60000,
-            },
-            headers={
-                "Authorization": f"Bearer {os.environ['FIRECRAWL_API_KEY']}",
-                "User-Agent": DEFAULT_UA,
-            },
-            timeout=70,
-        )
-        rows = []
-        for idx, r in enumerate(data.get("data", {}).get("web", []), 1):
-            summary = r.get("description") or r.get("markdown", "")[:500]
-            rows.append(item(
-                "firecrawl_search",
-                r.get("title", ""),
-                r.get("url", ""),
-                kind="web_result",
-                summary=summary,
-                score=max(1, 30 - idx),
-                signals={
-                    "position": r.get("position") or idx,
-                    "provider": "firecrawl",
-                    "category": r.get("category", ""),
                 },
                 raw=r,
             ))

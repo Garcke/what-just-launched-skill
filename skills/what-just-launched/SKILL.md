@@ -78,7 +78,7 @@ For product discovery, use:
 ```text
 Product Hunt, Hacker News, GitHub Trending,
 Apple RSS / iTunes Search, Google Play / AppBrain,
-BetaList
+BetaList, Microlaunch
 ```
 
 For user feedback, use:
@@ -110,7 +110,7 @@ For X/Twitter, prefer server-safe keys (`XAI_API_KEY` or `XQUIK_API_KEY`) on ser
 
 For YouTube, use `YOUTUBE_API_KEY` for video discovery. Use `yt-dlp` only as an optional transcript helper, and treat throttling or bot gates as source degradation.
 
-For web search, use configured API providers (`BRAVE_API_KEY` or `BRAVE_SEARCH_API_KEY`, `FIRECRAWL_API_KEY`, `SERPAPI_API_KEY`, `TAVILY_API_KEY`).
+For web search, use configured API providers (`BRAVE_API_KEY` or `BRAVE_SEARCH_API_KEY`, `SERPAPI_API_KEY`, `TAVILY_API_KEY`). Use `FIRECRAWL_API_KEY` as an optional webpage parsing helper for product sources such as Microlaunch, not as a web-search provider.
 
 ## Output Brief
 

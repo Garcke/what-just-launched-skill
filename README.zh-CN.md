@@ -66,6 +66,7 @@ skills/what-just-launched/scripts/just_launched/
 | Apple RSS / iTunes Search | iOS App 榜单和元数据 | Apple 公共 API |
 | Google Play / AppBrain | Android App 发现补充 | AppBrain 页面搜索 |
 | BetaList | 早期 startup / waitlist 产品 | 公共页面，低频访问 |
+| Microlaunch | 独立产品、SaaS、AI 工具、开发者产品 | 公共页面；可选 Firecrawl 页面解析 |
 
 ### 用户反馈源
 
@@ -79,7 +80,7 @@ skills/what-just-launched/scripts/just_launched/
 | X / Twitter | 发布反应、创始人/用户讨论 | `XQUIK_API_KEY` 或外部 adapter |
 | YouTube | 测评视频、教程、评论 | `YOUTUBE_API_KEY` |
 | Hacker News | 开发者反馈和质疑 | HN Algolia API |
-| Web Search | 官网、评测、榜单、对比文章、资讯/搜索证据 | Brave / Firecrawl / SerpApi / Tavily |
+| Web Search | 官网、评测、榜单、对比文章、资讯/搜索证据 | Brave / SerpApi / Tavily |
 
 ## 安装到 Codex
 
@@ -383,7 +384,7 @@ product_launch_date  产品自身的上线/首次发布日期
 
 ```bash
 python scripts/just-launched.py --write-config TAVILY_API_KEY=your_key_here
-python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
+python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=brave,serpapi,tavily
 ```
 
 推荐配置：
@@ -409,11 +410,13 @@ PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 YOUTUBE_API_KEY=
 
 # Web Search
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,serpapi,tavily
 BRAVE_API_KEY=
-FIRECRAWL_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
+
+# 可选页面解析辅助，用于 Microlaunch 这类产品源
+FIRECRAWL_API_KEY=
 ```
 
 ## Web Search Provider
@@ -421,13 +424,13 @@ TAVILY_API_KEY=
 默认支持：
 
 ```text
-brave,firecrawl,serpapi,tavily
+brave,serpapi,tavily
 ```
 
 推荐实际使用：
 
 ```text
-brave,firecrawl,serpapi,tavily
+brave,serpapi,tavily
 ```
 
 ## 安全说明

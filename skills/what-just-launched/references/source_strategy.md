@@ -12,6 +12,7 @@ Use these product discovery sources:
 | Apple RSS / iTunes Search | iOS app charts and metadata | Official Apple public APIs |
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search; upgrade later to Google Play scraper |
 | BetaList | early-stage startups and waitlists | Public pages, low request volume |
+| Microlaunch | indie products, SaaS, AI tools, developer products | Public pages; Firecrawl scrape can improve page parsing |
 
 ## User Feedback Sources
 
@@ -27,7 +28,7 @@ Use these feedback sources:
 | X / Twitter | launch reactions, founder/user chatter, fast-moving sentiment | `XAI_API_KEY`, `XQUIK_API_KEY`, browser cookies, or manual cookies |
 | YouTube | reviews, tutorials, launch videos, comments | `YOUTUBE_API_KEY`; optional `yt-dlp` transcripts |
 | Hacker News | technical feedback and developer skepticism | HN Algolia API |
-| Web Search | official posts, reviews, comparisons, launch lists, news/search evidence | Brave, Firecrawl, SerpApi, or Tavily |
+| Web Search | official posts, reviews, comparisons, launch lists, news/search evidence | Brave, SerpApi, or Tavily |
 
 ## Reddit Safety Rules
 

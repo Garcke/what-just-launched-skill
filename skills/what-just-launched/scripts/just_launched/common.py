@@ -139,6 +139,32 @@ def post_json(url: str, payload: dict[str, Any], headers: dict[str, str] | None 
     return json.loads(raw.decode("utf-8"))
 
 
+def firecrawl_scrape(
+    url: str,
+    *,
+    formats: list[str] | None = None,
+    only_main_content: bool = True,
+    timeout_ms: int = 60000,
+) -> Any:
+    key = os.getenv("FIRECRAWL_API_KEY")
+    if not key:
+        raise RuntimeError("FIRECRAWL_API_KEY is not configured")
+    return post_json(
+        "https://api.firecrawl.dev/v2/scrape",
+        {
+            "url": url,
+            "formats": formats or ["markdown", "html"],
+            "onlyMainContent": only_main_content,
+            "timeout": timeout_ms,
+        },
+        headers={
+            "Authorization": f"Bearer {key}",
+            "User-Agent": DEFAULT_UA,
+        },
+        timeout=max(25, int(timeout_ms / 1000) + 10),
+    )
+
+
 def get_text(url: str, headers: dict[str, str] | None = None, timeout: int = 20) -> str:
     req = urllib.request.Request(url, headers=headers or {}, method="GET")
     with urllib.request.urlopen(req, timeout=timeout) as resp:

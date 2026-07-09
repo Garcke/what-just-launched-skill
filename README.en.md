@@ -64,6 +64,7 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 | Apple RSS / iTunes Search | iOS app charts and app metadata | Apple public APIs |
 | Google Play / AppBrain | Android app discovery fallback | AppBrain page search |
 | BetaList | Early-stage startups and waitlists | Public pages, low-volume access |
+| Microlaunch | Indie products, SaaS, AI tools, developer products | Public pages; optional Firecrawl page parsing |
 
 ### Feedback Sources
 
@@ -77,7 +78,7 @@ To add a product-data source, use `sources/product_data/`. To add a community/co
 | X / Twitter | Launch reactions and fast-moving sentiment | `XQUIK_API_KEY` or external adapter |
 | YouTube | Reviews, tutorials, and comments | `YOUTUBE_API_KEY` |
 | Hacker News | Developer feedback and skepticism | HN Algolia API |
-| Web Search | Official pages, reviews, comparisons, launch lists, news/search evidence | Brave / Firecrawl / SerpApi / Tavily |
+| Web Search | Official pages, reviews, comparisons, launch lists, news/search evidence | Brave / SerpApi / Tavily |
 
 ## Install Into Codex
 
@@ -381,7 +382,7 @@ Append config values:
 
 ```bash
 python scripts/just-launched.py --write-config TAVILY_API_KEY=your_key_here
-python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
+python scripts/just-launched.py --write-config PRODUCT_SCOUT_WEB_PROVIDERS=brave,serpapi,tavily
 ```
 
 Recommended configuration:
@@ -407,11 +408,13 @@ PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 YOUTUBE_API_KEY=
 
 # Web Search
-PRODUCT_SCOUT_WEB_PROVIDERS=brave,firecrawl,serpapi,tavily
+PRODUCT_SCOUT_WEB_PROVIDERS=brave,serpapi,tavily
 BRAVE_API_KEY=
-FIRECRAWL_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
+
+# Optional page parsing helper for product sources such as Microlaunch
+FIRECRAWL_API_KEY=
 ```
 
 ## Web Search Providers
@@ -419,13 +422,13 @@ TAVILY_API_KEY=
 Supported providers:
 
 ```text
-brave,firecrawl,serpapi,tavily
+brave,serpapi,tavily
 ```
 
 Suggested practical order:
 
 ```text
-brave,firecrawl,serpapi,tavily
+brave,serpapi,tavily
 ```
 
 ## Security Notes
