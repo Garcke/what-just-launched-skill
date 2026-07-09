@@ -4,18 +4,53 @@
 
 Discover recently launched products, apps, AI tools, startup launches, and early market signals from product platforms, developer communities, app stores, and web search.
 
-Choose a language:
+## Install
 
-- [中文文档](README.zh-CN.md)
-- [English documentation](README.en.md)
+Recommended for Codex, Cursor, Claude Code, OpenCode, Gemini CLI, Copilot, and other Agent Skills hosts:
 
-## Quick Example
+```bash
+npx skills add Garcke/what-just-launched-skill -g
+```
+
+Target a specific agent:
+
+```bash
+npx skills add Garcke/what-just-launched-skill -g -a codex
+npx skills add Garcke/what-just-launched-skill -g -a claude-code
+npx skills add Garcke/what-just-launched-skill -g -a cursor
+npx skills add Garcke/what-just-launched-skill -g -a opencode
+```
+
+Update later:
+
+```bash
+npx skills update what-just-launched -g
+```
+
+## Configure
+
+Keys are optional, but Product Hunt and web search are much better with them:
+
+```bash
+python scripts/just-launched.py --write-config PRODUCT_HUNT_TOKEN=<product_hunt_token>
+python scripts/just-launched.py --write-config SERPAPI_API_KEY=<serpapi_key>
+python scripts/just-launched.py --write-config TAVILY_API_KEY=<tavily_key>
+python scripts/just-launched.py --write-config FIRECRAWL_API_KEY=<firecrawl_key>
+```
+
+Run a setup check:
+
+```bash
+python scripts/just-launched.py --diagnose
+```
+
+## Use
 
 ```bash
 python scripts/just-launched.py "new AI products" --mode discovery --days 7 --market us
 ```
 
-For a strict launch-date window:
+Strict launch-date window:
 
 ```bash
 python scripts/just-launched.py "new AI products" --mode discovery --since 2026-07-01 --until 2026-07-06 --filter-launch-date

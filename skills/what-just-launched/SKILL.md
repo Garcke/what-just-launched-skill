@@ -31,7 +31,7 @@ For a fuller setup report:
 python scripts/just-launched.py --diagnose
 ```
 
-API keys can live in environment variables or `~/.config/product-scout/.env`. Append keys without editing source:
+API keys can live in environment variables or `~/.config/what-just-launched/.env`. The legacy `~/.config/product-scout/.env` path is still supported as a fallback. Append keys without editing source:
 
 ```bash
 python scripts/just-launched.py --write-config REDDIT_USER_AGENT="linux:what-just-launched:0.1.0 (by /u/example)"
