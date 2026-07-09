@@ -1,0 +1,12 @@
+<svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">What Just Launched</title>
+  <desc id="desc">Text image for the What Just Launched product discovery project.</desc>
+  <rect width="1200" height="360" rx="32" fill="#101820"/>
+  <rect x="36" y="36" width="1128" height="288" rx="24" fill="#F6F1E7"/>
+  <path d="M96 94H1104" stroke="#101820" stroke-width="3" stroke-linecap="round"/>
+  <path d="M96 266H1104" stroke="#101820" stroke-width="3" stroke-linecap="round"/>
+  <text x="600" y="171" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="74" font-weight="800" letter-spacing="0" fill="#101820">What Just Launched</text>
+  <text x="600" y="224" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="0" fill="#2E4B3F">Discover fresh products, launches, and early market signals</text>
+  <circle cx="130" cy="180" r="13" fill="#E94F37"/>
+  <circle cx="1070" cy="180" r="13" fill="#E94F37"/>
+</svg>

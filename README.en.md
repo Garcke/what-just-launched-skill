@@ -1,12 +1,12 @@
-# What Just Launched Skill
+# What Just Launched
 
-`what-just-launched` is a Codex skill for discovering recently launched products. It is intentionally focused on one question:
+`what-just-launched` is a product discovery engine for recently launched products. It is intentionally focused on one question:
 
 ```text
 What just launched recently, and is it worth watching?
 ```
 
-The skill gathers launch and early-market signals from product launch platforms, app stores, developer communities, community/news search, and feedback sources, then emits normalized JSON that Codex can turn into a concise product briefing.
+It gathers launch and early-market signals from product launch platforms, app stores, developer communities, community/news search, and feedback sources, then emits normalized JSON that agent tools can turn into a concise product briefing.
 
 ## What It Is For
 

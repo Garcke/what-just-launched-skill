@@ -1,6 +1,6 @@
-# What Just Launched Skill
+# What Just Launched
 
-`what-just-launched` 是一个用于 Codex 的新产品发现 skill。它的目标不是泛泛地做市场调研，而是回答一个更具体的问题：
+`what-just-launched` 是一个用于发现最近上线产品的工具。它的目标不是泛泛地做市场调研，而是回答一个更具体的问题：
 
 ```text
 最近刚上线了什么值得关注的新产品？
