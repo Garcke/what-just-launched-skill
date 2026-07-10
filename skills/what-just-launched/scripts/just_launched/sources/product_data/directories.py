@@ -6,6 +6,7 @@ import json
 import os
 import re
 import urllib.parse
+import xml.etree.ElementTree as ET
 from typing import Any
 
 from ...common import (
@@ -20,15 +21,92 @@ from ...common import (
 
 class DirectorySources:
     def betalist(self) -> list[dict[str, Any]]:
+        rows = self._betalist_feed_rows()
+        if rows and not self.query:
+            return rows[: self.args.limit]
         url = "https://betalist.com/"
         if self.query:
             url = f"https://betalist.com/search?q={urllib.parse.quote_plus(self.query)}"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_BETALIST_USE_FIRECRAWL")
-        rows = self._betalist_rows(text, parser)
-        if not rows and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
+        page_rows = self._betalist_rows(text, parser)
+        if not page_rows and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
             text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
-            rows = self._betalist_rows(text, "html")
-        return rows[: self.args.limit]
+            page_rows = self._betalist_rows(text, "html")
+        if self.query:
+            query_rows = self._filter_betalist_feed_rows(rows)
+            merged = query_rows + [row for row in page_rows if row.get("url") not in {item.get("url") for item in query_rows}]
+            return merged[: self.args.limit]
+        return (rows or page_rows)[: self.args.limit]
+
+    def _betalist_feed_rows(self) -> list[dict[str, Any]]:
+        try:
+            text = get_text(
+                "https://feeds.feedburner.com/BetaList",
+                headers={"Accept": "application/atom+xml,application/xml,text/xml,*/*", "User-Agent": DEFAULT_UA},
+                timeout=30,
+            )
+        except Exception:
+            return []
+        try:
+            root = ET.fromstring(text)
+        except ET.ParseError:
+            return []
+        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        rows: list[dict[str, Any]] = []
+        for idx, entry in enumerate(root.findall("atom:entry", ns), 1):
+            title = (entry.findtext("atom:title", default="", namespaces=ns) or "").strip()
+            published = (entry.findtext("atom:published", default="", namespaces=ns) or "").strip()
+            updated = (entry.findtext("atom:updated", default="", namespaces=ns) or "").strip()
+            entry_id = (entry.findtext("atom:id", default="", namespaces=ns) or "").strip()
+            link = entry_id
+            link_node = entry.find("atom:link[@rel='alternate']", ns)
+            if link_node is not None:
+                link = str(link_node.attrib.get("href") or link)
+            clean_link = self._clean_betalist_url(link)
+            slug = clean_link.rstrip("/").split("/")[-1]
+            content = entry.findtext("atom:content", default="", namespaces=ns) or ""
+            content_html = html.unescape(content)
+            summary = self._html_text(content_html)
+            image_match = re.search(r"<img[^>]+src=['\"]([^'\"]+)['\"]", content_html, flags=re.I)
+            if not title or not clean_link:
+                continue
+            rows.append(item(
+                "betalist",
+                title,
+                clean_link,
+                kind="startup",
+                summary=summary,
+                score=float(max(1, 50 - idx)),
+                published_at=published,
+                product_launch_date=date_only(published),
+                launch_date=date_only(published),
+                evidence_published_at=published or updated,
+                date_confidence="known_launch_date" if published else "evidence_date_only" if updated else "unknown",
+                signals={
+                    "slug": slug,
+                    "feed_id": entry_id,
+                    "updated": updated,
+                    "image": image_match.group(1) if image_match else "",
+                    "parser": "atom_feed",
+                },
+            ))
+            if len(rows) >= max(self.args.limit, 20):
+                break
+        return rows
+
+    def _filter_betalist_feed_rows(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        if not self.query:
+            return rows
+        return [row for row in rows if self._query_matches_text(f"{row.get('title', '')} {row.get('summary', '')}")]
+
+    def _clean_betalist_url(self, url: str) -> str:
+        parsed = urllib.parse.urlparse(url)
+        return urllib.parse.urlunparse((parsed.scheme or "https", parsed.netloc or "betalist.com", parsed.path.rstrip("/") or "/", "", "", ""))
+
+    def _html_text(self, value: str) -> str:
+        text = re.sub(r"<[^>]+>", " ", value)
+        text = html.unescape(text)
+        return re.sub(r"\s+", " ", text).strip()
 
     def _betalist_rows(self, text: str, parser: str) -> list[dict[str, Any]]:
         rows = []
@@ -191,7 +269,7 @@ class DirectorySources:
         query_terms = [
             term
             for term in re.findall(r"[a-z0-9]+", self.query.lower())
-            if len(term) > 2 and term not in {"new", "product", "products", "tool", "tools", "app", "apps"}
+            if (len(term) > 2 or term == "ai") and term not in {"new", "product", "products", "tool", "tools", "app", "apps"}
         ]
         if not query_terms:
             return True
@@ -199,7 +277,7 @@ class DirectorySources:
             str(product.get(key) or "")
             for key in ("codename", "problem_label", "solution_label", "market", "product_type", "offer_type", "stage")
         ).lower()
-        return any(term in haystack for term in query_terms)
+        return any(re.search(r"\bai\b", haystack) if term == "ai" else term in haystack for term in query_terms)
 
     def fazier(self) -> list[dict[str, Any]]:
         products = self._fazier_api_products()
@@ -403,9 +481,9 @@ class DirectorySources:
         query_terms = [
             term
             for term in re.findall(r"[a-z0-9]+", self.query.lower())
-            if len(term) > 2 and term not in {"new", "product", "products", "tool", "tools", "app", "apps"}
+            if (len(term) > 2 or term == "ai") and term not in {"new", "product", "products", "tool", "tools", "app", "apps"}
         ]
         if not query_terms:
             return True
         haystack = text.lower()
-        return any(term in haystack for term in query_terms)
+        return any(re.search(r"\bai\b", haystack) if term == "ai" else term in haystack for term in query_terms)

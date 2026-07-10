@@ -7,7 +7,7 @@ Use these product discovery sources:
 | Source | Use For | Access |
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` for GraphQL |
-| BetaList | early-stage startups and waitlists | Public HTML pages; no stable dated feed/API found yet |
+| BetaList | early-stage startups and waitlists | Atom feed `https://feeds.feedburner.com/BetaList` for latest dated launches; HTML list/search/category pages as fallback |
 | Microlaunch | indie products, SaaS, AI tools, developer products | Public page data merged with `https://nextjs-twitter-api.vercel.app/api/launches?channel=MicroLaunch&batch=YYYYMM`; match page `id` to API `product_id` |
 | Uneed | indie products, SaaS, AI tools, launch pages | Public daily ladder API; optional Firecrawl fallback |
 | Fazier | daily product launches and indie products | Next.js JSON data endpoint `/_next/data/{buildId}/index.json`, with page parsing fallback |

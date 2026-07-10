@@ -1,6 +1,6 @@
 {
   "name": "what-just-launched",
-  "version": "1.8.10",
+  "version": "1.8.11",
   "description": "Installer and CLI helper for the What Just Launched agent skill.",
   "license": "MIT",
   "repository": {
