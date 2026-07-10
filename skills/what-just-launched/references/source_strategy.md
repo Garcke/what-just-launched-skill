@@ -7,10 +7,6 @@ Use these product discovery sources:
 | Source | Use For | Access |
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` for GraphQL |
-| Hacker News | developer products, Show HN, technical launches | HN Algolia API |
-| GitHub Trending | open-source and developer-tool momentum | Public GitHub Trending page; optional Firecrawl page parsing |
-| Apple RSS / iTunes Search | iOS app charts and metadata | Official Apple public APIs |
-| Google Play / AppBrain | Android app discovery fallback | AppBrain page search; upgrade later to Google Play scraper |
 | BetaList | early-stage startups and waitlists | Public pages; optional Firecrawl page parsing |
 | Microlaunch | indie products, SaaS, AI tools, developer products | Public pages; Firecrawl scrape can improve page parsing |
 | Uneed | indie products, SaaS, AI tools, launch pages | Public daily ladder API; optional Firecrawl fallback |
@@ -30,7 +26,7 @@ Use these feedback sources:
 | X / Twitter | launch reactions, founder/user chatter, fast-moving sentiment | `XAI_API_KEY`, `XQUIK_API_KEY`, browser cookies, or manual cookies |
 | YouTube | reviews, tutorials, launch videos, comments | `YOUTUBE_API_KEY`; optional `yt-dlp` transcripts |
 | Hacker News | technical feedback and developer skepticism | HN Algolia API |
-| Web Search | official posts, reviews, comparisons, launch lists, news/search evidence | Brave, SerpApi, or Tavily |
+| Web Search | official posts, reviews, comparisons, launch lists, news/search evidence; not a primary product discovery source | Brave, SerpApi, or Tavily |
 
 ## Reddit Safety Rules
 
@@ -106,7 +102,7 @@ engine.py                      orchestration only
 
 `community_feedback` sources answer "what are people saying about it?".
 
-Some platforms can serve both purposes. For example, Hacker News can surface Show HN launches and also provide developer reactions. Put the adapter where its evidence is primarily interpreted, then register it for every mode it should participate in.
+Some platforms can serve both purposes, but keep the default routing conservative. For example, Hacker News can surface Show HN launches, but it is treated as community/news evidence rather than a primary product discovery source.
 
 ## Adding Sources
 

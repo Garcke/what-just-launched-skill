@@ -16,9 +16,6 @@ class SourceSpec:
 
 PRODUCT_DATA_SPECS = {
     "product_hunt": SourceSpec("product_hunt", "product_hunt", ("discovery", "all"), "product_data"),
-    "github_trending": SourceSpec("github_trending", "github_trending", ("discovery", "all"), "product_data"),
-    "apple": SourceSpec("apple", "apple", ("discovery", "all"), "product_data"),
-    "google_play": SourceSpec("google_play", "google_play", ("discovery", "all"), "product_data"),
     "betalist": SourceSpec("betalist", "betalist", ("discovery", "all"), "product_data"),
     "microlaunch": SourceSpec("microlaunch", "microlaunch", ("discovery", "all"), "product_data"),
     "uneed": SourceSpec("uneed", "uneed", ("discovery", "all"), "product_data"),
@@ -26,7 +23,7 @@ PRODUCT_DATA_SPECS = {
 }
 
 COMMUNITY_FEEDBACK_SPECS = {
-    "hacker_news": SourceSpec("hacker_news", "hacker_news", ("discovery", "feedback", "all"), "community_feedback"),
+    "hacker_news": SourceSpec("hacker_news", "hacker_news", ("feedback", "all"), "community_feedback"),
     "web": SourceSpec("web", "web_search", ("feedback", "all"), "community_feedback"),
     "reddit": SourceSpec("reddit", "reddit", ("feedback", "all"), "community_feedback"),
     "reddit_public": SourceSpec("reddit_public", "reddit_public", (), "community_feedback"),

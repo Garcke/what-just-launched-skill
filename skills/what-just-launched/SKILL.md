@@ -1,6 +1,6 @@
 ---
 name: what-just-launched
-description: Discover and synthesize recently launched products across launch platforms, app stores, developer communities, social/video feedback sources, and web search. Use when the user asks what just launched, what new products appeared recently, what new apps or AI products are emerging, or wants launch signals from sources such as Product Hunt, Hacker News, GitHub Trending, Apple App Store, Google Play/AppBrain, BetaList, Microlaunch, Uneed, Fazier, Reddit, X/Twitter, YouTube, and web search.
+description: Discover and synthesize recently launched products across launch platforms, product directories, community/news sources, social/video feedback sources, and web search. Use when the user asks what just launched, what new products appeared recently, what new apps or AI products are emerging, or wants launch signals from sources such as Product Hunt, BetaList, Microlaunch, Uneed, Fazier, Hacker News, Reddit, X/Twitter, YouTube, and web search.
 ---
 
 # What Just Launched
@@ -76,9 +76,7 @@ Use `products` as the primary product discovery view. Order products by `product
 For product discovery, use:
 
 ```text
-Product Hunt, Hacker News, GitHub Trending,
-Apple RSS / iTunes Search, Google Play / AppBrain,
-BetaList, Microlaunch, Uneed, Fazier
+Product Hunt, BetaList, Microlaunch, Uneed, Fazier
 ```
 
 For user feedback, use:
@@ -97,7 +95,7 @@ python scripts/just-launched.py "Cursor" --mode feedback --sources reddit,hacker
 Prefer split source routing when the task needs both product discovery and feedback:
 
 ```bash
-python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,github_trending --feedback-sources web,reddit,hacker_news --days 7
+python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,uneed,fazier --feedback-sources web,reddit,hacker_news --days 7
 ```
 
 ## Safety And Reliability
@@ -110,7 +108,7 @@ For X/Twitter, prefer server-safe keys (`XAI_API_KEY` or `XQUIK_API_KEY`) on ser
 
 For YouTube, use `YOUTUBE_API_KEY` for video discovery. Use `yt-dlp` only as an optional transcript helper, and treat throttling or bot gates as source degradation.
 
-For web search, use configured API providers (`BRAVE_API_KEY` or `BRAVE_SEARCH_API_KEY`, `SERPAPI_API_KEY`, `TAVILY_API_KEY`). Use `FIRECRAWL_API_KEY` as an optional webpage parsing helper for page-based product sources such as GitHub Trending, BetaList, Microlaunch, Uneed, and Fazier, not as a web-search provider.
+For web search, use configured API providers (`BRAVE_API_KEY` or `BRAVE_SEARCH_API_KEY`, `SERPAPI_API_KEY`, `TAVILY_API_KEY`). Treat web search as community/news evidence, not as a primary product discovery source. Use `FIRECRAWL_API_KEY` as an optional webpage parsing helper for page-based product sources such as BetaList, Microlaunch, Uneed, and Fazier, not as a web-search provider.
 
 ## Output Brief
 

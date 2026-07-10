@@ -58,7 +58,7 @@ npx skills add Garcke/what-just-launched-skill -g
 python scripts/just-launched.py --write-config KEY=VALUE
 ```
 
-最小可用配置不需要 key，Hacker News、GitHub Trending、Apple 公共接口、Uneed、Fazier、Stack Exchange、Lobsters 都可以先跑。
+最小可用配置不需要 key，BetaList、Microlaunch、Uneed、Fazier、Hacker News、Stack Exchange、Lobsters 都可以先跑。
 
 检查当前可用来源：
 
@@ -124,7 +124,7 @@ npx what-just-launched run "Cursor AI reviews" --mode feedback --days 30 --sourc
 分别指定产品源和反馈源：
 
 ```bash
-npx what-just-launched run "AI coding tools" --mode all --product-sources product_hunt,github_trending,uneed,fazier --feedback-sources web,hacker_news,reddit --days 7
+npx what-just-launched run "AI coding tools" --mode all --product-sources product_hunt,uneed,fazier --feedback-sources web,hacker_news,reddit --days 7
 ```
 
 ## 数据源
@@ -134,10 +134,6 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 | 来源 | 用途 | 访问方式 |
 |---|---|---|
 | Product Hunt | SaaS、AI 工具、独立产品、发布榜 | `PRODUCT_HUNT_TOKEN` |
-| Hacker News | Show HN、Launch HN、开发者产品 | HN Algolia API |
-| GitHub Trending | 开源项目和开发者工具 | 公开页面，可选 Firecrawl 解析 |
-| Apple RSS / iTunes Search | iOS 榜单和应用元数据 | Apple 公共 API |
-| Google Play / AppBrain | Android 应用发现补充 | AppBrain 页面搜索 |
 | BetaList | 早期 startup / waitlist 产品 | 公开页面，可选 Firecrawl 解析 |
 | Microlaunch | 独立产品、SaaS、AI 工具 | 公开页面，可选 Firecrawl 解析 |
 | Uneed | 独立产品和发布页 | 公开 daily ladder API，可选 Firecrawl fallback |
@@ -155,7 +151,7 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 | X / Twitter | 发布反应和社交信号 | `XQUIK_API_KEY` 或 adapter |
 | YouTube | 测评、教程、评论 | `YOUTUBE_API_KEY` |
 | Hacker News | 开发者反馈和质疑 | HN Algolia API |
-| Web Search | 评测、对比、发布榜、资讯证据 | Brave / SerpApi / Tavily |
+| Web Search | 评测、对比、发布榜、资讯证据；不是主产品发现源 | Brave / SerpApi / Tavily |
 
 ## 输出结构
 

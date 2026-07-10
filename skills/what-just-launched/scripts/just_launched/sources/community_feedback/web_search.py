@@ -102,6 +102,8 @@ class WebSearchSource:
             f"https://serpapi.com/search.json?{params}",
             headers={"Accept": "application/json", "User-Agent": DEFAULT_UA},
         )
+        if data.get("error"):
+            raise RuntimeError(str(data.get("error")))
         rows = []
         for idx, r in enumerate(data.get("organic_results", []), 1):
             rows.append(item(
@@ -125,8 +127,6 @@ class WebSearchSource:
                 "max_results": min(self.args.limit, 20),
                 "search_depth": "basic",
                 "days": self.days,
-                "start_date": self.start_date.isoformat(),
-                "end_date": self.end_date.isoformat(),
             },
             headers={"User-Agent": DEFAULT_UA},
         )

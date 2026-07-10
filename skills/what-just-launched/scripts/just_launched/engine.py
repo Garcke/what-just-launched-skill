@@ -46,14 +46,11 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
     def preflight(self) -> list[dict[str, str]]:
         checks = [
             status("product_hunt", "available" if os.getenv("PRODUCT_HUNT_TOKEN") else "missing_config", "set PRODUCT_HUNT_TOKEN for Product Hunt GraphQL"),
-            status("hacker_news", "available", "uses free HN Algolia API"),
-            status("github_trending", "available", "scrapes public GitHub Trending page"),
-            status("apple_rss_itunes", "available", "uses Apple RSS and iTunes Search APIs"),
-            status("google_play_appbrain", "available", "uses AppBrain page search as a lightweight Android discovery fallback"),
             status("betalist", "available", "scrapes public BetaList pages; uses Firecrawl scrape when configured"),
             status("microlaunch", "available", "scrapes Microlaunch product pages; uses Firecrawl scrape when configured"),
             status("uneed", "available", "scrapes Uneed product pages; uses Firecrawl scrape when configured"),
             status("fazier", "available", "scrapes Fazier launch pages; uses Firecrawl scrape when configured"),
+            status("hacker_news", "available", "community/news source; uses free HN Algolia API"),
             status("reddit", "available" if self._has_reddit_oauth() else "missing_config", "use REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT; public fallback is disabled by default"),
             status("reddit_public", "available", "explicit opt-in source id; uses low-rate public Reddit JSON without OAuth"),
             status("lobsters", "available", "explicit opt-in source id; scrapes public Lobsters search pages at low request volume"),

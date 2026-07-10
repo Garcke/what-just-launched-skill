@@ -58,7 +58,7 @@ Append config values safely:
 python scripts/just-launched.py --write-config KEY=VALUE
 ```
 
-Minimal setup works without keys for Hacker News, GitHub Trending, Apple public endpoints, Uneed, Fazier, Stack Exchange, and Lobsters.
+Minimal setup works without keys for BetaList, Microlaunch, Uneed, Fazier, Hacker News, Stack Exchange, and Lobsters.
 
 Check available sources:
 
@@ -124,7 +124,7 @@ npx what-just-launched run "Cursor AI reviews" --mode feedback --days 30 --sourc
 Use split source routing:
 
 ```bash
-npx what-just-launched run "AI coding tools" --mode all --product-sources product_hunt,github_trending,uneed,fazier --feedback-sources web,hacker_news,reddit --days 7
+npx what-just-launched run "AI coding tools" --mode all --product-sources product_hunt,uneed,fazier --feedback-sources web,hacker_news,reddit --days 7
 ```
 
 ## Sources
@@ -134,10 +134,6 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 | Source | Use For | Access |
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` |
-| Hacker News | Show HN, Launch HN, developer products | HN Algolia API |
-| GitHub Trending | Open-source projects and developer tools | Public page; optional Firecrawl parsing |
-| Apple RSS / iTunes Search | iOS app charts and metadata | Apple public APIs |
-| Google Play / AppBrain | Android app discovery fallback | AppBrain page search |
 | BetaList | Early-stage startups and waitlists | Public pages; optional Firecrawl parsing |
 | Microlaunch | Indie products, SaaS, AI tools | Public pages; optional Firecrawl parsing |
 | Uneed | Indie products and launch pages | Public daily ladder API; optional Firecrawl fallback |
@@ -155,7 +151,7 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 | X / Twitter | Launch reactions and social signals | `XQUIK_API_KEY` or adapter |
 | YouTube | Reviews, tutorials, comments | `YOUTUBE_API_KEY` |
 | Hacker News | Developer feedback and skepticism | HN Algolia API |
-| Web Search | Reviews, comparisons, launch lists, news evidence | Brave / SerpApi / Tavily |
+| Web Search | Reviews, comparisons, launch lists, news evidence; not a primary product source | Brave / SerpApi / Tavily |
 
 ## Output Shape
 

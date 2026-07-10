@@ -10,7 +10,7 @@ The script emits UTF-8 JSON.
   "mode": "all",
   "market": "us",
   "days": 30,
-  "selected_sources": ["product_hunt", "hacker_news", "web"],
+  "selected_sources": ["product_hunt", "uneed", "web"],
   "time_range": {
     "since": "2026-06-07",
     "until": "2026-07-06"
@@ -104,7 +104,7 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
   "kind": "app",
   "url": "https://example.com",
   "urls": ["https://example.com"],
-  "sources": ["product_hunt", "github_trending"],
+  "sources": ["product_hunt", "uneed"],
   "evidence_count": 2,
   "best_ranking_score": 0.812345,
   "product_score": 0.734567,
@@ -117,7 +117,7 @@ Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing b
     "launch_confidence": 1.0
   },
   "rank_reasons": [
-    "product evidence from product_hunt, github_trending",
+    "product evidence from product_hunt, uneed",
     "launch date is verified inside the requested window"
   ],
   "launch_date": "2026-07-01",
@@ -180,7 +180,7 @@ Use `--filter-launch-date` for new-product discovery so products with known laun
 Use `--product-sources` and `--feedback-sources` to route the two pipelines separately:
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode all --product-sources product_hunt,github_trending --feedback-sources web,hacker_news
+python scripts/just-launched.py "new AI products" --mode all --product-sources product_hunt,uneed,fazier --feedback-sources web,hacker_news
 ```
 
 `--sources` remains as a backward-compatible global override.

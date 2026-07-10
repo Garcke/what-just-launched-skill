@@ -24,19 +24,45 @@ class DirectorySources:
         if self.query:
             url = f"https://betalist.com/search?q={urllib.parse.quote_plus(self.query)}"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_BETALIST_USE_FIRECRAWL")
-        rows = []
-        for m in re.finditer(r'<a[^>]+href="(/startups/[^"]+)"[^>]*>(.*?)</a>', text, flags=re.S):
-            title = html.unescape(re.sub("<[^>]+>", "", m.group(2))).strip()
-            if title and len(title) < 120:
-                rows.append(item(
-                    "betalist",
-                    title,
-                    f"https://betalist.com{m.group(1)}",
-                    kind="startup",
-                    score=20,
-                    signals={"parser": parser},
-                ))
+        rows = self._betalist_rows(text, parser)
+        if not rows and parser == "firecrawl_scrape":
+            text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
+            rows = self._betalist_rows(text, "html")
         return rows[: self.args.limit]
+
+    def _betalist_rows(self, text: str, parser: str) -> list[dict[str, Any]]:
+        rows = []
+        seen: set[str] = set()
+        for idx, m in enumerate(re.finditer(r'href="(/startups/[^"]+)"', text), 1):
+            href = m.group(1)
+            slug = href.rstrip("/").split("/")[-1]
+            if not slug or slug in seen:
+                continue
+            window = text[m.end(): m.end() + 2500]
+            spans = [
+                html.unescape(re.sub("<[^>]+>", " ", span)).strip()
+                for span in re.findall(r"<span[^>]*>(.*?)</span>", window, flags=re.S)
+            ]
+            spans = [re.sub(r"\s+", " ", span).strip() for span in spans if span.strip()]
+            title = spans[0] if spans else slug.replace("-", " ").title()
+            summary = spans[1] if len(spans) > 1 else ""
+            if not title or len(title) > 120:
+                continue
+            seen.add(slug)
+            rows.append(item(
+                "betalist",
+                title,
+                f"https://betalist.com{href}",
+                kind="startup",
+                summary=summary,
+                score=float(max(1, 40 - len(rows))),
+                evidence_published_at=self.today,
+                date_confidence="evidence_date_only",
+                signals={"slug": slug, "parser": parser, "date_basis": "page_evidence"},
+            ))
+            if len(rows) >= self.args.limit:
+                break
+        return rows
 
     def microlaunch(self) -> list[dict[str, Any]]:
         url = "https://microlaunch.net/"
