@@ -7,22 +7,21 @@ Discover recently launched products, apps, AI tools, startup launches, and early
 ## Install
 
 ```bash
-npx skills add Garcke/what-just-launched-skill -g
+npx what-just-launched install
 ```
 
-`Garcke/` is required for now because the `skills` CLI installs GitHub repositories as `owner/repo`. The command can become shorter later if the project is published through a registry or a dedicated installer.
+This npm installer removes the need to type `Garcke/what-just-launched-skill`.
 
 Optional: target one agent.
 
 ```bash
-npx skills add Garcke/what-just-launched-skill -g -a claude-code
+npx what-just-launched install --agent claude-code
 ```
 
-Update or remove:
+GitHub repository install is still supported:
 
 ```bash
-npx skills update what-just-launched -g
-npx skills remove what-just-launched -g
+npx skills add Garcke/what-just-launched-skill -g
 ```
 
 ## Configure
@@ -39,19 +38,19 @@ python scripts/just-launched.py --write-config FIRECRAWL_API_KEY=<firecrawl_key>
 Run a setup check:
 
 ```bash
-python scripts/just-launched.py --diagnose
+npx what-just-launched doctor
 ```
 
 ## Use
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode discovery --days 7 --market us
+npx what-just-launched run "new AI products" --mode discovery --days 7 --market us
 ```
 
 Strict launch-date window:
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode discovery --since 2026-07-01 --until 2026-07-06 --filter-launch-date
+npx what-just-launched run "new AI products" --mode discovery --since 2026-07-01 --until 2026-07-06 --filter-launch-date
 ```
 
 ## Sources

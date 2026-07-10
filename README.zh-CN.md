@@ -13,27 +13,35 @@
 推荐安装：
 
 ```bash
-npx skills add Garcke/what-just-launched-skill -g
+npx what-just-launched install
 ```
 
-`-g` 表示安装到用户全局目录，所有项目都能使用。不加 `-g` 则安装到当前项目。
-
-目前 `Garcke/` 不能去掉，因为 `npx skills add` 安装 GitHub 项目时需要 `owner/repo`。如果后续发布到 skills registry，或者做一个独立 npm installer，安装命令就可以进一步缩短。
+npm installer 会把内置 skill 安装到本地 Agent 的 skill 目录。默认安装到 Codex。
 
 可选：指定 Agent。
 
 ```bash
-npx skills add Garcke/what-just-launched-skill -g -a claude-code
+npx what-just-launched install --agent claude-code
 ```
 
-需要时可以把 `claude-code` 换成其他支持的 Agent，例如 `codex`、`cursor`、`opencode`。
+需要时可以把 `claude-code` 换成其他支持目标：`codex`、`cursor`、`opencode`、`shared`、`all`。
 
-更新、查看或卸载：
+不安装也可以直接运行：
 
 ```bash
-npx skills update what-just-launched -g
-npx skills list -g
-npx skills remove what-just-launched -g
+npx what-just-launched run "new AI products" --mode discovery --days 7
+```
+
+GitHub 仓库安装仍然支持，但需要 `owner/repo`：
+
+```bash
+npx skills add Garcke/what-just-launched-skill -g
+```
+
+GitHub CLI 2.90.0 或更新版本也支持安装/发布 skills：
+
+```bash
+gh skill install Garcke/what-just-launched-skill what-just-launched
 ```
 
 ## 配置
@@ -62,7 +70,7 @@ python scripts/just-launched.py --write-config KEY=VALUE
 
 ```bash
 python scripts/just-launched.py --preflight
-python scripts/just-launched.py --diagnose
+npx what-just-launched doctor
 ```
 
 推荐配置：
@@ -104,25 +112,25 @@ FIRECRAWL_API_KEY=
 查询最近 7 天的新 AI 产品：
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode discovery --days 7 --market us
+npx what-just-launched run "new AI products" --mode discovery --days 7 --market us
 ```
 
 使用明确时间范围，并按产品上线日期过滤：
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode discovery --since 2026-07-01 --until 2026-07-06 --filter-launch-date
+npx what-just-launched run "new AI products" --mode discovery --since 2026-07-01 --until 2026-07-06 --filter-launch-date
 ```
 
 查询某个产品的用户反馈：
 
 ```bash
-python scripts/just-launched.py "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,github_issues
+npx what-just-launched run "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,github_issues
 ```
 
 分别指定产品源和反馈源：
 
 ```bash
-python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,github_trending,uneed,fazier --feedback-sources web,hacker_news,reddit --days 7
+npx what-just-launched run "AI coding tools" --mode all --product-sources product_hunt,github_trending,uneed,fazier --feedback-sources web,hacker_news,reddit --days 7
 ```
 
 ## 数据源
@@ -187,4 +195,4 @@ python scripts/just-launched.py "AI coding tools" --mode all --product-sources p
 
 ## 发布规则
 
-每次推送到 GitHub 后，都需要创建新的版本 tag 和 GitHub Release。版本号使用 `vMAJOR.MINOR.PATCH`，例如 `v1.8.3`。
+每次推送到 GitHub 后，都需要创建新的版本 tag 和 GitHub Release。版本号使用 `vMAJOR.MINOR.PATCH`，例如 `v1.8.4`。

@@ -1,0 +1,39 @@
+{
+  "name": "what-just-launched",
+  "version": "1.8.4",
+  "description": "Installer and CLI helper for the What Just Launched agent skill.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Garcke/what-just-launched-skill.git"
+  },
+  "homepage": "https://github.com/Garcke/what-just-launched-skill#readme",
+  "bugs": {
+    "url": "https://github.com/Garcke/what-just-launched-skill/issues"
+  },
+  "bin": {
+    "what-just-launched": "bin/what-just-launched.js"
+  },
+  "files": [
+    "bin/",
+    "skills/",
+    "!skills/**/__pycache__/**",
+    "!skills/**/*.pyc",
+    "assets/",
+    "README.md",
+    "README.en.md",
+    "README.zh-CN.md"
+  ],
+  "keywords": [
+    "agent-skills",
+    "codex",
+    "claude-code",
+    "cursor",
+    "product-discovery",
+    "launches",
+    "ai-products"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

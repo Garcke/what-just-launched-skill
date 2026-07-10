@@ -13,27 +13,35 @@ It gathers launch and early-market signals from product launch platforms, app st
 Recommended install:
 
 ```bash
-npx skills add Garcke/what-just-launched-skill -g
+npx what-just-launched install
 ```
 
-`-g` installs globally for your user. Drop `-g` to install into the current project.
-
-`Garcke/` is required for now because `npx skills add` resolves GitHub skills as `owner/repo`. If the project is later published through a skills registry or a dedicated npm installer, the install command can become shorter.
+The npm installer installs the bundled skill into your local agent skill directory. By default it targets Codex.
 
 Optional: target one agent.
 
 ```bash
-npx skills add Garcke/what-just-launched-skill -g -a claude-code
+npx what-just-launched install --agent claude-code
 ```
 
-Replace `claude-code` with another supported agent when needed, such as `codex`, `cursor`, or `opencode`.
+Replace `claude-code` with another supported target when needed: `codex`, `cursor`, `opencode`, `shared`, or `all`.
 
-Update, list, or remove:
+Run without installing:
 
 ```bash
-npx skills update what-just-launched -g
-npx skills list -g
-npx skills remove what-just-launched -g
+npx what-just-launched run "new AI products" --mode discovery --days 7
+```
+
+GitHub repository install is still supported, but it requires `owner/repo`:
+
+```bash
+npx skills add Garcke/what-just-launched-skill -g
+```
+
+GitHub CLI publish/install support is also available in GitHub CLI 2.90.0 or later:
+
+```bash
+gh skill install Garcke/what-just-launched-skill what-just-launched
 ```
 
 ## Configuration
@@ -62,7 +70,7 @@ Check available sources:
 
 ```bash
 python scripts/just-launched.py --preflight
-python scripts/just-launched.py --diagnose
+npx what-just-launched doctor
 ```
 
 Recommended keys:
@@ -104,25 +112,25 @@ FIRECRAWL_API_KEY=
 Find new AI products from the last 7 days:
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode discovery --days 7 --market us
+npx what-just-launched run "new AI products" --mode discovery --days 7 --market us
 ```
 
 Use an explicit date window and filter by product launch date:
 
 ```bash
-python scripts/just-launched.py "new AI products" --mode discovery --since 2026-07-01 --until 2026-07-06 --filter-launch-date
+npx what-just-launched run "new AI products" --mode discovery --since 2026-07-01 --until 2026-07-06 --filter-launch-date
 ```
 
 Research user feedback for a product:
 
 ```bash
-python scripts/just-launched.py "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,github_issues
+npx what-just-launched run "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,github_issues
 ```
 
 Use split source routing:
 
 ```bash
-python scripts/just-launched.py "AI coding tools" --mode all --product-sources product_hunt,github_trending,uneed,fazier --feedback-sources web,hacker_news,reddit --days 7
+npx what-just-launched run "AI coding tools" --mode all --product-sources product_hunt,github_trending,uneed,fazier --feedback-sources web,hacker_news,reddit --days 7
 ```
 
 ## Sources
@@ -187,4 +195,4 @@ Use `products` as the primary product discovery view. `product_data` contains so
 
 ## Release Rule
 
-Every push to GitHub should be accompanied by a new version tag and GitHub Release. Use `vMAJOR.MINOR.PATCH`, for example `v1.8.3`.
+Every push to GitHub should be accompanied by a new version tag and GitHub Release. Use `vMAJOR.MINOR.PATCH`, for example `v1.8.4`.
