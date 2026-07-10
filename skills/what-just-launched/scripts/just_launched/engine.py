@@ -176,6 +176,14 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
         except (TypeError, ValueError):
             return None
 
+    def _safe_float(self, value: Any) -> float | None:
+        if value is None:
+            return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
     def _command_exists(self, command: str) -> bool:
         exe = "where.exe" if os.name == "nt" else "which"
         try:

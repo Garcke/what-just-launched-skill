@@ -72,43 +72,103 @@ class DirectorySources:
             text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
             parser = "html"
             products = self._microlaunch_products(text)
+        launches_by_product_id = self._microlaunch_launches_by_product_id()
         rows = []
         for idx, product in enumerate(products, 1):
             title = str(product.get("codename") or "").strip()
             slug = str(product.get("slug") or "").strip()
-            created_at = str(product.get("created_at") or "").strip()
-            summary = str(product.get("problem_label") or product.get("solution_label") or "").strip()
+            launch = launches_by_product_id.get(str(product.get("id") or ""))
+            created_at = str((launch or {}).get("created_at") or product.get("created_at") or "").strip()
+            launch_date = str((launch or {}).get("start_date") or date_only(created_at)).strip()
+            summary = str(product.get("problem_label") or product.get("solution_label") or (launch or {}).get("description") or "").strip()
             if not title or not slug:
                 continue
             if self.query and not self._microlaunch_matches_query(product):
                 continue
+            score = self._safe_float((launch or {}).get("product_points_week"))
+            if score is None:
+                score = self._safe_float((launch or {}).get("score_week"))
+            if score is None:
+                score = self._safe_float((launch or {}).get("votes"))
+            if score is None:
+                score = float(max(1, 40 - idx))
+            feedback = (launch or {}).get("feedback_arr") or []
             rows.append(item(
                 "microlaunch",
                 title,
                 f"https://microlaunch.net/p/{urllib.parse.quote(slug)}",
                 kind="product",
                 summary=summary,
-                score=float(max(1, 40 - idx)),
+                score=float(score),
                 published_at=created_at,
-                product_launch_date=date_only(created_at),
-                launch_date=date_only(created_at),
+                product_launch_date=date_only(launch_date),
+                launch_date=date_only(launch_date),
                 evidence_published_at=created_at,
-                date_confidence="known_launch_date" if created_at else "unknown",
+                date_confidence="known_launch_date" if launch_date else "unknown",
                 signals={
                     "id": product.get("id"),
                     "slug": slug,
+                    "launch_id": (launch or {}).get("id"),
+                    "batch": (launch or {}).get("batch_num"),
+                    "website_url": (launch or {}).get("url"),
+                    "votes": (launch or {}).get("votes"),
+                    "votes_week": (launch or {}).get("votes_week"),
+                    "score_week": (launch or {}).get("score_week"),
+                    "product_points_week": (launch or {}).get("product_points_week"),
+                    "feedback_count": len(feedback) if isinstance(feedback, list) else 0,
                     "market": product.get("market", ""),
                     "product_type": product.get("product_type", ""),
                     "offer_type": product.get("offer_type", ""),
                     "stage": product.get("stage", ""),
                     "is_premium": product.get("is_premium", False),
-                    "parser": parser,
+                    "parser": "page_plus_launches_api" if launch else parser,
                 },
-                raw=product,
+                raw={**product, "launch": launch or {}},
             ))
             if len(rows) >= self.args.limit:
                 break
         return rows
+
+    def _microlaunch_launches_by_product_id(self) -> dict[str, dict[str, Any]]:
+        rows: dict[str, dict[str, Any]] = {}
+        for batch in self._microlaunch_batches():
+            query = urllib.parse.urlencode({"channel": "MicroLaunch", "batch": batch})
+            url = f"https://nextjs-twitter-api.vercel.app/api/launches?{query}"
+            try:
+                data = get_json(
+                    url,
+                    headers={
+                        "Accept": "application/json",
+                        "Origin": "https://microlaunch.net",
+                        "Referer": "https://microlaunch.net/",
+                        "User-Agent": DEFAULT_UA,
+                    },
+                    timeout=30,
+                )
+            except Exception:
+                continue
+            launches = data.get("data", {}).get("launches", []) if isinstance(data, dict) else []
+            for launch in launches if isinstance(launches, list) else []:
+                product_id = str(launch.get("product_id") or "")
+                if not product_id:
+                    continue
+                previous = rows.get(product_id)
+                if previous and str(previous.get("created_at") or "") >= str(launch.get("created_at") or ""):
+                    continue
+                rows[product_id] = launch
+        return rows
+
+    def _microlaunch_batches(self) -> list[int]:
+        batches: list[int] = []
+        current = dt.date(self.start_date.year, self.start_date.month, 1)
+        end = dt.date(self.end_date.year, self.end_date.month, 1)
+        while current <= end:
+            batches.append(current.year * 100 + current.month)
+            if current.month == 12:
+                current = dt.date(current.year + 1, 1, 1)
+            else:
+                current = dt.date(current.year, current.month + 1, 1)
+        return batches
 
     def _microlaunch_products(self, text: str) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
