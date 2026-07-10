@@ -38,12 +38,6 @@ GitHub 仓库安装仍然支持，但需要 `owner/repo`：
 npx skills add Garcke/what-just-launched-skill -g
 ```
 
-GitHub CLI 2.90.0 或更新版本也支持安装/发布 skills：
-
-```bash
-gh skill install Garcke/what-just-launched-skill what-just-launched
-```
-
 ## 配置
 
 不要把密钥提交到仓库。API key 可以放在环境变量里，也可以放在：

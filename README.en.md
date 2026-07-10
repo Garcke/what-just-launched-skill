@@ -38,12 +38,6 @@ GitHub repository install is still supported, but it requires `owner/repo`:
 npx skills add Garcke/what-just-launched-skill -g
 ```
 
-GitHub CLI publish/install support is also available in GitHub CLI 2.90.0 or later:
-
-```bash
-gh skill install Garcke/what-just-launched-skill what-just-launched
-```
-
 ## Configuration
 
 Do not commit secrets. Provide API keys through environment variables or:
