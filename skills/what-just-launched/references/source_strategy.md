@@ -7,10 +7,10 @@ Use these product discovery sources:
 | Source | Use For | Access |
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` for GraphQL |
-| BetaList | early-stage startups and waitlists | Public pages; optional Firecrawl page parsing |
-| Microlaunch | indie products, SaaS, AI tools, developer products | Public pages; Firecrawl scrape can improve page parsing |
+| BetaList | early-stage startups and waitlists | Public HTML pages; no stable dated feed/API found yet |
+| Microlaunch | indie products, SaaS, AI tools, developer products | Public page data; an external launches API exposes dates/scores but not product names/slugs, so it is not yet a full replacement |
 | Uneed | indie products, SaaS, AI tools, launch pages | Public daily ladder API; optional Firecrawl fallback |
-| Fazier | daily product launches and indie products | Public pages; optional Firecrawl page parsing |
+| Fazier | daily product launches and indie products | Next.js JSON data endpoint `/_next/data/{buildId}/index.json`, with page parsing fallback |
 
 Candidate product sources to evaluate next:
 

@@ -25,7 +25,7 @@ class DirectorySources:
             url = f"https://betalist.com/search?q={urllib.parse.quote_plus(self.query)}"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_BETALIST_USE_FIRECRAWL")
         rows = self._betalist_rows(text, parser)
-        if not rows and parser == "firecrawl_scrape":
+        if not rows and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
             text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
             rows = self._betalist_rows(text, "html")
         return rows[: self.args.limit]
@@ -68,7 +68,7 @@ class DirectorySources:
         url = "https://microlaunch.net/"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_MICROLAUNCH_USE_FIRECRAWL")
         products = self._microlaunch_products(text)
-        if not products and parser == "firecrawl_scrape":
+        if not products and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
             text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
             parser = "html"
             products = self._microlaunch_products(text)
@@ -142,10 +142,13 @@ class DirectorySources:
         return any(term in haystack for term in query_terms)
 
     def fazier(self) -> list[dict[str, Any]]:
+        products = self._fazier_api_products()
+        parser = "next_data_json" if products else ""
         url = "https://fazier.com/"
-        text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_FAZIER_USE_FIRECRAWL")
-        products = self._fazier_products(text)
-        if not products and parser == "firecrawl_scrape":
+        if not products:
+            text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_FAZIER_USE_FIRECRAWL")
+            products = self._fazier_products(text)
+        if not products and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
             text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
             parser = "html"
             products = self._fazier_products(text)
@@ -186,6 +189,28 @@ class DirectorySources:
                 break
         return rows
 
+    def _fazier_api_products(self) -> list[dict[str, Any]]:
+        try:
+            text = get_text("https://fazier.com/", headers={"User-Agent": BROWSER_UA}, timeout=30)
+        except Exception:
+            return []
+        match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', text, flags=re.S)
+        if not match:
+            return []
+        try:
+            data = json.loads(html.unescape(match.group(1)))
+        except json.JSONDecodeError:
+            return []
+        build_id = str(data.get("buildId") or "").strip()
+        if not build_id:
+            return []
+        url = f"https://fazier.com/_next/data/{urllib.parse.quote(build_id)}/index.json"
+        try:
+            data = get_json(url, headers={"Accept": "application/json", "User-Agent": DEFAULT_UA}, timeout=30)
+        except Exception:
+            return []
+        return self._fazier_products_from_groups(data.get("pageProps", {}).get("posts", []))
+
     def _fazier_products(self, text: str) -> list[dict[str, Any]]:
         match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', text, flags=re.S)
         if not match:
@@ -195,6 +220,9 @@ class DirectorySources:
         except json.JSONDecodeError:
             return []
         groups = data.get("props", {}).get("pageProps", {}).get("posts", [])
+        return self._fazier_products_from_groups(groups)
+
+    def _fazier_products_from_groups(self, groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         seen: set[str] = set()
         for group in groups:
@@ -212,7 +240,7 @@ class DirectorySources:
         url = "https://www.uneed.best/"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_UNEED_USE_FIRECRAWL")
         rows = self._uneed_rows(text, parser)
-        if not rows and parser == "firecrawl_scrape":
+        if not rows and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
             text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
             rows = self._uneed_rows(text, "html")
         return rows[: self.args.limit]
