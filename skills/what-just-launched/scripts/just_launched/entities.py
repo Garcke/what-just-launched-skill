@@ -28,6 +28,13 @@ MATCH_STOPWORDS = {
     "world",
 }
 
+DIRECTORY_PRODUCT_HOSTS = {
+    "betalist.com",
+    "fazier.com",
+    "microlaunch.net",
+    "uneed.best",
+}
+
 
 def build_products(
     product_rows: list[dict[str, Any]],
@@ -63,6 +70,9 @@ def product_entity_key(row: dict[str, Any]) -> str:
         if host.startswith("www."):
             host = host[4:]
         path = parsed.path.strip("/")
+        if host in DIRECTORY_PRODUCT_HOSTS and path:
+            parts = path.split("/")
+            return f"url:{host}/{'/'.join(parts[:2])}"
         if host in {"apps.apple.com", "play.google.com", "github.com", "producthunt.com"} and path:
             parts = path.split("/")
             return f"url:{host}/{'/'.join(parts[:3])}"
