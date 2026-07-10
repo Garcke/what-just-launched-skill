@@ -10,7 +10,7 @@ It gathers launch and early-market signals from product launch platforms, app st
 
 ## Install
 
-The recommended install path is the open Agent Skills CLI. It supports Codex, Claude Code, Cursor, OpenCode, Gemini CLI, Copilot, and many other compatible hosts.
+Recommended install:
 
 ```bash
 npx skills add Garcke/what-just-launched-skill -g
@@ -18,97 +18,22 @@ npx skills add Garcke/what-just-launched-skill -g
 
 `-g` installs globally for your user. Drop `-g` to install into the current project.
 
-### Agent-Specific Install
+`Garcke/` is required for now because `npx skills add` resolves GitHub skills as `owner/repo`. If the project is later published through a skills registry or a dedicated npm installer, the install command can become shorter.
 
-Install only for Codex:
-
-```bash
-npx skills add Garcke/what-just-launched-skill -g -a codex
-```
-
-Install only for Claude Code:
+Optional: target one agent.
 
 ```bash
 npx skills add Garcke/what-just-launched-skill -g -a claude-code
 ```
 
-Install only for Cursor:
+Replace `claude-code` with another supported agent when needed, such as `codex`, `cursor`, or `opencode`.
 
-```bash
-npx skills add Garcke/what-just-launched-skill -g -a cursor
-```
-
-Install only for OpenCode:
-
-```bash
-npx skills add Garcke/what-just-launched-skill -g -a opencode
-```
-
-Install for multiple agents:
-
-```bash
-npx skills add Garcke/what-just-launched-skill -g -a codex -a cursor -a claude-code
-```
-
-List the skill before installing:
-
-```bash
-npx skills add Garcke/what-just-launched-skill --list
-```
-
-Update later:
+Update, list, or remove:
 
 ```bash
 npx skills update what-just-launched -g
-```
-
-List or remove:
-
-```bash
 npx skills list -g
 npx skills remove what-just-launched -g
-```
-
-### Claude Code Prompt Install
-
-If you want Claude Code to perform the install, paste this prompt into Claude Code:
-
-```text
-Install the Agent Skill from https://github.com/Garcke/what-just-launched-skill for Claude Code using:
-npx skills add Garcke/what-just-launched-skill -g -a claude-code
-Then run the skill's preflight or diagnose command and summarize which sources are configured.
-```
-
-If this project later becomes available in the Claude Code marketplace, prefer the marketplace command because it handles plugin-style updates. Until then, use `npx skills`.
-
-### Manual Developer Install
-
-Use this when editing the source locally:
-
-```bash
-git clone https://github.com/Garcke/what-just-launched-skill.git
-cd what-just-launched-skill
-```
-
-For Codex:
-
-```bash
-mkdir -p ~/.codex/skills
-cp -R skills/what-just-launched ~/.codex/skills/
-```
-
-For Claude Code:
-
-```bash
-mkdir -p ~/.claude/skills
-cp -R skills/what-just-launched ~/.claude/skills/
-```
-
-Windows PowerShell example:
-
-```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills"
-Copy-Item -Recurse -Force "skills\what-just-launched" "$env:USERPROFILE\.codex\skills\"
 ```
 
 ## Configuration
@@ -131,60 +56,46 @@ Append config values safely:
 python scripts/just-launched.py --write-config KEY=VALUE
 ```
 
-### Minimal Setup
+Minimal setup works without keys for Hacker News, GitHub Trending, Apple public endpoints, Uneed, Fazier, Stack Exchange, and Lobsters.
 
-Some sources work without keys, including Hacker News, GitHub Trending, Apple public endpoints, Uneed, Fazier, Stack Exchange, and Lobsters.
-
-Check what is available:
+Check available sources:
 
 ```bash
 python scripts/just-launched.py --preflight
 python scripts/just-launched.py --diagnose
 ```
 
-### Recommended Keys
+Recommended keys:
 
 ```bash
-# Product discovery
 python scripts/just-launched.py --write-config PRODUCT_HUNT_TOKEN=<product_hunt_token>
-
-# Web search
 python scripts/just-launched.py --write-config SERPAPI_API_KEY=<serpapi_key>
 python scripts/just-launched.py --write-config TAVILY_API_KEY=<tavily_key>
-
-# Optional page parsing helper for page-based product sources
 python scripts/just-launched.py --write-config FIRECRAWL_API_KEY=<firecrawl_key>
 ```
 
-### Full `.env` Template
+Full `.env` template:
 
 ```bash
-# Product Hunt
 PRODUCT_HUNT_TOKEN=
 PRODUCT_SCOUT_PRODUCT_HUNT_TOPIC=
 
-# Reddit OAuth
 REDDIT_CLIENT_ID=
 REDDIT_CLIENT_SECRET=
 REDDIT_USER_AGENT=linux:what-just-launched:0.1.0 (by /u/your_username)
 PRODUCT_SCOUT_REDDIT_COMMENTS=true
 
-# X / Twitter
 XQUIK_API_KEY=
 XAI_API_KEY=
 PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 
-# YouTube
 YOUTUBE_API_KEY=
 PRODUCT_SCOUT_YOUTUBE_COMMENTS=false
 
-# Web Search
 PRODUCT_SCOUT_WEB_PROVIDERS=brave,serpapi,tavily
 BRAVE_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
-
-# Page parsing helper
 FIRECRAWL_API_KEY=
 ```
 
@@ -276,4 +187,4 @@ Use `products` as the primary product discovery view. `product_data` contains so
 
 ## Release Rule
 
-Every push to GitHub should be accompanied by a new version tag and GitHub Release. Use `vMAJOR.MINOR.PATCH`, for example `v1.8.2`.
+Every push to GitHub should be accompanied by a new version tag and GitHub Release. Use `vMAJOR.MINOR.PATCH`, for example `v1.8.3`.

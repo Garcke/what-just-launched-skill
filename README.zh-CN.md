@@ -10,7 +10,7 @@
 
 ## 安装
 
-推荐使用开放 Agent Skills CLI。它支持 Codex、Claude Code、Cursor、OpenCode、Gemini CLI、Copilot 等兼容工具。
+推荐安装：
 
 ```bash
 npx skills add Garcke/what-just-launched-skill -g
@@ -18,97 +18,22 @@ npx skills add Garcke/what-just-launched-skill -g
 
 `-g` 表示安装到用户全局目录，所有项目都能使用。不加 `-g` 则安装到当前项目。
 
-### 指定 Agent 安装
+目前 `Garcke/` 不能去掉，因为 `npx skills add` 安装 GitHub 项目时需要 `owner/repo`。如果后续发布到 skills registry，或者做一个独立 npm installer，安装命令就可以进一步缩短。
 
-只安装到 Codex：
-
-```bash
-npx skills add Garcke/what-just-launched-skill -g -a codex
-```
-
-只安装到 Claude Code：
+可选：指定 Agent。
 
 ```bash
 npx skills add Garcke/what-just-launched-skill -g -a claude-code
 ```
 
-只安装到 Cursor：
+需要时可以把 `claude-code` 换成其他支持的 Agent，例如 `codex`、`cursor`、`opencode`。
 
-```bash
-npx skills add Garcke/what-just-launched-skill -g -a cursor
-```
-
-只安装到 OpenCode：
-
-```bash
-npx skills add Garcke/what-just-launched-skill -g -a opencode
-```
-
-同时安装到多个 Agent：
-
-```bash
-npx skills add Garcke/what-just-launched-skill -g -a codex -a cursor -a claude-code
-```
-
-安装前查看仓库里有哪些可安装项：
-
-```bash
-npx skills add Garcke/what-just-launched-skill --list
-```
-
-后续更新：
+更新、查看或卸载：
 
 ```bash
 npx skills update what-just-launched -g
-```
-
-查看或卸载：
-
-```bash
 npx skills list -g
 npx skills remove what-just-launched -g
-```
-
-### Claude Code 指令安装
-
-如果想让 Claude Code 自己执行安装，可以把这段话发给 Claude Code：
-
-```text
-Install the Agent Skill from https://github.com/Garcke/what-just-launched-skill for Claude Code using:
-npx skills add Garcke/what-just-launched-skill -g -a claude-code
-Then run the skill's preflight or diagnose command and summarize which sources are configured.
-```
-
-如果以后这个项目进入 Claude Code marketplace，再优先使用 marketplace 安装，因为 marketplace 更适合插件式自动更新。现在先使用 `npx skills`。
-
-### 手动开发安装
-
-需要本地修改源码时使用：
-
-```bash
-git clone https://github.com/Garcke/what-just-launched-skill.git
-cd what-just-launched-skill
-```
-
-安装到 Codex：
-
-```bash
-mkdir -p ~/.codex/skills
-cp -R skills/what-just-launched ~/.codex/skills/
-```
-
-安装到 Claude Code：
-
-```bash
-mkdir -p ~/.claude/skills
-cp -R skills/what-just-launched ~/.claude/skills/
-```
-
-Windows PowerShell 示例：
-
-```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills"
-Copy-Item -Recurse -Force "skills\what-just-launched" "$env:USERPROFILE\.codex\skills\"
 ```
 
 ## 配置
@@ -131,9 +56,7 @@ Copy-Item -Recurse -Force "skills\what-just-launched" "$env:USERPROFILE\.codex\s
 python scripts/just-launched.py --write-config KEY=VALUE
 ```
 
-### 最小可用配置
-
-部分来源不需要 key，例如 Hacker News、GitHub Trending、Apple 公共接口、Uneed、Fazier、Stack Exchange、Lobsters。
+最小可用配置不需要 key，Hacker News、GitHub Trending、Apple 公共接口、Uneed、Fazier、Stack Exchange、Lobsters 都可以先跑。
 
 检查当前可用来源：
 
@@ -142,49 +65,37 @@ python scripts/just-launched.py --preflight
 python scripts/just-launched.py --diagnose
 ```
 
-### 推荐配置
+推荐配置：
 
 ```bash
-# 产品发现
 python scripts/just-launched.py --write-config PRODUCT_HUNT_TOKEN=<product_hunt_token>
-
-# Web Search
 python scripts/just-launched.py --write-config SERPAPI_API_KEY=<serpapi_key>
 python scripts/just-launched.py --write-config TAVILY_API_KEY=<tavily_key>
-
-# 页面解析辅助，用于 BetaList、Microlaunch、Fazier 等页面型来源
 python scripts/just-launched.py --write-config FIRECRAWL_API_KEY=<firecrawl_key>
 ```
 
-### 完整 `.env` 模板
+完整 `.env` 模板：
 
 ```bash
-# Product Hunt
 PRODUCT_HUNT_TOKEN=
 PRODUCT_SCOUT_PRODUCT_HUNT_TOPIC=
 
-# Reddit OAuth
 REDDIT_CLIENT_ID=
 REDDIT_CLIENT_SECRET=
 REDDIT_USER_AGENT=linux:what-just-launched:0.1.0 (by /u/your_username)
 PRODUCT_SCOUT_REDDIT_COMMENTS=true
 
-# X / Twitter
 XQUIK_API_KEY=
 XAI_API_KEY=
 PRODUCT_SCOUT_X_ADAPTER_COMMAND=
 
-# YouTube
 YOUTUBE_API_KEY=
 PRODUCT_SCOUT_YOUTUBE_COMMENTS=false
 
-# Web Search
 PRODUCT_SCOUT_WEB_PROVIDERS=brave,serpapi,tavily
 BRAVE_API_KEY=
 SERPAPI_API_KEY=
 TAVILY_API_KEY=
-
-# 页面解析辅助
 FIRECRAWL_API_KEY=
 ```
 
@@ -276,4 +187,4 @@ python scripts/just-launched.py "AI coding tools" --mode all --product-sources p
 
 ## 发布规则
 
-每次推送到 GitHub 后，都需要创建新的版本 tag 和 GitHub Release。版本号使用 `vMAJOR.MINOR.PATCH`，例如 `v1.8.2`。
+每次推送到 GitHub 后，都需要创建新的版本 tag 和 GitHub Release。版本号使用 `vMAJOR.MINOR.PATCH`，例如 `v1.8.3`。

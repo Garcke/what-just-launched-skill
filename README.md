@@ -6,25 +6,23 @@ Discover recently launched products, apps, AI tools, startup launches, and early
 
 ## Install
 
-Recommended for Codex, Cursor, Claude Code, OpenCode, Gemini CLI, Copilot, and other Agent Skills hosts:
-
 ```bash
 npx skills add Garcke/what-just-launched-skill -g
 ```
 
-Target a specific agent:
+`Garcke/` is required for now because the `skills` CLI installs GitHub repositories as `owner/repo`. The command can become shorter later if the project is published through a registry or a dedicated installer.
+
+Optional: target one agent.
 
 ```bash
-npx skills add Garcke/what-just-launched-skill -g -a codex
 npx skills add Garcke/what-just-launched-skill -g -a claude-code
-npx skills add Garcke/what-just-launched-skill -g -a cursor
-npx skills add Garcke/what-just-launched-skill -g -a opencode
 ```
 
-Update later:
+Update or remove:
 
 ```bash
 npx skills update what-just-launched -g
+npx skills remove what-just-launched -g
 ```
 
 ## Configure
