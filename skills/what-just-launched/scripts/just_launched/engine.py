@@ -82,6 +82,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
                 "YOUTUBE_API_KEY": bool(os.getenv("YOUTUBE_API_KEY")),
                 "BRAVE_API_KEY": bool(os.getenv("BRAVE_API_KEY") or os.getenv("BRAVE_SEARCH_API_KEY")),
                 "FIRECRAWL_API_KEY": bool(os.getenv("FIRECRAWL_API_KEY")),
+                "PRODUCT_SCOUT_FIRECRAWL_KEYLESS": os.getenv("PRODUCT_SCOUT_FIRECRAWL_KEYLESS", "true"),
                 "SERPAPI_API_KEY": bool(os.getenv("SERPAPI_API_KEY")),
                 "TAVILY_API_KEY": bool(os.getenv("TAVILY_API_KEY")),
                 "PRODUCT_SCOUT_WEB_PROVIDERS": os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,serpapi,tavily"),

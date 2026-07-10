@@ -147,8 +147,9 @@ def firecrawl_scrape(
     timeout_ms: int = 60000,
 ) -> Any:
     key = os.getenv("FIRECRAWL_API_KEY")
-    if not key:
-        raise RuntimeError("FIRECRAWL_API_KEY is not configured")
+    headers = {"User-Agent": DEFAULT_UA}
+    if key:
+        headers["Authorization"] = f"Bearer {key}"
     return post_json(
         "https://api.firecrawl.dev/v2/scrape",
         {
@@ -157,10 +158,7 @@ def firecrawl_scrape(
             "onlyMainContent": only_main_content,
             "timeout": timeout_ms,
         },
-        headers={
-            "Authorization": f"Bearer {key}",
-            "User-Agent": DEFAULT_UA,
-        },
+        headers=headers,
         timeout=max(25, int(timeout_ms / 1000) + 10),
     )
 
@@ -171,13 +169,14 @@ def get_page_text(
     env_flag: str = "",
     timeout: int = 30,
 ) -> tuple[str, str]:
-    if os.getenv("FIRECRAWL_API_KEY") and _enabled(env_flag):
+    if _enabled(env_flag) and (os.getenv("FIRECRAWL_API_KEY") or _enabled("PRODUCT_SCOUT_FIRECRAWL_KEYLESS")):
         try:
             data = firecrawl_scrape(url, formats=["html", "markdown"], only_main_content=False)
             body = data.get("data", {}) if isinstance(data, dict) else {}
             text = "\n".join(str(body.get(key) or "") for key in ("html", "markdown") if body.get(key))
             if text:
-                return text, "firecrawl_scrape"
+                parser = "firecrawl_scrape" if os.getenv("FIRECRAWL_API_KEY") else "firecrawl_keyless"
+                return text, parser
         except Exception:
             pass
     return get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=timeout), "html"

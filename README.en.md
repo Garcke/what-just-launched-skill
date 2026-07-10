@@ -59,6 +59,7 @@ python scripts/just-launched.py --write-config KEY=VALUE
 ```
 
 Minimal setup works without keys for BetaList, Microlaunch, Uneed, Fazier, Hacker News, Stack Exchange, and Lobsters.
+Page-based product sources try Firecrawl when available. If `FIRECRAWL_API_KEY` is not configured, the engine tries Firecrawl keyless by default and falls back to direct HTML when keyless is blocked.
 
 Check available sources:
 

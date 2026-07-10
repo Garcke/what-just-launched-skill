@@ -108,7 +108,7 @@ For X/Twitter, prefer server-safe keys (`XAI_API_KEY` or `XQUIK_API_KEY`) on ser
 
 For YouTube, use `YOUTUBE_API_KEY` for video discovery. Use `yt-dlp` only as an optional transcript helper, and treat throttling or bot gates as source degradation.
 
-For web search, use configured API providers (`BRAVE_API_KEY` or `BRAVE_SEARCH_API_KEY`, `SERPAPI_API_KEY`, `TAVILY_API_KEY`). Treat web search as community/news evidence, not as a primary product discovery source. Use `FIRECRAWL_API_KEY` as an optional webpage parsing helper for page-based product sources such as BetaList, Microlaunch, Uneed, and Fazier, not as a web-search provider.
+For web search, use configured API providers (`BRAVE_API_KEY` or `BRAVE_SEARCH_API_KEY`, `SERPAPI_API_KEY`, `TAVILY_API_KEY`). Treat web search as community/news evidence, not as a primary product discovery source. Use Firecrawl as an optional webpage parsing helper for page-based product sources such as BetaList, Microlaunch, Uneed, and Fazier, not as a web-search provider. When `FIRECRAWL_API_KEY` is absent, the engine may try Firecrawl keyless and then fall back to direct HTML if keyless is blocked or unavailable.
 
 ## Output Brief
 

@@ -41,8 +41,12 @@ SERPAPI_API_KEY=
 TAVILY_API_KEY=
 
 # Optional page parsing helper for page-based product sources.
+# If FIRECRAWL_API_KEY is empty, the engine tries Firecrawl keyless by default
+# and falls back to direct HTML when keyless is blocked or unavailable.
+# Disable keyless globally with PRODUCT_SCOUT_FIRECRAWL_KEYLESS=false.
 # Disable per source with PRODUCT_SCOUT_<SOURCE>_USE_FIRECRAWL=false.
 FIRECRAWL_API_KEY=
+PRODUCT_SCOUT_FIRECRAWL_KEYLESS=true
 ```
 
 ## X Adapter Command Contract

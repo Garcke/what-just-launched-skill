@@ -12,6 +12,16 @@ Use these product discovery sources:
 | Uneed | indie products, SaaS, AI tools, launch pages | Public daily ladder API; optional Firecrawl fallback |
 | Fazier | daily product launches and indie products | Public pages; optional Firecrawl page parsing |
 
+Candidate product sources to evaluate next:
+
+| Source | Initial Quality | Notes |
+|---|---|---|
+| Peerlist Launchpad | High | Weekly launch board with product cards and feedback. Direct HTML can 403; Firecrawl can retrieve pages, but virtualized lists may expose only rendered cards. Treat as optional until coverage is stable. |
+| DevHunt | Medium-high for developer tools | Developer-tool directory with many tool pages. Good topical fit, but current page evidence does not expose reliable launch dates. Use as date-unverified discovery unless a dated endpoint is found. |
+| Launching Next | Medium | New-startup directory with simple pages. Useful breadth, but weaker freshness and quality signals than Product Hunt, Uneed, Fazier, or Peerlist. |
+| Tiny Startups | Unknown | Candidate launch board, but retrieval was unstable in testing. Re-test through Firecrawl before adding. |
+| AI tool directories | Mixed | Futurepedia, Toolify, TAIAT, and similar sites are broad discovery sources, but often lack true launch dates and may rank SEO pages over actual launches. Use only with strong freshness evidence. |
+
 ## User Feedback Sources
 
 Use these feedback sources:

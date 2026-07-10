@@ -59,6 +59,7 @@ python scripts/just-launched.py --write-config KEY=VALUE
 ```
 
 最小可用配置不需要 key，BetaList、Microlaunch、Uneed、Fazier、Hacker News、Stack Exchange、Lobsters 都可以先跑。
+页面型产品源会优先尝试 Firecrawl。没有配置 `FIRECRAWL_API_KEY` 时，会默认尝试 Firecrawl keyless；如果 keyless 被拦截或不可用，会自动回退到普通 HTML 抓取。
 
 检查当前可用来源：
 
