@@ -143,7 +143,7 @@ def build_product_entity(rows: list[dict[str, Any]], community_rows: list[dict[s
 
     launch_dates = sorted({str(row.get("launch_date") or row.get("product_launch_date") or "") for row in rows if row.get("launch_date") or row.get("product_launch_date")})
     first_seen_dates = sorted({str(row.get("first_seen_at") or "") for row in rows if row.get("first_seen_at")})
-    confidence_rank = {"known_in_range": 3, "known_out_of_range": 2, "evidence_date_only": 1, "unknown": 0}
+    confidence_rank = {"known_in_range": 4, "inferred_in_range": 3, "known_out_of_range": 2, "evidence_date_only": 1, "unknown": 0}
     launch_date_confidence = max(
         (str(row.get("ranking", {}).get("launch_date_confidence") or "unknown") for row in rows),
         key=lambda value: confidence_rank.get(value, 0),
@@ -216,6 +216,7 @@ def product_score_breakdown(
     evidence_depth = min(1.0, len(rows) / 4.0)
     launch_confidence_score = {
         "known_in_range": 1.0,
+        "inferred_in_range": 0.85,
         "known_out_of_range": 0.35,
         "evidence_date_only": 0.65,
         "unknown": 0.20,
@@ -246,6 +247,8 @@ def product_rank_reasons(
         reasons.append(f"product evidence from {', '.join(sources[:4])}")
     if launch_date_confidence == "known_in_range":
         reasons.append("launch date is verified inside the requested window")
+    elif launch_date_confidence == "inferred_in_range":
+        reasons.append("launch date is inferred from the first weekly vote inside the requested window")
     elif launch_date_confidence == "evidence_date_only":
         reasons.append("fresh evidence exists, but launch date is not directly verified")
     if feedback:

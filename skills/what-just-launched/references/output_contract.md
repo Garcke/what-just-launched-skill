@@ -186,7 +186,7 @@ product_launch_date = backward-compatible alias for launch_date
 first_seen_at = first date this skill saw the product in a chart/source, when known
 evidence_published_at = article/post/video/chart evidence date
 published_at = backward-compatible evidence publication date
-date_confidence = source-level date basis such as known_launch_date, chart_date_only, trending_period_only, evidence_date_only, or unknown
+date_confidence = source-level date basis such as known_launch_date, inferred_from_first_vote, chart_date_only, trending_period_only, evidence_date_only, or unknown
 ```
 
 Use `--filter-launch-date` for new-product discovery so products with known launch dates outside the requested range are removed.
@@ -215,9 +215,12 @@ The ranking pipeline:
 
 ```text
 known_in_range
+inferred_in_range
 known_out_of_range
 evidence_date_only
 unknown
 ```
+
+`inferred_in_range` means a source supplied a strong proxy date inside the requested window rather than a direct launch timestamp. Uneed weekly archives use the earliest vote timestamp as this proxy; daily ladders retain `known_in_range`.
 
 `matched_sources` contains more than one source when duplicate evidence was merged.

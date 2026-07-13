@@ -61,6 +61,8 @@ The top-level `time_range` is the search window. `launch_date` is the product's 
 
 Use `date_confidence` and `ranking.launch_date_confidence` carefully. Trending pages often expose trend dates, not true launch dates, so label those as "date not verified" when they matter.
 
+Uneed uses completed weekly archives first, the current week's daily ladders, and historical daily ladders only when weekly results do not fill the requested limit. Weekly launch dates are inferred from each product's earliest vote timestamp and are less certain than daily ladder dates.
+
 When `--filter-launch-date` is active, sources with known launch dates keep only products whose `product_launch_date` is inside `time_range`. Sources without a reliable launch date may still return results; label those as "date not verified" if they affect the conclusion.
 
 ## Ranking Semantics

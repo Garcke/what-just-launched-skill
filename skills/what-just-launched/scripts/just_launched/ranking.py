@@ -223,7 +223,7 @@ class RankingMixin:
             merged_ranking["source_diversity"] = clamp((len(sources) - 1) / 4.0)
             merged_ranking["launch_date_confidence"] = max(
                 (row["_ranking"]["launch_date_confidence"] for row in group_rows),
-                key={"known_in_range": 3, "known_out_of_range": 2, "evidence_date_only": 1, "unknown": 0}.get,
+                key={"known_in_range": 4, "inferred_in_range": 3, "known_out_of_range": 2, "evidence_date_only": 1, "unknown": 0}.get,
             )
             merged_row["_ranking"] = merged_ranking
             if len(group_rows) > 1:
@@ -252,6 +252,8 @@ class RankingMixin:
         if date_confidence in {"chart_date_only", "trending_period_only"}:
             return "evidence_date_only"
         launch_date = str(row.get("launch_date") or row.get("product_launch_date") or "")
+        if date_confidence == "inferred_from_first_vote" and launch_date:
+            return "inferred_in_range" if self._date_in_range(launch_date) else "known_out_of_range"
         if launch_date:
             return "known_in_range" if self._date_in_range(launch_date) else "known_out_of_range"
         if row.get("evidence_published_at") or row.get("published_at"):

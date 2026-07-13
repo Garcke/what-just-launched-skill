@@ -7,6 +7,7 @@ import os
 import re
 import urllib.parse
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from ...common import (
@@ -393,59 +394,191 @@ class DirectorySources:
     def _uneed_api_rows(self) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         seen: set[str] = set()
-        current = self.end_date
-        while current >= self.start_date and len(rows) < self.args.limit:
-            day = current.isoformat()
+        today = dt.date.fromisoformat(self.today)
+        effective_end = min(self.end_date, today)
+        if self.start_date > effective_end:
+            return rows
+
+        daily_dates: set[dt.date] = set()
+        week_start = effective_end - dt.timedelta(days=effective_end.weekday())
+        first_week = self.start_date - dt.timedelta(days=self.start_date.weekday())
+        weeks: list[dt.date] = []
+        while week_start >= first_week:
+            weeks.append(week_start)
+            week_start -= dt.timedelta(days=7)
+
+        for week_start in weeks:
+            week_end = week_start + dt.timedelta(days=6)
+            range_start = max(self.start_date, week_start)
+            range_end = min(effective_end, week_end)
+            if week_end < today:
+                self._uneed_add_weekly_rows(rows, seen, week_start, range_start, range_end)
+            else:
+                self._uneed_add_daily_range(rows, seen, range_start, range_end, daily_dates)
+            if len(rows) >= self.args.limit:
+                return rows[: self.args.limit]
+
+        # Weekly archives contain winners, not every daily launch. Fill sparse or
+        # query-specific results from daily ladders only when the archive is insufficient.
+        for week_start in weeks:
+            week_end = week_start + dt.timedelta(days=6)
+            if week_end >= today:
+                continue
+            range_start = max(self.start_date, week_start)
+            range_end = min(effective_end, week_end)
+            self._uneed_add_daily_range(rows, seen, range_start, range_end, daily_dates)
+            if len(rows) >= self.args.limit:
+                break
+        return rows
+
+    def _uneed_add_weekly_rows(
+        self,
+        rows: list[dict[str, Any]],
+        seen: set[str],
+        week_start: dt.date,
+        range_start: dt.date,
+        range_end: dt.date,
+    ) -> None:
+        week = week_start.isoformat()
+        url = "https://www.uneed.best/api/tools/get-archives?" + urllib.parse.urlencode({
+            "type": "weekly",
+            "date": week,
+            "year": week,
+        })
+        data = self._uneed_get_api(url)
+        if not isinstance(data, list):
+            return
+        for idx, product in enumerate(data, 1):
+            votes = [vote for vote in product.get("votes") or [] if isinstance(vote, dict)]
+            vote_dates = sorted(filter(None, (date_only(str(vote.get("created_at") or "")) for vote in votes)))
+            launch_date = vote_dates[0] if vote_dates else ""
+            if not launch_date:
+                continue
+            parsed_launch_date = dt.date.fromisoformat(launch_date)
+            if not range_start <= parsed_launch_date <= range_end:
+                continue
+            self._uneed_add_product(
+                rows,
+                seen,
+                product,
+                idx,
+                launch_date,
+                "inferred_from_first_vote",
+                "weekly_archive_api",
+                week_start=week,
+            )
+            if len(rows) >= self.args.limit:
+                return
+
+    def _uneed_add_daily_range(
+        self,
+        rows: list[dict[str, Any]],
+        seen: set[str],
+        range_start: dt.date,
+        range_end: dt.date,
+        daily_dates: set[dt.date],
+    ) -> None:
+        dates: list[dt.date] = []
+        current = range_end
+        while current >= range_start:
+            if current not in daily_dates:
+                daily_dates.add(current)
+                dates.append(current)
+            current -= dt.timedelta(days=1)
+
+        def fetch_day(current_day: dt.date) -> tuple[str, Any]:
+            day = current_day.isoformat()
             url = "https://www.uneed.best/api/tools/get-ladder?" + urllib.parse.urlencode({
                 "type": "daily",
                 "date": day,
                 "year": day,
             })
-            data = self._uneed_get_ladder(url)
-            if not isinstance(data, list):
-                break
-            for idx, product in enumerate(data, 1):
-                slug = str(product.get("slug") or "")
-                title = str(product.get("name") or "").strip()
-                if not slug or not title or slug in seen:
-                    continue
-                if self.query and not self._directory_matches_query(product, ("name", "description")):
-                    continue
-                votes = product.get("votes") or []
-                vote_score = sum(float(vote.get("value") or 1) for vote in votes if isinstance(vote, dict))
-                review_count = len(product.get("reviews") or [])
-                seen.add(slug)
-                rows.append(item(
-                    "uneed",
-                    title,
-                    f"https://www.uneed.best/tool/{urllib.parse.quote(slug)}",
-                    kind="product",
-                    summary=str(product.get("description") or ""),
-                    score=vote_score or float(max(1, 50 - idx)),
-                    published_at=day,
-                    product_launch_date=day,
-                    launch_date=day,
-                    evidence_published_at=day,
-                    date_confidence="known_launch_date",
-                    signals={
-                        "id": product.get("id"),
-                        "slug": slug,
-                        "rank": idx,
-                        "votes": len(votes),
-                        "vote_score": vote_score,
-                        "reviews": review_count,
-                        "rate": product.get("rate"),
-                        "premium": product.get("premium", False),
-                        "parser": "api",
-                    },
-                    raw=product,
-                ))
-                if len(rows) >= self.args.limit:
-                    break
-            current = current - dt.timedelta(days=1)
-        return rows
+            return day, self._uneed_get_api(url)
 
-    def _uneed_get_ladder(self, url: str) -> Any:
+        with ThreadPoolExecutor(max_workers=min(4, len(dates) or 1)) as executor:
+            daily_payloads = list(executor.map(fetch_day, dates))
+
+        for day, data in daily_payloads:
+            if isinstance(data, list):
+                for idx, product in enumerate(data, 1):
+                    self._uneed_add_product(
+                        rows,
+                        seen,
+                        product,
+                        idx,
+                        day,
+                        "known_launch_date",
+                        "daily_api",
+                    )
+                    if len(rows) >= self.args.limit:
+                        return
+
+    def _uneed_add_product(
+        self,
+        rows: list[dict[str, Any]],
+        seen: set[str],
+        product: dict[str, Any],
+        rank: int,
+        launch_date: str,
+        date_confidence: str,
+        parser: str,
+        *,
+        week_start: str = "",
+    ) -> None:
+        slug = str(product.get("slug") or "")
+        title = str(product.get("name") or "").strip()
+        if not slug or not title or slug in seen:
+            return
+        if self.query and not self._uneed_matches_query(product):
+            return
+        votes = [vote for vote in product.get("votes") or [] if isinstance(vote, dict)]
+        vote_score = float(product.get("totalVoteValue") or 0)
+        if not vote_score:
+            vote_score = sum(float(vote.get("value") or 1) for vote in votes)
+        seen.add(slug)
+        signals = {
+            "id": product.get("id"),
+            "slug": slug,
+            "rank": rank,
+            "votes": len(votes),
+            "vote_score": vote_score,
+            "reviews": len(product.get("reviews") or []),
+            "rate": product.get("rate"),
+            "premium": product.get("premium", False),
+            "parser": parser,
+        }
+        if week_start:
+            signals["week_start"] = week_start
+            signals["date_basis"] = "earliest_vote_created_at"
+        rows.append(item(
+            "uneed",
+            title,
+            f"https://www.uneed.best/tool/{urllib.parse.quote(slug)}",
+            kind="product",
+            summary=str(product.get("description") or ""),
+            score=vote_score or float(max(1, 50 - rank)),
+            published_at=launch_date,
+            product_launch_date=launch_date,
+            launch_date=launch_date,
+            evidence_published_at=launch_date,
+            date_confidence=date_confidence,
+            signals=signals,
+            raw=product,
+        ))
+
+    def _uneed_matches_query(self, product: dict[str, Any]) -> bool:
+        tags = product.get("Tags") or product.get("tags") or []
+        tag_text = " ".join(
+            str(tag.get("name") or tag.get("slug") or "") if isinstance(tag, dict) else str(tag)
+            for tag in tags
+        )
+        return self._query_matches_text(" ".join((
+            str(product.get("name") or ""),
+            str(product.get("description") or ""),
+            tag_text,
+        )))
+
+    def _uneed_get_api(self, url: str) -> Any:
         last_error: Exception | None = None
         for _ in range(2):
             try:
