@@ -7,7 +7,7 @@ import urllib.parse
 from typing import Any
 
 from .feedback_summary import summarize_feedback
-from .ranking import clean_text, normalize_url
+from .ranking import clean_text, normalize_url, parse_date
 
 MATCH_STOPWORDS = {
     "about",
@@ -48,7 +48,8 @@ def build_products(
             key = f"row:{idx}"
         groups.setdefault(key, []).append(row)
 
-    products = [build_product_entity(rows, community_rows) for rows in groups.values()]
+    merged_groups = merge_cross_source_groups(list(groups.values()))
+    products = [build_product_entity(rows, community_rows) for rows in merged_groups]
     products.sort(
         key=lambda product: (
             product.get("product_score", 0),
@@ -60,6 +61,48 @@ def build_products(
     for rank, product in enumerate(products, 1):
         product["product_rank"] = rank
     return products[:limit]
+
+
+def merge_cross_source_groups(groups: list[list[dict[str, Any]]]) -> list[list[dict[str, Any]]]:
+    merged: list[list[dict[str, Any]]] = []
+    title_index: dict[str, list[int]] = {}
+    for rows in groups:
+        titles = {
+            canonical_title(str(row.get("title") or ""))
+            for row in rows
+            if len(canonical_title(str(row.get("title") or ""))) >= 5
+        }
+        target: int | None = None
+        for title in titles:
+            for index in title_index.get(title, []):
+                if can_merge_product_groups(merged[index], rows):
+                    target = index
+                    break
+            if target is not None:
+                break
+        if target is None:
+            target = len(merged)
+            merged.append(list(rows))
+        else:
+            merged[target].extend(rows)
+        for title in titles:
+            if target not in title_index.setdefault(title, []):
+                title_index[title].append(target)
+    return merged
+
+
+def can_merge_product_groups(left: list[dict[str, Any]], right: list[dict[str, Any]]) -> bool:
+    left_sources = {str(row.get("source") or "") for row in left}
+    right_sources = {str(row.get("source") or "") for row in right}
+    if left_sources & right_sources:
+        return False
+    left_dates = [parse_date(str(row.get("launch_date") or row.get("product_launch_date") or "")) for row in left]
+    right_dates = [parse_date(str(row.get("launch_date") or row.get("product_launch_date") or "")) for row in right]
+    known_left = [value for value in left_dates if value]
+    known_right = [value for value in right_dates if value]
+    if known_left and known_right:
+        return min(abs((a - b).days) for a in known_left for b in known_right) <= 14
+    return True
 
 
 def product_entity_key(row: dict[str, Any]) -> str:
@@ -224,6 +267,8 @@ def match_community_feedback(
     product_domains = product_match_domains(product_rows)
     matches: list[dict[str, Any]] = []
     for row in community_rows:
+        if str(row.get("signals", {}).get("feedback_likelihood") or "") == "low":
+            continue
         score = feedback_match_score(row, product_terms, product_domains)
         if score < 0.45:
             continue

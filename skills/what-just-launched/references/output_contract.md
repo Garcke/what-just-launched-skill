@@ -93,9 +93,23 @@ error
 
 Use `source`, `title`, `url`, `summary`, `signals`, and `ranking` when writing briefs. The script omits `raw` by default; pass `--include-raw` only when debugging adapters.
 
+Web-search rows add classification and publication-date metadata under `signals`:
+
+```json
+{
+  "result_type": "community_discussion",
+  "feedback_likelihood": "high",
+  "date_raw": "3 hours ago",
+  "date_source": "provider:date",
+  "date_verified": true
+}
+```
+
+`result_type` can be `community_discussion`, `social_post`, `review_or_comparison`, `news`, `press_release`, `launch_listing`, `listicle`, `official_or_product_page`, or `web_page`. Low-likelihood web pages remain available as market evidence but do not contribute to feedback summaries or product-level feedback matching. Web results with a verified publication date outside `time_range` are discarded.
+
 ## Product Entity Entries
 
-`products` contains grouped product entities built from `product_data` evidence:
+`products` contains grouped product entities built from `product_data` evidence. Exact normalized names from different sources merge when launch dates are within 14 days; same-source duplicates remain separate:
 
 ```json
 {

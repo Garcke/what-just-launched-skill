@@ -144,6 +144,8 @@ Follow-up sources to configure
 
 Use `community_feedback_summary` for broad user-feedback themes, and `products[].feedback_summary` when explaining feedback tied to one product.
 
+For web-search evidence, inspect `signals.result_type`, `signals.feedback_likelihood`, and `signals.date_verified`. Treat low-likelihood official pages, launch listings, listicles, and press releases as market evidence rather than user feedback.
+
 Read `references/source_strategy.md` when choosing sources or explaining missing coverage. Read `references/configuration.md` when setting up keys. Read `references/output_contract.md` when changing scripts or building downstream tooling against the JSON output.
 
 When changing source coverage, keep product/app/repository adapters under `scripts/just_launched/sources/product_data/`, keep community/comment feedback adapters under `scripts/just_launched/sources/community_feedback/`, and register source ids, method names, source types, and mode membership in `scripts/just_launched/sources/registry.py`.

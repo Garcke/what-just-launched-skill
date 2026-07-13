@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import re
 import urllib.request
 from typing import Any
 
@@ -42,6 +43,8 @@ class ProductHuntSource:
         rows = []
         for edge in data.get("data", {}).get("posts", {}).get("edges", []):
             n = edge.get("node", {})
+            if not self._product_hunt_matches_query(n, topic):
+                continue
             rows.append(item(
                 "product_hunt",
                 n.get("name", ""),
@@ -54,10 +57,36 @@ class ProductHuntSource:
                 evidence_published_at=n.get("createdAt", ""),
                 date_confidence="known_launch_date" if n.get("createdAt") else "unknown",
                 score=float(n.get("votesCount") or 0) + float(n.get("commentsCount") or 0) * 3,
-                signals={"votes": n.get("votesCount"), "comments": n.get("commentsCount"), "topic": topic or ""},
+                signals={
+                    "votes": n.get("votesCount"),
+                    "comments": n.get("commentsCount"),
+                    "topic": topic or "",
+                    "local_query_match": bool(self.query),
+                },
                 raw=n,
             ))
         return rows
+
+    def _product_hunt_matches_query(self, product: dict[str, Any], topic: str | None) -> bool:
+        terms = [
+            term for term in re.findall(r"[a-z0-9]+", (self.query or "").lower())
+            if term not in {
+                "alternative", "alternatives", "app", "apps", "complaint", "complaints", "feedback",
+                "latest", "launch", "launched", "new", "pricing", "product", "products", "recent",
+                "review", "reviews", "tool", "tools",
+            }
+        ]
+        topic_terms = {
+            "artificial-intelligence": {"ai", "agent", "agents", "artificial", "intelligence", "llm"},
+            "developer-tools": {"api", "code", "coding", "developer", "devtool", "github"},
+            "productivity": {"calendar", "notes", "productivity", "task", "todo", "workflow"},
+            "marketing": {"crm", "marketing", "sales", "seo"},
+        }.get(topic or "", set())
+        terms = [term for term in terms if term not in topic_terms]
+        if not terms:
+            return True
+        haystack = f"{product.get('name') or ''} {product.get('tagline') or ''}".lower()
+        return any(term in haystack for term in terms)
 
     def _product_hunt_topic(self) -> str | None:
         topic = os.getenv("PRODUCT_SCOUT_PRODUCT_HUNT_TOPIC", "").strip()

@@ -39,6 +39,10 @@ MIGRATION_PATTERNS = {
 
 
 def summarize_feedback(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    rows = [
+        row for row in rows
+        if str(row.get("signals", {}).get("feedback_likelihood") or "") != "low"
+    ]
     evidence_count = len(rows)
     return {
         "evidence_count": evidence_count,

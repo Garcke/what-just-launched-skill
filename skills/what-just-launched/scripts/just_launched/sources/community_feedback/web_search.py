@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import datetime as dt
 import os
+import re
 import urllib.parse
 from typing import Any
 
 from ...common import (
     DEFAULT_UA,
+    date_only,
     get_json,
     item,
     post_json,
@@ -71,6 +74,10 @@ class WebSearchSource:
             snippets = r.get("extra_snippets") or []
             summary_parts = [r.get("description", ""), *snippets[:2]]
             summary = " ".join(part for part in summary_parts if part)
+            published_at, date_raw, date_source = self._web_result_date(r, r.get("url", ""))
+            if published_at and not self._date_in_range(published_at):
+                continue
+            result_type, feedback_likelihood = self._classify_web_result(r.get("title", ""), r.get("url", ""), summary)
             rows.append(item(
                 "brave_search",
                 r.get("title", ""),
@@ -78,11 +85,19 @@ class WebSearchSource:
                 kind="web_result",
                 summary=summary,
                 score=max(1, 30 - idx),
+                published_at=published_at,
+                evidence_published_at=published_at,
+                date_confidence="evidence_date_only" if published_at else "unknown",
                 signals={
                     "position": idx,
                     "provider": "brave",
                     "age": r.get("age", ""),
                     "freshness": self._brave_freshness(),
+                    "result_type": result_type,
+                    "feedback_likelihood": feedback_likelihood,
+                    "date_raw": date_raw,
+                    "date_source": date_source,
+                    "date_verified": bool(published_at),
                 },
                 raw=r,
             ))
@@ -106,6 +121,10 @@ class WebSearchSource:
             raise RuntimeError(str(data.get("error")))
         rows = []
         for idx, r in enumerate(data.get("organic_results", []), 1):
+            published_at, date_raw, date_source = self._web_result_date(r, r.get("link", ""))
+            if published_at and not self._date_in_range(published_at):
+                continue
+            result_type, feedback_likelihood = self._classify_web_result(r.get("title", ""), r.get("link", ""), r.get("snippet", ""))
             rows.append(item(
                 "serpapi_search",
                 r.get("title", ""),
@@ -113,7 +132,18 @@ class WebSearchSource:
                 kind="web_result",
                 summary=r.get("snippet", ""),
                 score=max(1, 30 - idx),
-                signals={"position": r.get("position") or idx, "provider": "serpapi"},
+                published_at=published_at,
+                evidence_published_at=published_at,
+                date_confidence="evidence_date_only" if published_at else "unknown",
+                signals={
+                    "position": r.get("position") or idx,
+                    "provider": "serpapi",
+                    "result_type": result_type,
+                    "feedback_likelihood": feedback_likelihood,
+                    "date_raw": date_raw,
+                    "date_source": date_source,
+                    "date_verified": bool(published_at),
+                },
                 raw=r,
             ))
         return rows
@@ -132,6 +162,10 @@ class WebSearchSource:
         )
         rows = []
         for r in data.get("results", []):
+            published_at, date_raw, date_source = self._web_result_date(r, r.get("url", ""))
+            if published_at and not self._date_in_range(published_at):
+                continue
+            result_type, feedback_likelihood = self._classify_web_result(r.get("title", ""), r.get("url", ""), r.get("content", ""))
             rows.append(item(
                 "tavily_search",
                 r.get("title", ""),
@@ -139,9 +173,82 @@ class WebSearchSource:
                 kind="web_result",
                 summary=r.get("content", ""),
                 score=float(r.get("score") or 10),
+                published_at=published_at,
+                evidence_published_at=published_at,
+                date_confidence="evidence_date_only" if published_at else "unknown",
+                signals={
+                    "provider": "tavily",
+                    "result_type": result_type,
+                    "feedback_likelihood": feedback_likelihood,
+                    "date_raw": date_raw,
+                    "date_source": date_source,
+                    "date_verified": bool(published_at),
+                },
                 raw=r,
             ))
         return rows
+
+    def _web_result_date(self, result: dict[str, Any], url: str) -> tuple[str, str, str]:
+        for key in ("published_date", "publishedDate", "page_age", "age", "date"):
+            raw = str(result.get(key) or "").strip()
+            parsed = self._parse_web_date(raw)
+            if parsed:
+                return parsed, raw, f"provider:{key}"
+        match = re.search(r"/(20\d{2})[/_-](0?[1-9]|1[0-2])[/_-](0?[1-9]|[12]\d|3[01])(?:/|[-_.])", url)
+        if match:
+            try:
+                parsed = dt.date(int(match.group(1)), int(match.group(2)), int(match.group(3))).isoformat()
+                return parsed, match.group(0).strip("/"), "url_path"
+            except ValueError:
+                pass
+        return "", "", ""
+
+    def _parse_web_date(self, value: str) -> str:
+        if not value:
+            return ""
+        parsed = date_only(value)
+        if parsed:
+            return parsed
+        lowered = value.lower().strip()
+        if lowered == "today":
+            return self.end_date.isoformat()
+        if lowered == "yesterday":
+            return (self.end_date - dt.timedelta(days=1)).isoformat()
+        relative = re.search(r"(\d+)\s+(minute|hour|day|week|month|year)s?\s+ago", lowered)
+        if relative:
+            amount = int(relative.group(1))
+            unit = relative.group(2)
+            days = amount if unit == "day" else amount * 7 if unit == "week" else amount * 30 if unit == "month" else amount * 365 if unit == "year" else 0
+            return (self.end_date - dt.timedelta(days=days)).isoformat()
+        for fmt in ("%b %d, %Y", "%B %d, %Y", "%m/%d/%Y", "%Y/%m/%d"):
+            try:
+                return dt.datetime.strptime(value, fmt).date().isoformat()
+            except ValueError:
+                continue
+        return ""
+
+    def _classify_web_result(self, title: str, url: str, summary: str) -> tuple[str, str]:
+        parsed = urllib.parse.urlparse(url)
+        host = parsed.netloc.lower().removeprefix("www.")
+        path = parsed.path.lower()
+        text = f"{title} {summary}".lower()
+        if host in {"reddit.com", "news.ycombinator.com", "lobste.rs", "stackoverflow.com"}:
+            return "community_discussion", "high"
+        if host in {"x.com", "twitter.com", "linkedin.com", "facebook.com", "youtube.com"}:
+            return "social_post", "medium"
+        if host in {"prnewswire.com", "businesswire.com", "globenewswire.com", "einpresswire.com"} or "press-release" in path or "press release" in text:
+            return "press_release", "low"
+        if host in {"producthunt.com", "betalist.com", "peerlist.io", "microlaunch.net", "uneed.best", "fazier.com"}:
+            return "launch_listing", "low"
+        if re.search(r"\b(review|reviews|reviewed|hands-on|tested|comparison|alternative|alternatives|versus|vs\.?\b)", text):
+            return "review_or_comparison", "high"
+        if re.search(r"\b(top|best)\s+\d*\s*(ai|apps?|products?|platforms?|tools?)\b", text) or "ranked" in text:
+            return "listicle", "low"
+        if any(segment in path for segment in ("/terms", "/privacy", "/docs", "/pricing", "/download", "/plugin")):
+            return "official_or_product_page", "low"
+        if re.search(r"\b(announce|announced|launches|launched|released|funding|raises)\b", text):
+            return "news", "medium"
+        return "web_page", "low"
 
     def _brave_api_key(self) -> str:
         return os.getenv("BRAVE_API_KEY") or os.getenv("BRAVE_SEARCH_API_KEY") or ""

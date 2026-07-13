@@ -47,10 +47,10 @@ class ProductScout(RankingMixin, ProductHuntSource, PeerlistSource, AppStoreSour
     def preflight(self) -> list[dict[str, str]]:
         checks = [
             status("product_hunt", "available" if os.getenv("PRODUCT_HUNT_TOKEN") else "missing_config", "set PRODUCT_HUNT_TOKEN for Product Hunt GraphQL"),
-            status("betalist", "available", "scrapes public BetaList pages; uses Firecrawl scrape when configured"),
-            status("microlaunch", "available", "scrapes Microlaunch product pages; uses Firecrawl scrape when configured"),
-            status("uneed", "available", "scrapes Uneed product pages; uses Firecrawl scrape when configured"),
-            status("fazier", "available", "scrapes Fazier launch pages; uses Firecrawl scrape when configured"),
+            status("betalist", "available", "uses Atom feed, then direct HTML, with Firecrawl as fallback"),
+            status("microlaunch", "available", "uses direct page data plus launches API, with Firecrawl as fallback"),
+            status("uneed", "available", "uses daily ladder API, then direct HTML, with Firecrawl as fallback"),
+            status("fazier", "available", "uses Next.js JSON, then direct HTML, with Firecrawl as fallback"),
             status("peerlist", "available", "uses the public Launchpad spotlight API; raw HTTP may be blocked by Cloudflare"),
             status("hacker_news", "available", "community/news source; uses free HN Algolia API"),
             status("reddit", "available" if self._has_reddit_oauth() else "missing_config", "use REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT; public fallback is disabled by default"),
