@@ -84,7 +84,7 @@ Product Hunt, Peerlist Launchpad, BetaList, Microlaunch, Uneed, Fazier
 For user feedback, use:
 
 ```text
-Reddit, Reddit Public JSON, Hacker News, Web Search,
+Reddit, Hacker News, Web Search,
 Stack Exchange, Lobsters, X / Twitter, YouTube
 ```
 
@@ -102,7 +102,7 @@ python scripts/just-launched.py "AI coding tools" --mode all --product-sources p
 
 ## Safety And Reliability
 
-Do not scrape Reddit HTML from server IPs. Reddit should use OAuth credentials and a unique descriptive User-Agent. The script keeps public Reddit JSON disabled unless `PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON=true` is explicitly set.
+Prefer Reddit OAuth credentials and a unique descriptive User-Agent when configured. Without OAuth, the Reddit adapter automatically uses low-rate public RSS discovery; treat its missing engagement counts as lower-confidence evidence.
 
 For X/Twitter, prefer server-safe keys (`XAI_API_KEY` or `XQUIK_API_KEY`) on servers. Browser cookie access (`FROM_BROWSER=auto` or `AUTH_TOKEN` + `CT0`) is for local/user-consented use only. Never write cookies into the skill files.
 

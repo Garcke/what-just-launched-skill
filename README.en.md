@@ -145,8 +145,7 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 
 | Source | Use For | Access |
 |---|---|---|
-| Reddit | User discussions, complaints, comparisons | OAuth first |
-| Reddit Public JSON | Local low-rate fallback | Explicitly enabled |
+| Reddit | User discussions, complaints, comparisons | OAuth first; automatic keyless RSS fallback |
 | Stack Exchange | Technical questions and integration pain | Public Stack Exchange API |
 | Lobsters | Developer-community discussion | Public pages |
 | X / Twitter | Launch reactions and social signals | `XQUIK_API_KEY` or adapter |
@@ -180,7 +179,7 @@ Use `products` as the primary product discovery view. `product_data` contains so
 ## Security Notes
 
 - Do not commit `.env`, API keys, browser cookies, or GitHub tokens.
-- Reddit should use OAuth. Avoid direct Reddit HTML scraping on servers.
+- Reddit prefers OAuth and automatically falls back to low-rate public RSS when OAuth is unavailable.
 - X/Twitter cookie access is for local, user-consented flows only.
 - If a token appears in chat or logs, revoke it and generate a new one.
 

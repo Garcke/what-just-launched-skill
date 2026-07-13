@@ -42,7 +42,6 @@ SOURCE_WEIGHTS = {
     "fazier": 0.92,
     "peerlist": 1.05,
     "reddit": 1.10,
-    "reddit_public": 0.85,
     "lobsters": 0.82,
     "stackexchange": 0.72,
     "xquik": 0.90,
@@ -67,7 +66,6 @@ SOURCE_QUALITY = {
     "fazier": 0.72,
     "peerlist": 0.82,
     "reddit": 0.80,
-    "reddit_public": 0.62,
     "lobsters": 0.70,
     "stackexchange": 0.62,
     "xquik": 0.68,
@@ -174,15 +172,21 @@ class RankingMixin:
                 raw_score = float(row.get("score") or 0)
                 engagement = 1.0 if total == 1 and raw_score > 0 else (raw_score - score_min) / denom if denom else 0.0
                 local_relevance = 1.0 if total == 1 else 1.0 - ((rank - 1) / max(1, total - 1))
+                source_weight = SOURCE_WEIGHTS.get(source, 0.75)
+                source_quality = SOURCE_QUALITY.get(source, 0.50)
+                if source == "reddit" and row.get("signals", {}).get("access_mode") == "keyless_rss":
+                    source_weight = 0.90
+                    source_quality = 0.68
+                    engagement = 0.0
                 row = dict(row)
                 row["_ranking"] = {
                     "source_rank": rank,
                     "local_relevance": clamp(local_relevance),
                     "engagement": clamp(engagement),
                     "freshness": self._freshness_score(row),
-                    "source_quality": SOURCE_QUALITY.get(source, 0.50),
-                    "source_weight": SOURCE_WEIGHTS.get(source, 0.75),
-                    "rrf_score": SOURCE_WEIGHTS.get(source, 0.75) / (RRF_K + rank),
+                    "source_quality": source_quality,
+                    "source_weight": source_weight,
+                    "rrf_score": source_weight / (RRF_K + rank),
                     "matched_sources": [source],
                     "source_diversity": 0.0,
                     "launch_date_confidence": self._launch_date_confidence(row),

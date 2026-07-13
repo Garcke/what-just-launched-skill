@@ -28,8 +28,7 @@ Use these feedback sources:
 
 | Source | Use For | Access |
 |---|---|---|
-| Reddit | real user discussions, complaints, comparisons | OAuth first; public JSON only by explicit opt-in |
-| Reddit Public JSON | low-rate public Reddit fallback for local tests | explicit source id; can return 403 or bot gates |
+| Reddit | real user discussions, complaints, comparisons | OAuth first; automatic keyless RSS fallback |
 | Stack Exchange | technical questions, integration pain, repeated needs | Public Stack Exchange API |
 | Lobsters | developer-community discussions | explicit source id; public pages at low request volume |
 | X / Twitter | launch reactions, founder/user chatter, fast-moving sentiment | `XAI_API_KEY`, `XQUIK_API_KEY`, browser cookies, or manual cookies |
@@ -39,7 +38,7 @@ Use these feedback sources:
 
 ## Reddit Safety Rules
 
-Default to OAuth. Require:
+Prefer OAuth when these values are configured:
 
 ```text
 REDDIT_CLIENT_ID
@@ -53,7 +52,7 @@ Use a descriptive User-Agent such as:
 linux:what-just-launched:0.1.0 (by /u/example)
 ```
 
-Do not use generic Python/urllib/Java User-Agents. Respect Reddit rate-limit headers and avoid retry loops after 403, 429, or bot-gate responses. If OAuth is missing, report `missing_config` and use Web Search fallback for `site:reddit.com` style discovery rather than scraping Reddit pages.
+Without OAuth, use Reddit's public RSS search at low request volume. Do not retry loops after 403, 429, or bot-gate responses. RSS provides thread metadata but not reliable upvote or comment counts, so label those fields unavailable and rank the evidence more cautiously.
 
 ## X / Twitter Access Rules
 

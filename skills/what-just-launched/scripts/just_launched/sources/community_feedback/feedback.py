@@ -7,9 +7,9 @@ import json
 import os
 import re
 import subprocess
-import time
 import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from typing import Any
 
 from ...common import (
@@ -26,10 +26,16 @@ from ...common import (
 
 class FeedbackSources:
     def reddit(self) -> list[dict[str, Any]]:
-        if not self._has_reddit_oauth():
-            if os.getenv("PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON", "").lower() == "true":
-                return self._reddit_public_low_rate()
+        if not self.query:
             return []
+        if self._has_reddit_oauth():
+            try:
+                return self._reddit_oauth_rows()
+            except Exception:
+                return self._reddit_keyless_rss(oauth_fallback=True)
+        return self._reddit_keyless_rss()
+
+    def _reddit_oauth_rows(self) -> list[dict[str, Any]]:
         token = self._reddit_token()
         params = urllib.parse.urlencode({"q": self.query, "sort": "relevance", "t": "month", "limit": min(self.args.limit, 25), "type": "link"})
         data = get_json(
@@ -47,7 +53,7 @@ class FeedbackSources:
                 summary=d.get("selftext", "")[:500],
                 published_at=dt.datetime.fromtimestamp(d.get("created_utc", 0), dt.timezone.utc).isoformat() if d.get("created_utc") else "",
                 score=float(d.get("score") or 0) + float(d.get("num_comments") or 0) * 2,
-                signals={"subreddit": d.get("subreddit"), "upvotes": d.get("score"), "comments": d.get("num_comments")},
+                signals={"subreddit": d.get("subreddit"), "upvotes": d.get("score"), "comments": d.get("num_comments"), "access_mode": "oauth"},
                 raw=d,
             )
             row["id"] = d.get("id")
@@ -57,9 +63,6 @@ class FeedbackSources:
             for row in sorted(rows, key=lambda r: r.get("score", 0), reverse=True)[:3]:
                 self._attach_reddit_comments(row, token)
         return rows
-
-    def reddit_public(self) -> list[dict[str, Any]]:
-        return self._reddit_public_low_rate()
 
     def lobsters(self) -> list[dict[str, Any]]:
         if not self.query:
@@ -221,29 +224,76 @@ class FeedbackSources:
             payload = json.loads(resp.read().decode("utf-8"))
         return payload["access_token"]
 
-    def _reddit_public_low_rate(self) -> list[dict[str, Any]]:
-        if not self.query:
+    def _reddit_keyless_rss(self, *, oauth_fallback: bool = False) -> list[dict[str, Any]]:
+        params = urllib.parse.urlencode({"q": self.query, "sort": "relevance", "t": "month"})
+        text = get_text(
+            f"https://www.reddit.com/search.rss?{params}",
+            headers={
+                "User-Agent": BROWSER_UA,
+                "Accept": "application/atom+xml,application/xml,text/xml,*/*",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Connection": "close",
+            },
+            timeout=30,
+        )
+        try:
+            root = ET.fromstring(text)
+        except ET.ParseError:
             return []
-        time.sleep(1.5)
-        params = urllib.parse.urlencode({"q": self.query, "sort": "relevance", "t": "month", "limit": min(self.args.limit, 10)})
-        data = get_json(f"https://www.reddit.com/search.json?{params}", headers={"User-Agent": os.getenv("REDDIT_USER_AGENT", DEFAULT_UA)})
-        rows = []
-        for child in data.get("data", {}).get("children", []):
-            d = child.get("data", {})
-            published = dt.datetime.fromtimestamp(d.get("created_utc", 0), dt.timezone.utc).isoformat() if d.get("created_utc") else ""
+
+        atom = "{http://www.w3.org/2005/Atom}"
+        query_terms = [
+            term
+            for term in re.findall(r"[a-z0-9]+", self.query.lower())
+            if len(term) > 1 and term not in {"review", "reviews", "feedback", "new", "product", "products"}
+        ]
+        rows: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for idx, entry in enumerate(root.findall(f"{atom}entry"), 1):
+            title = str(entry.findtext(f"{atom}title") or "").strip()
+            link_node = entry.find(f"{atom}link")
+            url = str(link_node.attrib.get("href") or "").strip() if link_node is not None else ""
+            if not title or not url or "/comments/" not in url or url in seen:
+                continue
+            updated = str(entry.findtext(f"{atom}updated") or "").strip()
+            published_date = date_only(updated)
+            if published_date and not self._date_in_range(published_date):
+                continue
+            content = str(entry.findtext(f"{atom}content") or "")
+            summary = html.unescape(re.sub(r"<[^>]+>", " ", content))
+            summary = re.sub(r"\s+", " ", summary).strip()[:500]
+            haystack = f"{title} {summary}".lower()
+            matched_terms = sum(1 for term in query_terms if term in haystack)
+            relevance = matched_terms / len(query_terms) if query_terms else 1.0
+            if query_terms and (matched_terms == 0 or (len(query_terms) > 1 and relevance < 0.5)):
+                continue
+            category = entry.find(f"{atom}category")
+            subreddit = str(category.attrib.get("term") or "").removeprefix("r/") if category is not None else ""
+            author = str(entry.findtext(f"{atom}author/{atom}name") or "").removeprefix("/u/").removeprefix("u/")
+            seen.add(url)
             rows.append(item(
-                "reddit_public",
-                d.get("title", ""),
-                "https://www.reddit.com" + d.get("permalink", ""),
+                "reddit",
+                title,
+                url,
                 kind="discussion",
-                summary=d.get("selftext", "")[:500],
-                published_at=published,
-                evidence_published_at=published,
-                date_confidence="evidence_date_only" if published else "unknown",
-                score=float(d.get("score") or 0) + float(d.get("num_comments") or 0) * 2,
-                signals={"subreddit": d.get("subreddit"), "upvotes": d.get("score"), "comments": d.get("num_comments")},
-                raw=d,
+                summary=summary,
+                published_at=updated or published_date,
+                evidence_published_at=updated or published_date,
+                date_confidence="evidence_date_only" if published_date else "unknown",
+                score=float(max(1, self.args.limit + 1 - idx)) + relevance,
+                signals={
+                    "subreddit": subreddit,
+                    "author": author,
+                    "upvotes": None,
+                    "comments": None,
+                    "engagement_available": False,
+                    "access_mode": "keyless_rss",
+                    "oauth_fallback": oauth_fallback,
+                    "query_relevance": round(relevance, 3),
+                },
             ))
+            if len(rows) >= self.args.limit:
+                break
         return rows
 
     def _attach_reddit_comments(self, row: dict[str, Any], token: str) -> None:

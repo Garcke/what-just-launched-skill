@@ -19,7 +19,7 @@ PRODUCT_HUNT_TOKEN=
 # Examples: artificial-intelligence, developer-tools, productivity.
 PRODUCT_SCOUT_PRODUCT_HUNT_TOPIC=
 
-# Reddit, OAuth first. Avoid Reddit HTML scraping on servers.
+# Reddit. OAuth is preferred; keyless RSS works without these values.
 REDDIT_CLIENT_ID=
 REDDIT_CLIENT_SECRET=
 REDDIT_USER_AGENT=linux:what-just-launched:0.1.0 (by /u/your_username)

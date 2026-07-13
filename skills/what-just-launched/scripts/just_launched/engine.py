@@ -53,8 +53,7 @@ class ProductScout(RankingMixin, ProductHuntSource, PeerlistSource, AppStoreSour
             status("fazier", "available", "uses Next.js JSON, then direct HTML, with Firecrawl as fallback"),
             status("peerlist", "available", "uses the public Launchpad spotlight API; raw HTTP may be blocked by Cloudflare"),
             status("hacker_news", "available", "community/news source; uses free HN Algolia API"),
-            status("reddit", "available" if self._has_reddit_oauth() else "missing_config", "use REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT; public fallback is disabled by default"),
-            status("reddit_public", "available", "explicit opt-in source id; uses low-rate public Reddit JSON without OAuth"),
+            status("reddit", "available", "uses OAuth when configured, otherwise falls back to keyless Reddit RSS"),
             status("lobsters", "available", "explicit opt-in source id; scrapes public Lobsters search pages at low request volume"),
             status("stackexchange", "available", "uses public Stack Exchange advanced search API"),
             status("x_twitter", "available" if self._has_x_config() else "missing_config", "set XQUIK_API_KEY, XAI_API_KEY, PRODUCT_SCOUT_X_ADAPTER_COMMAND, FROM_BROWSER=auto, or AUTH_TOKEN+CT0"),
@@ -87,7 +86,6 @@ class ProductScout(RankingMixin, ProductHuntSource, PeerlistSource, AppStoreSour
                 "SERPAPI_API_KEY": bool(os.getenv("SERPAPI_API_KEY")),
                 "TAVILY_API_KEY": bool(os.getenv("TAVILY_API_KEY")),
                 "PRODUCT_SCOUT_WEB_PROVIDERS": os.getenv("PRODUCT_SCOUT_WEB_PROVIDERS", "brave,serpapi,tavily"),
-                "PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON": os.getenv("PRODUCT_SCOUT_ALLOW_REDDIT_PUBLIC_JSON", ""),
                 "PRODUCT_SCOUT_STACKEXCHANGE_SITE": os.getenv("PRODUCT_SCOUT_STACKEXCHANGE_SITE", "stackoverflow"),
             },
             "commands": {

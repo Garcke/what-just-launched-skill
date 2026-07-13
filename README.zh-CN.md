@@ -144,8 +144,7 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 
 | 来源 | 用途 | 访问方式 |
 |---|---|---|
-| Reddit | 用户讨论、抱怨、对比 | OAuth 优先 |
-| Reddit Public JSON | 本地低频 fallback | 显式启用 |
+| Reddit | 用户讨论、抱怨、对比 | OAuth 优先；未配置时自动使用低频公开 RSS |
 | Stack Exchange | 技术问题和集成痛点 | Stack Exchange 公共 API |
 | Lobsters | 开发者社区讨论 | 公开页面 |
 | X / Twitter | 发布反应和社交信号 | `XQUIK_API_KEY` 或 adapter |
@@ -179,7 +178,7 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 ## 安全说明
 
 - 不要提交 `.env`、API key、浏览器 cookie 或 GitHub token。
-- Reddit 建议使用 OAuth，不建议服务器直接抓 Reddit HTML。
+- Reddit 优先使用 OAuth；未配置 OAuth 时自动回退到低频公开 RSS。
 - X/Twitter cookie 方式只适合本地、用户授权的场景。
 - 如果 token 出现在聊天或日志里，建议立刻吊销并重新生成。
 
