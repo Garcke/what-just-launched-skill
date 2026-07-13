@@ -85,13 +85,13 @@ For user feedback, use:
 
 ```text
 Reddit, Reddit Public JSON, Hacker News, Web Search,
-GitHub Issues, Stack Exchange, Lobsters, X / Twitter, YouTube
+Stack Exchange, Lobsters, X / Twitter, YouTube
 ```
 
 Use `--sources` only when the user names specific sources or when a narrow source set is clearly better:
 
 ```bash
-python scripts/just-launched.py "Cursor" --mode feedback --sources reddit,hacker_news,github_issues --days 30
+python scripts/just-launched.py "Cursor" --mode feedback --sources reddit,hacker_news,stackexchange --days 30
 ```
 
 Prefer split source routing when the task needs both product discovery and feedback:

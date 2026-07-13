@@ -119,7 +119,7 @@ npx what-just-launched run "new AI products" --mode discovery --since 2026-07-01
 查询某个产品的用户反馈：
 
 ```bash
-npx what-just-launched run "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,github_issues
+npx what-just-launched run "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,stackexchange
 ```
 
 分别指定产品源和反馈源：
@@ -146,7 +146,6 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 |---|---|---|
 | Reddit | 用户讨论、抱怨、对比 | OAuth 优先 |
 | Reddit Public JSON | 本地低频 fallback | 显式启用 |
-| GitHub Issues | Bug、功能需求、开发者反馈 | GitHub 公开 Search API |
 | Stack Exchange | 技术问题和集成痛点 | Stack Exchange 公共 API |
 | Lobsters | 开发者社区讨论 | 公开页面 |
 | X / Twitter | 发布反应和社交信号 | `XQUIK_API_KEY` 或 adapter |

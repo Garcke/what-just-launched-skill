@@ -119,7 +119,7 @@ npx what-just-launched run "new AI products" --mode discovery --since 2026-07-01
 Research user feedback for a product:
 
 ```bash
-npx what-just-launched run "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,github_issues
+npx what-just-launched run "Cursor AI reviews" --mode feedback --days 30 --sources hacker_news,stackexchange
 ```
 
 Use split source routing:
@@ -147,7 +147,6 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 |---|---|---|
 | Reddit | User discussions, complaints, comparisons | OAuth first |
 | Reddit Public JSON | Local low-rate fallback | Explicitly enabled |
-| GitHub Issues | Bugs, feature requests, developer feedback | Public GitHub Search API |
 | Stack Exchange | Technical questions and integration pain | Public Stack Exchange API |
 | Lobsters | Developer-community discussion | Public pages |
 | X / Twitter | Launch reactions and social signals | `XQUIK_API_KEY` or adapter |

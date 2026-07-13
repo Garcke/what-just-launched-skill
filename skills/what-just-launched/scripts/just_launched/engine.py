@@ -56,7 +56,6 @@ class ProductScout(RankingMixin, ProductHuntSource, PeerlistSource, AppStoreSour
             status("reddit", "available" if self._has_reddit_oauth() else "missing_config", "use REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT; public fallback is disabled by default"),
             status("reddit_public", "available", "explicit opt-in source id; uses low-rate public Reddit JSON without OAuth"),
             status("lobsters", "available", "explicit opt-in source id; scrapes public Lobsters search pages at low request volume"),
-            status("github_issues", "available", "uses public GitHub Issues search API"),
             status("stackexchange", "available", "uses public Stack Exchange advanced search API"),
             status("x_twitter", "available" if self._has_x_config() else "missing_config", "set XQUIK_API_KEY, XAI_API_KEY, PRODUCT_SCOUT_X_ADAPTER_COMMAND, FROM_BROWSER=auto, or AUTH_TOKEN+CT0"),
             status("youtube", "available" if os.getenv("YOUTUBE_API_KEY") else "missing_config", "set YOUTUBE_API_KEY; yt-dlp is optional for transcripts"),

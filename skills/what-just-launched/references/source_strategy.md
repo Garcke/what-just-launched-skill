@@ -30,7 +30,6 @@ Use these feedback sources:
 |---|---|---|
 | Reddit | real user discussions, complaints, comparisons | OAuth first; public JSON only by explicit opt-in |
 | Reddit Public JSON | low-rate public Reddit fallback for local tests | explicit source id; can return 403 or bot gates |
-| GitHub Issues | bugs, feature requests, migration pain, developer feedback | Public GitHub Search API |
 | Stack Exchange | technical questions, integration pain, repeated needs | Public Stack Exchange API |
 | Lobsters | developer-community discussions | explicit source id; public pages at low request volume |
 | X / Twitter | launch reactions, founder/user chatter, fast-moving sentiment | `XAI_API_KEY`, `XQUIK_API_KEY`, browser cookies, or manual cookies |

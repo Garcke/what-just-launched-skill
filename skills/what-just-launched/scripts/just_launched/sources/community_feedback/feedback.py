@@ -96,29 +96,6 @@ class FeedbackSources:
                 break
         return rows
 
-    def github_issues(self) -> list[dict[str, Any]]:
-        if not self.query:
-            return []
-        q = f"{self.query} created:{self.start_date.isoformat()}..{self.end_date.isoformat()}"
-        params = urllib.parse.urlencode({"q": q, "sort": "comments", "order": "desc", "per_page": min(self.args.limit, 30)})
-        data = get_json(f"https://api.github.com/search/issues?{params}", headers={"User-Agent": DEFAULT_UA, "Accept": "application/vnd.github+json"})
-        rows = []
-        for issue in data.get("items", []):
-            rows.append(item(
-                "github_issues",
-                issue.get("title", ""),
-                issue.get("html_url", ""),
-                kind="issue" if "pull_request" not in issue else "pull_request",
-                summary=str(issue.get("body") or "")[:500],
-                published_at=issue.get("created_at", ""),
-                evidence_published_at=issue.get("created_at", ""),
-                date_confidence="evidence_date_only" if issue.get("created_at") else "unknown",
-                score=float(issue.get("comments") or 0) * 2 + float(issue.get("score") or 0),
-                signals={"comments": issue.get("comments"), "state": issue.get("state"), "author": (issue.get("user") or {}).get("login")},
-                raw=issue,
-            ))
-        return rows
-
     def stackexchange(self) -> list[dict[str, Any]]:
         if not self.query:
             return []
