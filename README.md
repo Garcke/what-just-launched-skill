@@ -55,7 +55,7 @@ npx what-just-launched run "new AI products" --mode discovery --since 2026-07-01
 
 ## Sources
 
-- Product discovery: Product Hunt, BetaList, Microlaunch, Uneed, Fazier.
+- Product discovery: Product Hunt, Peerlist Launchpad, BetaList, Microlaunch, Uneed, Fazier.
 - Feedback and news evidence: Reddit, Hacker News, GitHub Issues, Stack Exchange, Lobsters, X/Twitter, YouTube, Brave, SerpApi, Tavily.
 - Page parsing: Firecrawl with API key when configured, Firecrawl keyless by default when no key exists, then direct HTML fallback.
 

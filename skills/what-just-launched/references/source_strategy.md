@@ -7,6 +7,7 @@ Use these product discovery sources:
 | Source | Use For | Access |
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` for GraphQL |
+| Peerlist Launchpad | design, developer, AI, and indie product launches | Public weekly spotlight API with cursor pagination; raw HTTP may be blocked by Cloudflare |
 | BetaList | early-stage startups and waitlists | Atom feed `https://feeds.feedburner.com/BetaList` for latest dated launches; HTML list/search/category pages as fallback |
 | Microlaunch | indie products, SaaS, AI tools, developer products | Public page data merged with `https://nextjs-twitter-api.vercel.app/api/launches?channel=MicroLaunch&batch=YYYYMM`; match page `id` to API `product_id` |
 | Uneed | indie products, SaaS, AI tools, launch pages | Public daily ladder API; optional Firecrawl fallback |
@@ -16,7 +17,6 @@ Candidate product sources to evaluate next:
 
 | Source | Initial Quality | Notes |
 |---|---|---|
-| Peerlist Launchpad | High | Weekly launch board with product cards and feedback. Direct HTML can 403; Firecrawl can retrieve pages, but virtualized lists may expose only rendered cards. Treat as optional until coverage is stable. |
 | DevHunt | Medium-high for developer tools | Developer-tool directory with many tool pages. Good topical fit, but current page evidence does not expose reliable launch dates. Use as date-unverified discovery unless a dated endpoint is found. |
 | Launching Next | Medium | New-startup directory with simple pages. Useful breadth, but weaker freshness and quality signals than Product Hunt, Uneed, Fazier, or Peerlist. |
 | Tiny Startups | Unknown | Candidate launch board, but retrieval was unstable in testing. Re-test through Firecrawl before adding. |

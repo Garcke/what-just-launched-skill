@@ -73,7 +73,7 @@ def product_entity_key(row: dict[str, Any]) -> str:
         if host in DIRECTORY_PRODUCT_HOSTS and path:
             parts = path.split("/")
             return f"url:{host}/{'/'.join(parts[:2])}"
-        if host in {"apps.apple.com", "play.google.com", "github.com", "producthunt.com"} and path:
+        if host in {"apps.apple.com", "play.google.com", "github.com", "peerlist.io", "producthunt.com"} and path:
             parts = path.split("/")
             return f"url:{host}/{'/'.join(parts[:3])}"
         return f"domain:{host}" if host else f"url:{url}"

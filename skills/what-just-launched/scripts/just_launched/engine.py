@@ -29,9 +29,10 @@ from .sources.product_data.app_stores import AppStoreSources
 from .sources.product_data.directories import DirectorySources
 from .sources.product_data.github import GitHubSources
 from .sources.product_data.product_hunt import ProductHuntSource
+from .sources.product_data.peerlist import PeerlistSource
 from .sources.registry import selected_sources, source_runner, source_type
 
-class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsSource, GitHubSources, DirectorySources, FeedbackSources, WebSearchSource):
+class ProductScout(RankingMixin, ProductHuntSource, PeerlistSource, AppStoreSources, HackerNewsSource, GitHubSources, DirectorySources, FeedbackSources, WebSearchSource):
     def __init__(self, args: argparse.Namespace) -> None:
         self.args = args
         self.market = args.market.lower()
@@ -50,6 +51,7 @@ class ProductScout(RankingMixin, ProductHuntSource, AppStoreSources, HackerNewsS
             status("microlaunch", "available", "scrapes Microlaunch product pages; uses Firecrawl scrape when configured"),
             status("uneed", "available", "scrapes Uneed product pages; uses Firecrawl scrape when configured"),
             status("fazier", "available", "scrapes Fazier launch pages; uses Firecrawl scrape when configured"),
+            status("peerlist", "available", "uses the public Launchpad spotlight API; raw HTTP may be blocked by Cloudflare"),
             status("hacker_news", "available", "community/news source; uses free HN Algolia API"),
             status("reddit", "available" if self._has_reddit_oauth() else "missing_config", "use REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT; public fallback is disabled by default"),
             status("reddit_public", "available", "explicit opt-in source id; uses low-rate public Reddit JSON without OAuth"),

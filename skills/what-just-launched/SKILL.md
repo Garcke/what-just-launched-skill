@@ -1,6 +1,6 @@
 ---
 name: what-just-launched
-description: Discover and synthesize recently launched products across launch platforms, product directories, community/news sources, social/video feedback sources, and web search. Use when the user asks what just launched, what new products appeared recently, what new apps or AI products are emerging, or wants launch signals from sources such as Product Hunt, BetaList, Microlaunch, Uneed, Fazier, Hacker News, Reddit, X/Twitter, YouTube, and web search.
+description: Discover and synthesize recently launched products across launch platforms, product directories, community/news sources, social/video feedback sources, and web search. Use when the user asks what just launched, what new products appeared recently, what new apps or AI products are emerging, or wants launch signals from sources such as Product Hunt, Peerlist Launchpad, BetaList, Microlaunch, Uneed, Fazier, Hacker News, Reddit, X/Twitter, YouTube, and web search.
 ---
 
 # What Just Launched
@@ -76,7 +76,7 @@ Use `products` as the primary product discovery view. Order products by `product
 For product discovery, use:
 
 ```text
-Product Hunt, BetaList, Microlaunch, Uneed, Fazier
+Product Hunt, Peerlist Launchpad, BetaList, Microlaunch, Uneed, Fazier
 ```
 
 For user feedback, use:

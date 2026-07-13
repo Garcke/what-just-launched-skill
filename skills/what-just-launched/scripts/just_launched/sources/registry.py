@@ -20,6 +20,7 @@ PRODUCT_DATA_SPECS = {
     "microlaunch": SourceSpec("microlaunch", "microlaunch", ("discovery", "all"), "product_data"),
     "uneed": SourceSpec("uneed", "uneed", ("discovery", "all"), "product_data"),
     "fazier": SourceSpec("fazier", "fazier", ("discovery", "all"), "product_data"),
+    "peerlist": SourceSpec("peerlist", "peerlist", ("discovery", "all"), "product_data"),
 }
 
 COMMUNITY_FEEDBACK_SPECS = {
@@ -46,6 +47,7 @@ EMITTED_SOURCE_TYPES = {
     "microlaunch": "product_data",
     "uneed": "product_data",
     "fazier": "product_data",
+    "peerlist": "product_data",
     "brave_search": "community_feedback",
     "serpapi_search": "community_feedback",
     "tavily_search": "community_feedback",

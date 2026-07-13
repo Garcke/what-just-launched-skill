@@ -58,7 +58,7 @@ Append config values safely:
 python scripts/just-launched.py --write-config KEY=VALUE
 ```
 
-Minimal setup works without keys for BetaList, Microlaunch, Uneed, Fazier, Hacker News, Stack Exchange, and Lobsters.
+Minimal setup works without keys for Peerlist, BetaList, Microlaunch, Uneed, Fazier, Hacker News, Stack Exchange, and Lobsters. Peerlist may still require a browser-network context when Cloudflare blocks raw HTTP from the current IP.
 Page-based product sources try Firecrawl when available. If `FIRECRAWL_API_KEY` is not configured, the engine tries Firecrawl keyless by default and falls back to direct HTML when keyless is blocked.
 
 Check available sources:
@@ -135,6 +135,7 @@ npx what-just-launched run "AI coding tools" --mode all --product-sources produc
 | Source | Use For | Access |
 |---|---|---|
 | Product Hunt | SaaS, AI tools, indie products, launches | `PRODUCT_HUNT_TOKEN` |
+| Peerlist Launchpad | Design, developer, AI, and indie launches | Public weekly API; Cloudflare may block raw HTTP |
 | BetaList | Early-stage startups and waitlists | Public pages; optional Firecrawl parsing |
 | Microlaunch | Indie products, SaaS, AI tools | Public pages; optional Firecrawl parsing |
 | Uneed | Indie products and launch pages | Public daily ladder API; optional Firecrawl fallback |
