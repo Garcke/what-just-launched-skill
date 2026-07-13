@@ -5,9 +5,8 @@ import re
 from typing import Any
 
 from ...common import (
-    BROWSER_UA,
+    get_firecrawl_page_text,
     get_page_text,
-    get_text,
     item,
 )
 
@@ -17,9 +16,11 @@ class GitHubSources:
         url = f"https://github.com/trending?since={since}"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_GITHUB_TRENDING_USE_FIRECRAWL")
         rows = self._github_trending_rows(text, since, parser)
-        if not rows and parser == "firecrawl_scrape":
-            text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
-            rows = self._github_trending_rows(text, since, "html")
+        if not rows and parser == "html":
+            fallback = get_firecrawl_page_text(url, env_flag="PRODUCT_SCOUT_GITHUB_TRENDING_USE_FIRECRAWL")
+            if fallback:
+                text, parser = fallback
+                rows = self._github_trending_rows(text, since, parser)
         return rows
 
     def _github_trending_rows(self, text: str, since: str, parser: str) -> list[dict[str, Any]]:

@@ -169,6 +169,20 @@ def get_page_text(
     env_flag: str = "",
     timeout: int = 30,
 ) -> tuple[str, str]:
+    try:
+        return get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=timeout), "html"
+    except Exception as direct_error:
+        fallback = get_firecrawl_page_text(url, env_flag=env_flag)
+        if fallback:
+            return fallback
+        raise direct_error
+
+
+def get_firecrawl_page_text(
+    url: str,
+    *,
+    env_flag: str = "",
+) -> tuple[str, str] | None:
     if _enabled(env_flag) and (os.getenv("FIRECRAWL_API_KEY") or _enabled("PRODUCT_SCOUT_FIRECRAWL_KEYLESS")):
         try:
             data = firecrawl_scrape(url, formats=["html", "markdown"], only_main_content=False)
@@ -179,7 +193,7 @@ def get_page_text(
                 return text, parser
         except Exception:
             pass
-    return get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=timeout), "html"
+    return None
 
 
 def _enabled(env_flag: str) -> bool:

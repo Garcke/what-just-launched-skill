@@ -59,7 +59,7 @@ python scripts/just-launched.py --write-config KEY=VALUE
 ```
 
 Minimal setup works without keys for Peerlist, BetaList, Microlaunch, Uneed, Fazier, Hacker News, Stack Exchange, and Lobsters. Peerlist may still require a browser-network context when Cloudflare blocks raw HTTP from the current IP.
-Page-based product sources try Firecrawl when available. If `FIRECRAWL_API_KEY` is not configured, the engine tries Firecrawl keyless by default and falls back to direct HTML when keyless is blocked.
+Page-based product sources prefer structured APIs or feeds and direct HTML. Firecrawl is only used as a fallback when direct retrieval fails or returns no parseable products. If `FIRECRAWL_API_KEY` is not configured, the fallback may try Firecrawl keyless.
 
 Check available sources:
 

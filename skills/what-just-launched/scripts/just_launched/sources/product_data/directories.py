@@ -13,6 +13,7 @@ from ...common import (
     BROWSER_UA,
     DEFAULT_UA,
     date_only,
+    get_firecrawl_page_text,
     get_json,
     get_page_text,
     get_text,
@@ -29,9 +30,11 @@ class DirectorySources:
             url = f"https://betalist.com/search?q={urllib.parse.quote_plus(self.query)}"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_BETALIST_USE_FIRECRAWL")
         page_rows = self._betalist_rows(text, parser)
-        if not page_rows and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
-            text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
-            page_rows = self._betalist_rows(text, "html")
+        if not page_rows and parser == "html":
+            fallback = get_firecrawl_page_text(url, env_flag="PRODUCT_SCOUT_BETALIST_USE_FIRECRAWL")
+            if fallback:
+                text, parser = fallback
+                page_rows = self._betalist_rows(text, parser)
         if self.query:
             query_rows = self._filter_betalist_feed_rows(rows)
             merged = query_rows + [row for row in page_rows if row.get("url") not in {item.get("url") for item in query_rows}]
@@ -146,10 +149,11 @@ class DirectorySources:
         url = "https://microlaunch.net/"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_MICROLAUNCH_USE_FIRECRAWL")
         products = self._microlaunch_products(text)
-        if not products and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
-            text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
-            parser = "html"
-            products = self._microlaunch_products(text)
+        if not products and parser == "html":
+            fallback = get_firecrawl_page_text(url, env_flag="PRODUCT_SCOUT_MICROLAUNCH_USE_FIRECRAWL")
+            if fallback:
+                text, parser = fallback
+                products = self._microlaunch_products(text)
         launches_by_product_id = self._microlaunch_launches_by_product_id()
         rows = []
         for idx, product in enumerate(products, 1):
@@ -286,10 +290,11 @@ class DirectorySources:
         if not products:
             text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_FAZIER_USE_FIRECRAWL")
             products = self._fazier_products(text)
-        if not products and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
-            text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
-            parser = "html"
-            products = self._fazier_products(text)
+        if not products and parser == "html":
+            fallback = get_firecrawl_page_text(url, env_flag="PRODUCT_SCOUT_FAZIER_USE_FIRECRAWL")
+            if fallback:
+                text, parser = fallback
+                products = self._fazier_products(text)
         rows = []
         for idx, product in enumerate(products, 1):
             title = str(product.get("name") or "").strip()
@@ -378,9 +383,11 @@ class DirectorySources:
         url = "https://www.uneed.best/"
         text, parser = get_page_text(url, env_flag="PRODUCT_SCOUT_UNEED_USE_FIRECRAWL")
         rows = self._uneed_rows(text, parser)
-        if not rows and parser in {"firecrawl_scrape", "firecrawl_keyless"}:
-            text = get_text(url, headers={"User-Agent": BROWSER_UA}, timeout=30)
-            rows = self._uneed_rows(text, "html")
+        if not rows and parser == "html":
+            fallback = get_firecrawl_page_text(url, env_flag="PRODUCT_SCOUT_UNEED_USE_FIRECRAWL")
+            if fallback:
+                text, parser = fallback
+                rows = self._uneed_rows(text, parser)
         return rows[: self.args.limit]
 
     def _uneed_api_rows(self) -> list[dict[str, Any]]:
